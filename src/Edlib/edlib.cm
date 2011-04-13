@@ -1,0 +1,25 @@
+Group 
+ 
+  structure Edlib 
+  structure Set
+  structure EqSet
+  structure ListSort
+
+  signature ORDERING
+
+is
+
+Edlib.sml
+EDLIB_GENERAL.sml
+EdlibGeneral.sml
+LIST-sig.sml
+List.sml
+EQ_SET.sml
+EqSet.sml
+LIST_PAIR.sml
+ListPair.sml
+LIST_SORT.sml
+ListSort.sml
+SET-sig.sml
+Set.sml
+ORDERING.sml

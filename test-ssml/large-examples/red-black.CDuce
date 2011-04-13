@@ -1,0 +1,64 @@
+(* This file contains a half completed attempt to convert the red-black
+   tree example to CDuce.  It turns out to be reasonably easy to
+   construct an example that shows that CDuce doesn't do case analysis
+   like the the sort checker does - see the file ../no-case-analysis.cduce
+*)
+
+
+
+Type rbt = <empty> | <red> * bt * bt | <black> * rbt * rbt;;
+Type bt = <empty> | <black> * rbt * rbt;;
+Type red = <red> * bt * bt;;
+
+Type badRoot = rbt | <red> * red * bt | <red> * bt * red;;
+Type badleft = rbt | <black> * badRoot * rbt;;
+Type badright = rbt | <black> * rbt * badRoot;;
+
+
+(*[  datasort 'a rbt =  Empty | Black of 'a entry * 'a rbt * 'a rbt   (* red/black trees *)
+                   | Red of 'a entry * 'a bt * 'a bt
+       and 'a bt = Empty | Black of 'a entry * 'a rbt * 'a rbt     (* black root node *)  ]*)
+(*[  datasort 'a red = Red of 'a entry * 'a bt * 'a bt             ]*)   (* red root node *)
+
+(*[  datasort 'a badRoot                    (* invariant possibly violated at the root *)
+     = Empty | Black of 'a entry * 'a rbt * 'a rbt | Red of 'a entry * 'a bt * 'a bt
+     | Red of 'a entry * 'a red * 'a bt | Red of 'a entry * 'a bt * 'a red   ]*)
+
+(*[  datasort 'a badLeft               (* invariant possibly violated at the left child *)
+     = Empty | Black of 'a entry * 'a rbt * 'a rbt | Red of 'a entry * 'a bt * 'a bt
+     | Black of 'a entry * 'a badRoot * 'a rbt   ]*)
+
+(*[  datasort 'a badRight              (* invariant possibly violated at the right child *)
+     = Empty | Black of 'a entry * 'a rbt * 'a rbt | Red of 'a entry * 'a bt * 'a bt
+     | Black of 'a entry * 'a rbt * 'a badRoot  ]*)
+
+
+  fun restore_right (Black(e:'a entry, Red lt, Red (rt as (_,Red _,_)))) =
+         Red(e, Black lt, Black rt)	(* re-color *)
+    | restore_right (Black(e, Red lt, Red (rt as (_,_,Red _)))) =
+         Red(e, Black lt, Black rt)	(* re-color *)
+    | restore_right (Black(e, l, Red(re, Red(rle, rll, rlr), rr))) =
+	 (* l is black, deep rotate *)
+	 Black(rle, Red(e, l, rll), Red(re, rlr, rr))
+    | restore_right (Black(e, l, Red(re, rl, rr as Red _))) =
+	 (* l is black, shallow rotate *)
+	 Black(re, Red(e, l, rl), rr)
+    | restore_right dict = dict
+
+let fun restoreright (badright -> rbt)
+      | <black>, (<red>, lt1, lt2), (<red>, rt1::(<red>, _, _), rt2) ->
+         <red>, (<black>, lt1, lt2), (<black>, rt1, rt2)
+        
+
+
+Type rbt = <empty> | <red> * (bt * bt) | <black> * (rbt * rbt);;
+Type bt = <empty> | <black> * (rbt * rbt);;
+Type red = <red> * (bt * bt);;
+Type badRoot = rbt | <red> * (red * bt) | <red> * (bt * red);;
+Type badleft = rbt | <black> * (badRoot * rbt);;
+Type badright = rbt | <black> * (rbt * badRoot);;
+
+let fun restoreright (badright -> rbt)
+      | <black>, ((<red>, (lt1, lt2)), (<red>, (rt1::(<red>, (_, _)), rt2))) ->
+         <red>, (<black>, lt1, lt2), (<black>, rt1, rt2) ;;
+

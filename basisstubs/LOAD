@@ -1,0 +1,121 @@
+(* Initial allows for other modules to be discharged at link time *)
+local (* Initial.sml *)
+  (* This structure declares values that must be initialised when the
+   * system starts executing. The purpose is to allow the clients of
+   * this structure to be discharged at link time; only files that are
+   * safe (no side effects) can be discharged at link time. ME 1998-08-21 *)
+
+  structure Initial =
+    struct
+
+      infix - + *
+
+      (* Time structure *)
+      val timebase = ~1073741820 - 4  
+
+      (* Date structure *)
+      local fun localoffset_ () : real = prim("sml_localoffset", "sml_localoffset", ())
+      in val localoffset = localoffset_ ()
+      end
+
+      (* Timer *)
+      local
+	type tusage = {gcSec : int,  gcUsec : int,
+		       sysSec : int, sysUsec : int,
+		       usrSec : int, usrUsec : int}
+	fun getrealtime_ () : {sec : int, usec : int} =
+	  prim("sml_getrealtime", "sml_getrealtime", ())
+	fun getrutime_ () : tusage = prim("sml_getrutime", "sml_getrutime", ())
+      in val initial_realtime = getrealtime_ ()
+	 val initial_rutime = getrutime_ ()
+      end 
+
+      (* Real structure *)
+      local
+	fun get_posInf () : real = prim ("posInfFloat", "posInfFloat", ())
+	fun get_negInf () : real = prim ("negInfFloat", "negInfFloat", ())
+      in
+	val posInf = get_posInf()
+	val negInf = get_negInf()
+      end
+
+      (* Math structure *)
+      local
+	fun sqrt (r : real) : real = prim ("sqrtFloat", "sqrtFloat", r)
+	fun ln' (r : real) : real = prim ("lnFloat", "lnFloat", r)
+      in
+	val ln10 = ln' 10.0 
+	val NaN = sqrt ~1.0
+      end
+
+      (* Int structure. Integers are untagged, but there is a limit to
+       * the size of immediate integers that the Kit accepts. We should
+       * change the lexer such that it does not convert a string
+       * representation of an integer constant into an internal integer,
+       * as this makes the the kit dependent on the precision of the
+       * compiler (SML/NJ) that we use to compile the Kit. 
+       *)
+      local
+	fun pow2 0 = 1
+	  | pow2 n = 2 * pow2 (n - 1)
+	val max = pow2 30 + 1073741823  (* 2147483647 *)
+      in
+	val maxInt = max           (* Math.h: 2147483647 *)
+	val minInt = ~max          (* Math.h: -2147483647 *)
+      end
+
+      (* TextIO *)
+      val stdIn_stream : int = prim ("stdInStream", "stdInStream", 0)
+      val stdOut_stream : int = prim ("stdOutStream", "stdOutStream", 0)
+      val stdErr_stream : int = prim ("stdErrStream", "stdErrStream", 0)
+
+    end
+in
+
+(* General: *)
+GENERAL.sml General.sml OPTION.sml Option.sml
+
+(* Lists: *)
+LIST.sml List.sml LIST_PAIR.sml ListPair.sml LIST_SORT.sml
+ListSort.sml
+
+(* Arrays and Vectors: *)
+local wordtables.sml 
+in VECTOR.sml Vector.sml ARRAY.sml Array.sml
+end
+
+
+MONO_VECTOR.sml MONO_ARRAY.sml ByteVector.sml ByteArray.sml
+
+(* Text: *)
+STRING_CVT.sml StringCvt.sml 
+
+local STR_BASE.sml StrBase.sml 
+in Char.sml String.sml CHAR.sml STRING.sml SUBSTRING.sml Substring.sml 
+end
+
+BOOL.sml
+Bool.sml
+
+(* Integers: *)
+Word.sml Word8.sml WORD.sml BYTE.sml Byte.sml Int.sml INTEGER.sml
+
+(* Reals: *)
+MATH.sml Math.sml REAL.sml Real.sml
+
+(* IO: *)
+IO.sml TEXT_IO.sml TextIO.sml BIN_IO.sml BinIO.sml
+
+(* System: *)
+TIME.sml Time.sml OS_PATH.sml Path.sml OS_FILE_SYS.sml FileSys.sml
+OS_PROCESS.sml Process.sml OS.sml COMMAND_LINE.sml CommandLine.sml
+DATE.sml Date.sml TIMER.sml Timer.sml
+
+(* Misc: *)
+RANDOM.sml Random.sml SML90.sml
+
+end (*Initial*)
+
+
+
+

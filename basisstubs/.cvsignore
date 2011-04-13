@@ -1,0 +1,14 @@
+
+BITS
+PM *.log run
+no-assume-all
+orig-no-stubs
+pre-structs
+structs-
+structs-from-old-no-eqtype
+structs-from-old-script
+structs-merged
+structs-with-fns
+structs2-no-fns
+structs4-with-spaces-for-type
+structs5-with-fns-before-edits

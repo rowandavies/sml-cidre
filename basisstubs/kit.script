@@ -1,0 +1,99 @@
+(* ------------------------------------------------------------------------
+ * ML Kit script file.                                                     
+ *                                                                         
+ *                                                                         
+ * syntax:                                                                 
+ *                                                                         
+ *   DEC::= val ID : TYPE  = CONST REST                                    
+ *   REST::= ;                                                             
+ *       |  DEC                                                            
+ *   ID  ::= sequence_of_letters_underbars_and_primes                      
+ *   TYPE::= int | string | bool                                           
+ *   CONST::= ml_integer_constant | ml_string_constant | ml_bool_constant  
+ *                                                                         
+ *   blanks, tabs and newlines are separators;                             
+ *   comments are enclosed in (* and *) and can be nested.                 
+ * ------------------------------------------------------------------------- *)
+
+
+
+(* Printing of intermediate forms *)
+val print_attop_atbot_expression : bool = false
+val print_cfg_code_before_register_allocation : bool = false
+val print_cfg_code_after_register_allocation : bool = false
+val statistics_after_optimisation : bool = false
+val print_drop_regions_expression : bool = false
+val print_physical_size_inference_expression : bool = false
+val print_call_explicit_expression : bool = false
+
+(* Layout *)
+val print_types : bool = false
+val print_effects : bool = false
+val print_regions : bool = true
+val print_K_normal_forms : bool = false
+val raggedRight : bool = true
+val colwidth : int = 80
+val print_rho_levels : bool = false
+val print_rho_types : bool = false
+val print_program_points : bool = false
+val comments_in_kam_code : bool = false
+
+(* Control *)
+val chat : bool = false
+val optimiser : bool = true
+val minimize_fixs : bool = true
+val fix_conversion : bool = true
+val contract : bool = true
+val specialize_recursive_functions : bool = true
+val elim_explicit_records : bool = true
+val all_multiplicities_infinite : bool = false
+val disable_atbot_analysis : bool = false
+val show_compiler_timings : bool = false
+val cfg_copy_propagation : bool = true
+val cfg_dead_code_elimination : bool = true
+val cfg_register_allocation : bool = true
+val report_file_sig : bool = false
+
+(* File *)
+
+val log_to_file : bool = false
+
+(* Profiling *)
+val region_profiling : bool = false
+val generate_lambda_code_with_program_points : bool = false
+val generate_vcg_graph : bool = false
+val print_all_program_points : bool = true
+
+(* The following eight are used in TestEnv only. *)
+val test_log : string = "std_out"
+val acceptance_test : bool = true
+val quicker_acceptance_test : bool = true
+val performance_test : bool = false
+
+(* Debug Kit *)
+val warn_on_escaping_puts : bool = false
+val debug_which_at : bool = false
+val DEBUG_COMPILER : bool = false
+val debug_cfg_register_allocation : bool = false
+val debug_KAM_variables : bool = false
+val debug_lambda_compiler : bool = false
+val debug_live_set : bool = false
+val debug_man_enrich : bool = false
+
+(* Do not change the following flags: *)
+val type_check_lambda : bool = true
+val eliminate_polymorphic_equality : bool = true
+val unbox_datatypes : bool = false
+val tag_integers : bool = false
+val tag_values : bool = false
+val enhanced_atbot_analysis : bool = false
+
+(* Script entries for HPPA backend *)
+val target_file_extension : string = ".s"
+
+(* Script entries for HPUX architecture *)
+val c_compiler : string = "cc -Aa"
+val c_libs : string = "-lm"
+
+;
+

@@ -1,0 +1,165 @@
+(* This runs the sort checker over it's own sources.  It was created 
+   via CM.mkusefile.  - Rowan *)
+
+R.refine_file_report false "Common/CRASH-sig.sml";
+R.refine_file_report false "Common/MONO_FINMAP.sml";
+R.refine_file_report false "Edlib/EDLIB_GENERAL.sml";
+R.refine_file_report false "Edlib/EdlibGeneral.sml";
+R.refine_file_report false "Edlib/LIST-sig.sml";
+R.refine_file_report false "Edlib/List.sml";
+R.refine_file_report false "Edlib/EQ_SET.sml";
+R.refine_file_report false "Edlib/EqSet.sml";
+R.refine_file_report false "Common/PRETTYPRINT-sig.sml";
+R.refine_file_report false "Common/HashTable.sml";
+R.refine_file_report false "Common/QUASI_ENV.sml";
+R.refine_file_report false "Common/QuasiEnv.sml";
+R.refine_file_report false "Common/Heap.sml";
+R.refine_file_report false "Common/ERROR_CODE.sml";
+R.refine_file_report false "Common/E_OR_R_INFO.sml";
+R.refine_file_report false "Common/FLAGS-sig.sml";
+R.refine_file_report false "Common/KIT_MONO_SET.sml";
+R.refine_file_report false "Common/TYNAME-sig.sml";
+R.refine_file_report false "Common/FINMAP-sig.sml";
+R.refine_file_report false "Manager/NAME-sig.sml";
+R.refine_file_report false "Common/INFIXBASIS-sig.sml";
+R.refine_file_report false "Common/REPORT-sig.sml";
+R.refine_file_report false "Common/ENVIRONMENTS-sig.sml";
+R.refine_file_report false "Common/FUNID-sig.sml";
+R.refine_file_report false "Edlib/ORDERING.sml";
+R.refine_file_report false "Common/OrderFinMap.sml";
+R.refine_file_report false "Manager/OpacityEnv.sml";
+R.refine_file_report false "Manager/ELAB_REPOSITORY.sml";
+R.refine_file_report false "Manager/ElabRepository.sml";
+R.refine_file_report false "Common/NatSet.sml";
+R.refine_file_report false "Common/IntSet.sml";
+R.refine_file_report false "Common/IDENT-sig.sml";
+R.refine_file_report false "Common/STRID-sig.sml";
+R.refine_file_report false "Common/SORTNAME-sig.sml";
+R.refine_file_report false "Common/REFINED_ENVIRONMENTS.sml";
+R.refine_file_report false "Common/TYVAR-sig.sml";
+R.refine_file_report false "Common/REFOBJECT-sig.sml";
+R.refine_file_report false "Common/STATOBJECT-sig.sml";
+R.refine_file_report false "Common/SIGID-sig.sml";
+R.refine_file_report false "Common/MODULE_STATOBJECT.sml";
+R.refine_file_report false "Common/MODULE_ENVIRONMENTS.sml";
+R.refine_file_report false "Common/TOP_LEVEL_REPORT.sml";
+R.refine_file_report false "Common/TopLevelReport.sml";
+R.refine_file_report false "Edlib/LIST_PAIR.sml";
+R.refine_file_report false "Edlib/ListPair.sml";
+R.refine_file_report false "Edlib/Edlib.sml";
+R.refine_file_report false "Common/SOURCE_INFO.sml";
+R.refine_file_report false "Common/DF_INFO.sml";
+R.refine_file_report false "Common/PARSE_INFO.sml";
+R.refine_file_report false "Common/REFINE_ERROR_INFO.sml";
+R.refine_file_report false "Common/ERROR_INFO.sml";
+R.refine_file_report false "Common/TYPE_INFO.sml";
+R.refine_file_report false "Common/OVERLOADING_INFO.sml";
+R.refine_file_report false "Common/ELAB_INFO.sml";
+R.refine_file_report false "Common/LAB-sig.sml";
+R.refine_file_report false "Common/SCON-sig.sml";
+R.refine_file_report false "Common/TYCON-sig.sml";
+R.refine_file_report false "Common/DEC_GRAMMAR.sml";
+R.refine_file_report false "Common/TOPDEC_GRAMMAR.sml";
+R.refine_file_report false "Common/ERROR_TRAVERSE.sml";
+R.refine_file_report false "Common/ErrorTraverse.sml";
+
+
+R.refine_file_report false "Common/Timing.sml";
+R.refine_file_report false "Common/MAP_DEC_INFO.sml";
+R.refine_file_report false "Common/MapDecInfo.sml";
+R.refine_file_report false "Common/COMP-sig.sml";
+R.refine_file_report false "Common/REF_INFO.sml";
+R.refine_file_report false "Edlib/SET-sig.sml";
+R.refine_file_report false "Edlib/Set.sml";
+R.refine_file_report false "Common/FINMAPEQ-sig.sml";
+R.refine_file_report false "Common/RefInfo.sml";
+R.refine_file_report false "Common/Comp.sml";
+
+R.refine_file_report false "Common/RefineErrorInfo.sml";
+R.refine_file_report false "Common/SORTED_FINMAP.sml";
+R.refine_file_report false "Common/REFDEC-sig.sml";
+
+
+R.refine_file_report false "Common/RefDec.sml";
+
+R.refine_file_report false "Common/TIMESTAMP-sig.sml";
+R.refine_file_report false "Common/LIST_HACKS.sml";
+
+R.refine_file_report false "Common/smlnj-lib/Util/hash-table-rep.sml";
+R.refine_file_report false "Common/smlnj-lib/Util/hash-table-sig.sml";
+R.refine_file_report false "Common/smlnj-lib/Util/hash-table.sml";
+R.refine_file_report false "Edlib/LIST_SORT.sml";
+R.refine_file_report false "Edlib/ListSort.sml";
+R.refine_file_report false "Common/RedBlackTree.sml";
+R.refine_file_report false "Common/ListTable.sml";
+R.refine_file_report false "Common/RefinedEnvironments.sml";
+
+R.refine_file_report false "Common/RefObject.sml";
+R.refine_file_report false "Common/QuasiMap.sml";
+R.refine_file_report false "Common/QuasiSet.sml";
+R.refine_file_report false "Common/SortName.sml";
+R.refine_file_report false "Common/ELABTOPDEC-sig.sml";
+R.refine_file_report false "Common/ELABDEC-sig.sml";
+R.refine_file_report false "Common/OrderSet.sml";
+
+R.refine_file_report false "Common/ElabTopdec.sml";
+R.refine_file_report false "Common/ElabDec.sml";
+
+R.refine_file_report false "Common/ElabInfo.sml";
+R.refine_file_report false "Common/ErrorInfo.sml";
+R.refine_file_report false "Common/OverloadingInfo.sml";
+R.refine_file_report false "Common/TypeInfo.sml";
+R.refine_file_report false "Common/ModuleEnvironments.sml";
+R.refine_file_report false "Common/ModuleStatObject.sml";
+R.refine_file_report false "Common/Environments.sml";
+R.refine_file_report false "Common/StatObject.sml";
+R.refine_file_report false "Parsing/LEX_BASICS.sml";
+R.refine_file_report false "Common/BASIC_IO.sml";
+R.refine_file_report false "Parsing/PARSE-sig.sml";
+
+
+ R.refine_file_report false "Parsing/MyBase.sml";
+R.refine_file_report false "Parsing/GRAMMAR_UTILS.sml";
+ R.refine_file_report false "Parsing/GrammarUtils.sml";
+ R.refine_file_report false "Parsing/Topdec.grm.sig";
+ R.refine_file_report false "Parsing/Topdec-assume.grm.sml";
+R.refine_file_report false "Parsing/LEX_UTILS.sml";
+ R.refine_file_report false "Parsing/LexUtils.sml";
+R.refine_file_report false "Parsing/INFIX_STACK.sml";
+R.refine_file_report false "Parsing/InfixStack.sml";
+R.refine_file_report false "Parsing/INFIXING-sig.sml";
+R.refine_file_report false "Parsing/Infixing.sml";
+ R.refine_file_report false "Parsing/Topdec.lex.sml"; 
+ R.refine_file_report false "Parsing/Parse.sml"; 
+R.refine_file_report false "Common/TopdecGrammar.sml";
+R.refine_file_report false "Common/DecGrammar.sml";
+R.refine_file_report false "Common/ParseInfo.sml";
+R.refine_file_report false "Common/SourceInfo.sml";
+R.refine_file_report false "Common/DFInfo.sml";
+R.refine_file_report false "Common/InfixBasis.sml";
+R.refine_file_report false "Parsing/LexBasics.sml";
+R.refine_file_report false "Common/TyName.sml";
+R.refine_file_report false "Manager/Name.sml";
+R.refine_file_report false "Common/ListHacks.sml";
+R.refine_file_report false "Common/IntFinMapPT.sml";
+R.refine_file_report false "Common/SortedFinMap.sml";
+R.refine_file_report false "Common/FinMapEq.sml";
+R.refine_file_report false "Common/FinMap.sml";
+R.refine_file_report false "Common/PrettyPrint.sml";
+R.refine_file_report false "Common/Lab.sml";
+R.refine_file_report false "Common/TyVar.sml";
+R.refine_file_report false "Common/TyCon.sml";
+R.refine_file_report false "Common/FunId.sml";
+R.refine_file_report false "Common/SigId.sml";
+R.refine_file_report false "Common/SCon.sml";
+R.refine_file_report false "Common/Ident.sml";
+R.refine_file_report false "Common/StrId.sml";
+R.refine_file_report false "Common/Timestamp.sml";
+R.refine_file_report false "Common/Report.sml";
+R.refine_file_report false "Common/Flags.sml";
+R.refine_file_report false "Common/Crash.sml";
+R.refine_file_report false "Common/BasicIO.sml";
+(* R.refine_file_report false "Common/Elaboration.sml"; *)
+R.refine_file_report false "Manager/ParseElab.sml";
+(* R.refine_file_report false "Common/RefineCheck.sml"; *)
+R.refine_file_report false "Manager/PARSE_ELAB.sml";

@@ -1,0 +1,1660 @@
+
+functor RefDec( 
+                structure IG : DEC_GRAMMAR
+                structure OG : DEC_GRAMMAR
+                  sharing OG.Lab = IG.Lab
+                  sharing OG.SCon = IG.SCon
+                  sharing OG.Ident = IG.Ident
+                  sharing OG.TyVar = IG.TyVar
+                  sharing OG.TyCon = IG.TyCon
+                  sharing OG.StrId = IG.StrId
+
+                structure Environments : ENVIRONMENTS
+                  sharing type Environments.longid      = IG.longid
+                  sharing type Environments.longtycon   = IG.longtycon
+                  sharing type Environments.longstrid   = IG.longstrid
+                  sharing type Environments.tycon       = IG.tycon
+                  sharing type Environments.valbind     = IG.valbind
+                  sharing type Environments.id          = IG.id
+                  sharing type Environments.pat         = IG.pat
+                  sharing type Environments.ExplicitTyVar = IG.tyvar
+                  sharing type Environments.ty          = IG.ty
+
+                structure StatObject : STATOBJECT
+                  sharing StatObject.TyName = Environments.TyName
+                  sharing type StatObject.TypeScheme   = Environments.TypeScheme
+                  sharing type StatObject.ExplicitTyVar  = IG.tyvar
+                  sharing type StatObject.TypeFcn      = Environments.TypeFcn
+                  sharing type StatObject.realisation  = Environments.realisation
+                  sharing type StatObject.Substitution = Environments.Substitution
+                  sharing type StatObject.Type  = Environments.Type
+                  sharing type StatObject.TyVar = Environments.TyVar
+                  sharing type StatObject.scon  = IG.scon
+                  sharing type StatObject.lab   = IG.lab
+                  sharing type StatObject.level = Environments.level
+
+                structure RefInfo : REF_INFO
+                  sharing type RefInfo.ErrorInfo.Type  = StatObject.Type
+                  sharing type RefInfo.ErrorInfo.TyVar = StatObject.TyVar
+                  sharing type RefInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
+                  sharing type RefInfo.ErrorInfo.TyName = StatObject.TyName
+                  sharing type RefInfo.ErrorInfo.StringTree = StatObject.StringTree
+                  sharing type RefInfo.ErrorInfo.id    = Environments.id
+                  sharing type RefInfo.ErrorInfo.longid = OG.longid
+                  sharing type RefInfo.ErrorInfo.longstrid = OG.longstrid
+                  sharing type RefInfo.ErrorInfo.tycon = OG.tycon
+                  sharing type RefInfo.ErrorInfo.lab   = OG.lab
+                  sharing type RefInfo.ErrorInfo.longtycon = OG.longtycon
+                  sharing type RefInfo.ElabInfo.ElabInfo = IG.info
+                  sharing type RefInfo.RefInfo = OG.info
+
+                structure FinMap : FINMAP
+
+                structure Report: REPORT
+
+                structure PP: PRETTYPRINT
+                  sharing type StatObject.StringTree
+                               = Environments.StringTree
+                               = IG.StringTree
+                               = OG.StringTree
+                               = PP.StringTree
+                  sharing type PP.Report = Report.Report
+
+                structure Flags: FLAGS
+                structure Crash: CRASH
+
+
+               ) : REFDEC =
+
+(*
+		structure RefinedEnvironments: REFINED_ENVIRONMENTS
+		  sharing type RefinedEnvironments.longresid   = IG.longid
+		      and type RefinedEnvironments.longcon     = IG.longcon
+		      and type RefinedEnvironments.longtycon   = IG.longtycon
+		      and type RefinedEnvironments.longsortcon = IG.longsortcon
+		      and type RefinedEnvironments.tycon       = IG.tycon
+		      and type RefinedEnvironments.sortcon     = IG.sortcon
+		      and type RefinedEnvironments.excon       = IG.excon
+		      and type RefinedEnvironments.con         = IG.con
+		      and type RefinedEnvironments.id          = IG.id
+                      and type RefinedEnvironments.longexcon   = R.longexcon
+
+		structure RefObject: REFOBJECT
+		  sharing type RefObject.sortcon = IG.sortcon
+		      and type RefObject.scon  = IG.scon
+		      and type RefObject.lab   = IG.lab
+		      and type RefObject.SortName = RefinedEnvironments.SortName
+		      and type RefObject.SortFcn = RefinedEnvironments.SortFcn
+		      and type RefObject.SortScheme = RefinedEnvironments.SortScheme
+		      and type RefObject.TyVar = StatObject.TyVar
+		      and type RefObject.TypeFcn = StatObject.TypeFcn
+		      and type RefObject.TyName = StatObject.TyName
+		      and type RefObject.Type = StatObject.Type
+                      and type RefObject.SortVar = RefinedEnvironments.SortVar
+                      and type RefObject.Sort = RefinedEnvironments.Sort
+
+		structure RefineErrorInfo: REFINE_ERROR_INFO
+		  sharing type RefineErrorInfo.Sort  = RefObject.Sort
+		      and type RefineErrorInfo.SortScheme  = RefObject.SortScheme
+		      and type RefineErrorInfo.longsortcon = IG.longsortcon
+		      and type RefineErrorInfo.longcon = IG.longcon
+                      and type RefineErrorInfo.Type = StatObject.Type
+
+		structure SortInfo: SORT_INFO
+		  sharing type SortInfo.lab     = IG.lab
+		      and type SortInfo.longcon = R.longcon
+		      and type SortInfo.longexcon = R.longexcon
+		      and type SortInfo.Sort    = RefObject.Sort
+		      and type SortInfo.SortName  = RefObject.SortName
+		      and type SortInfo.SortVar   = RefObject.SortVar
+
+		structure SortVar: SORTVAR
+		  sharing type SortVar.SyntaxSortVar = IG.sortvar
+		  sharing type SortVar.Variance = RefObject.Variance
+
+		structure SortName: SORTNAME
+		  sharing type SortName.SortName = RefObject.SortName 
+		      and type SortName.TyName  = StatObject.TyName
+		      and type SortName.sortcon = IG.sortcon
+		      and type SortName.Variance = SortVar.Variance
+
+		structure SortCon: SORTCON
+		  sharing type SortCon.sortcon = IG.sortcon
+		      and type SortCon.longsortcon = IG.longsortcon
+		      and type SortCon.strid = TyCon.strid
+		      and type SortCon.tycon = IG.tycon
+		      and type SortCon.longtycon = IG.longtycon
+
+                structure ListHacks : LIST_HACKS
+	       ) : REFDEC =
+*)
+  struct
+
+    (*import from Environments:*)
+    type VarEnv            = Environments.VarEnv
+    type TyEnv             = Environments.TyEnv
+    type StrEnv            = Environments.StrEnv
+    type Env               = Environments.Env
+    type Context           = Environments.Context
+    type constructor_map   = Environments.constructor_map
+    type TyGoals           = Environments.TyGoals
+    structure VE           = Environments.VE
+    structure TyStr        = Environments.TyStr
+    structure TG           = Environments.TG
+    structure TE           = Environments.TE
+    structure SE           = Environments.SE
+    structure E            = Environments.E
+    structure C            = Environments.C
+    structure constructor_map = Environments.constructor_map
+
+    structure TyVar        = StatObject.TyVar
+    structure TyName       = StatObject.TyName
+         type Type         = StatObject.Type
+         type TyVar        = StatObject.TyVar
+         type RecType      = StatObject.RecType
+    structure Type         = StatObject.Type
+    structure TypeScheme   = StatObject.TypeScheme
+         type Substitution = StatObject.Substitution
+    structure Substitution = StatObject.Substitution
+    structure TypeFcn      = StatObject.TypeFcn
+    structure Realisation  = StatObject.Realisation
+
+    structure SO = StatObject and REI = RefineErrorInfo
+    structure ElabInfo = RefInfo.ElabInfo
+
+    (*import from other modules:*)
+    structure ErrorInfo = ElabInfo.ErrorInfo
+    structure OverloadingInfo = ElabInfo.OverloadingInfo
+    structure TypeInfo = ElabInfo.TypeInfo
+    structure Ident = IG.Ident
+    structure Lab = IG.Lab
+    type ParseInfo  = ParseInfo.ParseInfo
+    type ElabInfo = ElabInfo.ElabInfo
+    type TyName = TyName.TyName
+
+    type TyNameEnv = Env.TyNameEnv
+    type PreRefDec  = IG.dec
+     and PostRefDec = OG.dec
+    type RefInfo = RefInfo.RefInfo
+    type longid = IG.longid            
+
+    (* A local type to keep track of goal sort information in patterns *)
+    datatype PatSort = SORTps of SO.Sort 
+                           (* Constructor with type instances, and argument if required *)
+                     | VALCONSps of longid * SO.Type list * PatSort Option
+                     | ADDFIELDps of IG.lab * PatSort * PatSort
+                     | UNITps
+                     | UNIONps of PatSort * PatSort
+                     | EMPTYps
+    
+    structure PatSort =
+    struct
+      fun mkVALCONS(_, _, Some EMPTYps) = EMPTYps
+	| mkVALCONS x = VALCONSps x
+      fun mkADDFIELD(_, EMPTYps, _) = EMPTYps
+	| mkADDFIELD(_, _, EMPTYps) = EMPTYps
+	| mkADDFIELD x = ADDFIELDps x
+      fun mkUNION(EMPTYps, ps) = ps
+	| mkUNION(ps, EMPTYps) = ps
+	| mkUNION x = UNIONps x
+
+     fun pr_PatSort (SORTps srt) = "SORTps(" ^ (SO.pr_Sort srt) ^ ")"
+       | pr_PatSort (VALCONSps (longid, _, None)) = Ident.pr_longid longid
+       | pr_PatSort (VALCONSps (longid, _, Some ps)) = 
+	 (Ident.pr_longid longid) ^ "(" ^ pr_PatSort ps ^ ")"
+       | pr_PatSort (ADDFIELDps(lab, ps1, ps2)) = 
+	 "FIELD(" ^ Lab.pr_Lab lab ^ "=" ^ (pr_PatSort ps1) ^ ", " ^ (pr_PatSort ps2) ^ ")"
+       | pr_PatSort UNITps = "UNIT"
+       | pr_PatSort (UNIONps(ps1, ps2)) = 
+	 "UNION(" ^ (pr_PatSort ps1) ^ ", " ^ (pr_PatSort ps2) ^ ")"
+       | pr_PatSort EMPTYps = "EMPTY"
+    end
+    structure PS = PatSort   (* Abbrev *)
+
+    val debug_indent = ref 0
+    fun out_debug str = if !Flags.DEBUG_REFDEC then 
+                           output(std_out, (String.create (!debug_indent) " ") ^ str)
+			else ();
+
+    val okConv = RefInfo.from_ElabInfo
+
+    val errorsFound = ref false  (* Flags errors in sub-phrases. *)
+    fun addError(e: REI.info, i: RefInfo) : RefInfo =
+      (errorsFound := true; RefInfo.plus_RefineErrorInfo i e)
+      
+    fun errorConv(i : ElabInfo, e : REI.info) : RefInfo =
+       addError(e, okConv i)
+
+    fun sortvar_to_sv sortvar =
+      SO.SVofTV
+	(StatObject.mkExplicitTyVar 
+	  (TyVar.mk_TyVar (SortVar.pr_sortvar sortvar)))
+
+    val bogus_sort = SO.bogusSort
+
+    fun calc_variance (SortVar.COVARIANT, covar, contra) = (covar, contra)
+      | calc_variance (SortVar.CONTRAVARIANT, covar, contra) = (contra, covar)
+      | calc_variance (SortVar.IGNORED, covar, contra) = (true, true)
+      | calc_variance (SortVar.MIXED, covar, contra) = 
+        (covar andalso contra, covar andalso contra)
+
+    (* Instance of a sort-scheme for given types with all conjuncts. *)
+    fun full_instance (C, sscheme, ty_instances) =
+      let
+	val sort_instanceLists = map (Env.allRefinements C) ty_instances
+	(* conjoin all instantiations of sscheme - accumulator reverses order *)
+        val mkconj = SO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C))
+	fun conjoin_product ([], acc) = SO.instance(sscheme, acc)
+	  | conjoin_product (h::t, acc) = 
+	    List.foldR' (fn x => fn b => mkconj (x, b))
+	                (map (fn x => conjoin_product (t, x::acc)) h)
+      in
+	conjoin_product(ListHacks.reverse sort_instanceLists, [])
+      end
+
+    and findMLSort(C, i) = (* find the ML Sort corresponding to the info type *)
+      let
+	val Type = 
+	  case (GrammarInfo.getPostElabTypeInfo i) 
+	    of Some (TypeInfo.EXP_INFO {Type}) => Type
+	     | Some (TypeInfo.PLAINvalbind_INFO{tyvars, Type}) => Type	 
+             | Some (TypeInfo.VAR_PAT_INFO {Type, ...}) => Type
+             | Some (TypeInfo.MATCH_INFO {Type, ...}) => Type
+	     | _ => Crash.impossible "RefDec.findMLSort(2)"
+         fun TNtoSN tn = Env.mlSN_of_TyStr (case Env.lookupT(Env.T_of_C C, tn)
+					      of Some tystr => tystr
+				               | None => Crash.impossible "RefDec.findMLSort")
+      in
+	SO.MLSortOfTy TNtoSN Type
+      end
+
+    (*********
+    Environments to be used initially in refining a datbind
+     - we fill in the real CE and "covariance" later.
+    *********)
+    fun datatype_initial_T_TE_RE (IG.DATBIND(i, tyvars, tycon, _, datbind_opt)) =
+	let
+	  val tyname = case GrammarInfo.getPostElabTypeInfo i 
+	                 of Some (TypeInfo.DATBIND_INFO {TyName}) => TyName
+		          | _ => Crash.impossible "RefDec.ref_datbind"
+          val sortcon = SortCon.mk_TypeSortCon tycon
+	  val sortname = 
+	    SortName.freshSortName 
+	      {conjuncts=[sortcon], 
+	       variance= map (SortVar.variance o SortVar.mk_SortVar
+			       o TyVar.pr_tyvar) 
+	                     tyvars, 
+	       tyname=tyname}
+  	  val sortFcn =
+	    SO.SortName_in_SortFcn sortname
+	  val RL = Env.singleRL sortname
+	  val tystr =
+	    Env.mkTyStr(Env.emptyCE, Env.emptyR, sortname, true, RL)
+	  val T = Env.singleT(tyname, tystr)
+	  val TE = Env.singleTE(tycon, sortFcn)
+	  val RE = Env.singleRE(sortcon, sortFcn)
+	in
+	  case datbind_opt 
+	    of None => (T, TE, RE)
+	     | Some datbind => 
+	         let
+		   val (T', TE', RE') = datatype_initial_T_TE_RE datbind
+	         in
+		  (Env.T_plus_T(T, T'), Env.TE_plus_TE(TE, TE'), 
+		   Env.RE_plus_RE(RE, RE'))
+		 end
+	end
+
+    fun datasort_initial_RE (C, IG.DATSORTBIND(i, sortvars, sortcon, 
+				 	       consortbind, datsortbind_opt)) =
+      let
+	val IG.CONSORTBIND(i, IG.OP_OPT(longcon, _), _, _) = consortbind
+        val RE = 
+	  case Env.Lookup_longcon(C, longcon)
+            of None => 
+	       let            (* Return a dummy value, generate an error later. *)
+	         val tyname = TyName.freshTyName
+		                 {name=TyCon.mk_TyCon (SortCon.pr_SortCon sortcon),
+			  	  arity=List.size sortvars,
+				  equality=false}
+	         val sortname = SortName.freshSortName
+  	                         {conjuncts = [sortcon], 
+			  	  variance = map SortVar.variance sortvars, 
+				  tyname = tyname}
+	       in	       
+	         Env.singleRE (sortcon, SO.SortName_in_SortFcn sortname)
+	       end
+	     | Some sortscheme =>
+               let
+		 val (svs, sort) = SO.instance_vars sortscheme
+		 val conjunct = SO.firstConjunct sort
+		 val sort_cons =
+		   case SO.unSortArrow conjunct
+		     of Some (_, sort2) => sort2 | None => conjunct
+		 val (svs', sortname) = 
+		   case SO.unSortCons sort_cons
+		     of Some x => x
+		      | None => Crash.impossible "RefDec.datasort_initial_RE(1)"
+		 val tyname = SortName.tyname sortname
+		 val variance = case (List.size sortvars) = (List.size svs')
+		                  of true => map SortVar.variance sortvars
+			           | false => map (fn _ => SortVar.MIXED) svs'
+		 val new_sortname = SortName.freshSortName 
+  	                             {conjuncts = [sortcon], 
+				      variance = variance, 
+				      tyname = tyname}
+	       in
+		 Env.singleRE(sortcon, SO.SortName_in_SortFcn new_sortname)
+	       end
+      in
+	  case datsortbind_opt
+	    of None => RE
+	     | Some datsortbind => 
+	        let
+		  val RE' = datasort_initial_RE (C, datsortbind)
+		in
+		  Env.RE_plus_RE (RE, RE')
+		end
+      end
+
+    fun ref_dec'(C, IG.DATATYPEdec(i, datbind)) = 
+          let
+	    val (T, TE, RE) = datatype_initial_T_TE_RE datbind
+	    val fullT = Env.T_plus_T (Env.T_of_C C, T)
+	    val E = Env.E_plus_E (Env.TE_in_E TE, Env.RE_in_E RE)
+	    val (outT, outVE, out_datbind, _) = 
+	      ref_datbind(Env.C_plus_C (C, Env.mkC(T, E)), datbind, true)
+	    val outE = Env.E_plus_E (E, Env.VE_in_E outVE)
+	  in
+	    (outT, true, outE, OG.DATATYPEdec(okConv i, out_datbind))
+	  end
+
+      | ref_dec'(C, IG.DATASORTdec(i, datsortbind)) = 
+	  let
+	    val inT = Env.T_of_C C
+	    val RE = datasort_initial_RE (C, datsortbind)
+	    val C' = Env.C_plus_E (C, Env.RE_in_E RE)
+            val _ = (errorsFound := false)   (* Set by errorConv.  *)
+	    val (TR_map, out_datsortbind) = ref_datsortbind (C', datsortbind)
+	  in
+	    if !errorsFound then   (* Env.completeT will crash if errors *)
+	      (inT, false, Env.E_of_C C, OG.DATASORTdec(okConv i, out_datsortbind))
+	    else
+	      let  
+		val (outT, outRE, outVE) = Env.completeT (inT, FinMap.list TR_map, RE, C')
+		val outE = Env.E_plus_E (Env.RE_in_E outRE, Env.VE_in_E outVE)
+	      in
+		(outT, true, outE, OG.DATASORTdec(okConv i, out_datsortbind))
+	      end
+	  end
+
+      | ref_dec'(C, IG.VALdec(i, valbind)) = 
+	(case ref_valbind(C, valbind) of (T, success, VE, out_valbind) =>
+	   (T, success, Env.VE_in_E VE, OG.VALdec(okConv i, out_valbind)))
+
+      | ref_dec'(C, IG.EXCEPTIONdec(i, exbind)) =
+        (case ref_exbind(C, exbind) of (EE, out_exbind) =>
+           (Env.emptyT, true, Env.VE_and_EE_in_E(Env.VE_of_EE EE, EE), 
+	    OG.EXCEPTIONdec(okConv i, out_exbind)))
+
+      | ref_dec'(C, IG.TYPEdec(i, typbind)) = 
+        (case ref_typbind(C, typbind) of (TE, RE, out_typbind) => 
+	   (Env.emptyT, true, Env.E_plus_E (Env.TE_in_E TE, Env.RE_in_E RE), 
+	    OG.TYPEdec(okConv i, out_typbind)))
+
+      | ref_dec'(C, IG.SORTdec(i, srtbind)) = 
+        (case ref_srtbind(C, srtbind) of (RE, out_srtbind) => 
+	   (Env.emptyT, true, Env.RE_in_E RE, OG.SORTdec(okConv i, out_srtbind)))
+
+      | ref_dec'(C, IG.LOCALdec(i, dec1, dec2)) = 
+	let
+	  val (T1, success1, E1, out_dec1) = ref_dec'(C, dec1)
+	  val (T2, success2, E2, out_dec2) = 
+	    ref_dec'(Env.C_plus_E(Env.C_plus_T(C, T1), E1), dec2)
+        in
+	  (Env.T_plus_T(T1, T2), success1 andalso success2, E2, 
+	   OG.LOCALdec(okConv i, out_dec1, out_dec2))
+	end
+
+      | ref_dec'(C, IG.INFIXdec(i, n_opt, ids)) = 
+	(Env.emptyT, true, Env.emptyE, OG.INFIXdec(okConv i, n_opt, ids))
+
+      | ref_dec'(C, IG.INFIXRdec(i, n_opt, ids)) = 
+	(Env.emptyT, true, Env.emptyE, OG.INFIXRdec(okConv i, n_opt, ids))
+
+      | ref_dec'(C, IG.NONFIXdec(i, ids)) = 
+	(Env.emptyT, true, Env.emptyE, OG.NONFIXdec(okConv i, ids))
+
+      | ref_dec'(C, IG.SEQdec(i, dec1, dec2)) = 
+        let
+	  val (T1, success1, E1, out_dec1) = ref_dec'(C, dec1)
+	  val (T2, success2, E2, out_dec2) = 
+	    ref_dec'(Env.C_plus_T(Env.C_plus_E(C, E1), T1), dec2)
+        in
+	  (Env.T_plus_T(T1, T2), success1 andalso success2, Env.E_plus_E(E1, E2), 
+	   OG.SEQdec(okConv i, out_dec1, out_dec2))
+        end
+
+      | ref_dec'(C, IG.EMPTYdec i) =
+	(Env.emptyT, true, Env.emptyE, OG.EMPTYdec (okConv i))
+
+      | ref_dec' _ =   (* open, abstype unimplemented.  unres_fun impossible *)
+          Crash.unimplemented "open or abstype declaration found"
+
+    and ref_dec (C, dec) = 
+        case ref_dec'(C, dec) of (T, _, E, out_dec) => (T, E, out_dec)
+
+    and ref_typbind(C, IG.TYPBIND(i, tyvars, tycon, ty, typbind_opt)) = 
+      let
+	val sortcon = SortCon.mk_TypeSortCon tycon
+	val svs = map (SO.SVofTV o StatObject.mkExplicitTyVar) tyvars
+	val sortsvs = map SO.mkSortSortVar svs
+        val (srt, out_ty) = ref_ty(C, ty, (true, false))
+	val sortfcn = SO.mkSortFcn(svs, srt)
+        val (TE2, RE2, out_typbind_opt) = 
+	  case typbind_opt of None => (Env.emptyTE, Env.emptyRE, None)
+                            | Some typbind => 
+	                      case ref_typbind(C, typbind) of (TE, RE, out_typbind) =>
+				(TE, RE, Some out_typbind)				
+      in
+	(Env.TE_plus_TE(Env.singleTE(tycon, sortfcn), TE2),
+	 Env.RE_plus_RE(Env.singleRE(sortcon, sortfcn), RE2),
+	 OG.TYPBIND(okConv i, tyvars, tycon, out_ty, out_typbind_opt))
+      end
+
+    and ref_srtbind(C, IG.SRTBIND(i, sortvars, sortcon, sort, srtbind_opt)) = 
+      let
+	val svs = map sortvar_to_sv sortvars
+	val sortsvs = map SO.mkSortSortVar svs
+        val (srt, out_sort) = ref_sort(C, sort, (true, false))
+	val sortfcn = SO.mkSortFcn(svs, srt)
+        val (RE2, out_srtbind_opt) = 
+	  case srtbind_opt of None => (Env.emptyRE, None)
+                            | Some srtbind => 
+	                      case ref_srtbind(C, srtbind) of (RE, out_srtbind) =>
+				(RE, Some out_srtbind)				
+      in
+	(Env.RE_plus_RE(Env.singleRE(sortcon, sortfcn), RE2),
+	 OG.SRTBIND(okConv i, sortvars, sortcon, out_sort, out_srtbind_opt))
+      end
+      
+    and ref_exbind(C, IG.EXBIND(i, IG.OP_OPT(excon, withOp), ty_opt, exbind_opt)) =
+         let
+	   val (srt, out_ty_opt) = 
+	     case ty_opt
+	       of None => (SO.SortExn, None)
+	        | Some ty => let val (srt1, out_ty) = ref_ty(C, ty, (true, false)) in
+		               (SO.mkSortArrow(srt1, SO.SortExn), Some out_ty) 
+		             end
+           val (EE2, out_exbind_opt) = 
+	     case exbind_opt of None => (Env.emptyEE, None)
+	                      | Some exbind => 
+	                        case ref_exbind(C, exbind) 
+				  of (EE2, out_exbind) => (EE2, Some out_exbind)
+         in
+	   (Env.EE_plus_EE(Env.singleEE(excon, srt), EE2), 
+	    OG.EXBIND(okConv i, OG.OP_OPT(excon, withOp), out_ty_opt, out_exbind_opt))
+	 end
+      | ref_exbind _ = Crash.unimplemented "RefDec.ref_exbind"
+			      
+
+    and ref_datbind (C, IG.DATBIND(i, tyvar_list, tycon, conbind, datbind_opt),
+		     covariant_sofar) = 
+      let
+	val sortcon = SortCon.mk_TypeSortCon tycon
+	val sortfcn = case Env.Lookup_sortcon (C, sortcon)
+	                of Some sortfcn => sortfcn
+	                 | None => Crash.impossible "RefDec.ref_datbind(1)"
+	val sortname = case SO.SortFcn_to_SortName sortfcn
+	                 of Some sortname => sortname
+			  | None => Crash.impossible "RefDec.ref_datbind(2)"
+        val tyname = SortName.tyname sortname 
+	val sv_list = map (SO.SVofTV o StatObject.mkExplicitTyVar)
+	                  tyvar_list
+	val sort_list = map SO.mkSortSortVar sv_list
+	val sort = SO.mkSortConsSort
+	             (SO.mkConsSort(sort_list, sortname))
+	val (CE, RC, out_conbind, covariant_conbind) = ref_conbind (C, sort, conbind)
+	val VE = Env.CE_to_VE CE
+        val empty_sn = SortName.freshEmptySortName tyname
+	val R = Env.R_plus_R(Env.singleR(sortname, RC), Env.singleR(empty_sn, Env.emptyRC))
+	val RL = Env.addRL(Env.addRL(Env.singleRL sortname, (sortname, empty_sn), empty_sn),
+			   (empty_sn, empty_sn), empty_sn)
+	val (T', VE', out_datbind_opt, covariant) = 
+	  ref_datbind_opt(C, datbind_opt, covariant_sofar andalso covariant_conbind)
+        val _ = if covariant then (SortName.set_Covariance sortname;
+				   SortName.set_Covariance empty_sn) 
+		else ()
+	val tystr = Env.mkTyStr(CE, R, sortname, covariant, RL)
+	val outT = Env.T_plus_T (Env.singleT (tyname, tystr), T')
+      in
+	(outT, Env.VE_plus_VE (VE, VE'), 
+	 OG.DATBIND(okConv i, tyvar_list, tycon, out_conbind, out_datbind_opt),
+	 covariant)
+      end
+
+    and ref_datbind_opt (C, Some datbind, covariant_sofar) =
+        let
+	  val (T, VE, out_datbind, covariant) = 
+	    ref_datbind (C, datbind, covariant_sofar)
+	in
+	  (T, VE, Some out_datbind, covariant)
+	end
+      | ref_datbind_opt (C, None, covariant_sofar) =
+          (Env.emptyT, Env.emptyVE, None, covariant_sofar)
+
+    (* Constructor binding *)
+    (* bool is whether type has only covariant constructors *)
+    and ref_conbind (C, sort, conbind) 
+          : Env.ConEnv * Env.SortCons * OG.conbind * bool  = 
+      case conbind of
+	IG.CONBIND(i, IG.OP_OPT(con, withOp), ty_opt, conbind_opt) =>	  
+	  let
+	    val (sort', sortFcn_opt, out_ty_opt, covariant) = 
+	      case ty_opt
+		of Some ty => 
+		  let
+		    val (sort'', out_ty) = ref_ty(C, ty, (true, false))
+		    fun covariant_sortname sortname = 
+		      case Env.Lookup_tyname (C, SortName.tyname sortname)
+			of Some tystr => Env.covariant_of_TyStr tystr
+			 | None => Crash.impossible "RefDec.ref_conbind"
+		  in
+		    (SO.mkSortArrow(sort'', sort), 
+		     Some (SO.mkSortFcn(SO.sortvarsSort sort, sort'')), (* Note order! *)
+		     Some out_ty,
+		     SO.covariant_sort covariant_sortname sort'')
+		  end
+	         | None => (sort, None, None, true)
+	    val sortScheme = SO.Close_Sort sort'    (* Vars in order of last occurance *)
+
+	    val (CE, RC, out_conbind_opt, covariant_rest) =
+	      ref_conbind_opt(C, sort, conbind_opt)
+	  in
+	      (Env.CE_plus_CE (Env.singleCE(con, sortScheme), CE),
+	       Env.RC_plus_RC (RC, Env.singleRC(con, sortFcn_opt)),
+	       OG.CONBIND(okConv i, OG.OP_OPT(con, withOp),
+			  out_ty_opt, out_conbind_opt), 
+	       covariant_rest andalso covariant
+	      )
+	  end
+
+    and ref_conbind_opt(C, sort, conbind_opt): 
+        (Env.ConEnv * Env.SortCons * OG.conbind Option * bool) =
+      case conbind_opt of
+	Some(conbind) =>
+	  let
+	    val (CE, RC, out_conbind, covariant) = ref_conbind(C, sort, conbind)
+	  in
+	    (CE, RC, Some out_conbind, covariant)
+	  end
+      | None =>
+	  (Env.emptyCE, Env.emptyRC, None, true)
+
+    and ref_datsortbind (C, IG.DATSORTBIND(i, sortvar_list, sortcon, consortbind, 
+					    datsortbind_opt)) = 
+      let
+	val sortfcn = case Env.Lookup_sortcon (C, sortcon)
+	                of Some sortfcn => sortfcn
+	                 | None => Crash.impossible "RefDec.ref_datsortbind(1)"
+	val sortname = case SO.SortFcn_to_SortName sortfcn
+	                 of Some sortname => sortname
+			  | None => Crash.impossible "RefDec.ref_datsortbind(2)"
+        val tyname = SortName.tyname sortname 
+	val cov = case Env.Lookup_tyname (C, SortName.tyname sortname)
+	            of Some tystr => Env.covariant_of_TyStr tystr
+		     | None => true   (* A dummy value.  The error is caught later. *)
+        val _ = if cov then (SortName.set_Covariance sortname) else ()
+        val out_i = if (cov orelse !Flags.allow_noncovariant_refinements) then
+	              okConv i    (* This should be sound, but this needs to be shown. *)
+		    else errorConv(i, REI.NOT_COVARIANT)
+	val sv_list = map sortvar_to_sv sortvar_list
+	val sort_list = map SO.mkSortSortVar sv_list
+	val sort = SO.mkSortConsSort
+	             (SO.mkConsSort(sort_list, sortname))
+	val (RC, out_consortbind) = ref_consortbind (C, sort, consortbind)
+	val TRmap = FinMap.singleton (tyname, Env.singleR(sortname, RC))
+	val (TRmap', out_datsortbind_opt) = ref_datsortbind_opt(C, datsortbind_opt)
+	val out_TRmap = FinMap.mergeMap Env.R_plus_R TRmap' TRmap
+      in
+	(out_TRmap, OG.DATSORTBIND(out_i, sortvar_list, sortcon, 
+				   out_consortbind, out_datsortbind_opt))
+      end
+
+    and ref_datsortbind_opt (C, Some datsortbind) =
+        let
+	  val (TRmap, out_datsortbind) = ref_datsortbind (C, datsortbind)
+	in
+	  (TRmap, Some out_datsortbind)
+	end
+      | ref_datsortbind_opt (C, None) = (FinMap.empty, None)
+
+    and ref_consortbind (C, srt, IG.CONSORTBIND(i, IG.OP_OPT(longcon, withOp),
+						 sort_opt, consortbind_opt)) =
+      let
+	val (srt'', sortFcn_opt, out_sort_opt) =
+	  case sort_opt
+	    of Some sort => 
+	       let
+		 val (srt', out_sort) = ref_sort(C, sort, (true, false)) 
+	       in
+		 (SO.mkSortArrow(srt', srt), 
+		  Some (SO.mkSortFcn(SO.sortvarsSort srt, srt')),
+		  Some out_sort)
+	       end
+	     | None => (srt, None, None)
+	val sortScheme = SO.Close_Sort srt''
+	val (_, con) = Con.decompose longcon
+  	val (RC, out_consortbind_opt) = 
+	  ref_consortbind_opt(C, srt, consortbind_opt)
+	val (out_RC, out_i) =
+	  case Env.Lookup_longcon (C, longcon)
+	    of None => (RC, errorConv (i, REI.LOOKUP_LONGCON longcon))
+	     | Some sortScheme' => 
+	       (case SO.compatible_SortScheme (sortScheme, sortScheme')
+		  of true => (Env.RC_plus_RC (Env.singleRC(con, sortFcn_opt), RC), 
+			      okConv i)
+	           | false => (RC, errorConv(i, REI.INCOMPATIBLE(sortScheme, sortScheme')))
+	       )
+      in
+	(out_RC, OG.CONSORTBIND(out_i, OG.OP_OPT(longcon, withOp),
+				out_sort_opt, out_consortbind_opt))
+      end
+
+    and ref_consortbind_opt(C, srt, Some consortbind) =
+        let
+	  val (RC, out_consortbind) = ref_consortbind(C, srt, consortbind)
+	in
+	  (RC, Some out_consortbind)
+	end
+      | ref_consortbind_opt (C, srt, None) = (Env.emptyRC, None)
+
+    (****** Value Bindings ******)
+    and ref_valbind (C, IG.RECvalbind(i, valbind)) 
+            : TyNameEnv * bool * Env.VarEnv * OG.valbind =
+          let
+            fun valbindVE (IG.RECvalbind(i, valbind)) = valbindVE valbind
+              | valbindVE (IG.PLAINvalbind(i, pat1, exp2, valbind_opt)) =
+                let 
+		  val (_, VE1, _, _) = ref_pat'(C, pat1, findMLSort(C, i))
+                in  
+		  case valbind_opt of None => VE1 
+	                            | Some vb => Env.VE_plus_VE(VE1, valbindVE vb)
+		end  
+	    val VE = valbindVE valbind
+	  in	    
+	    ref_valbind (Env.C_plus_VE(C, VE), valbind)
+	  end
+      | ref_valbind (C, IG.PLAINvalbind(i, pat1, exp2, valbind_opt)) =
+        let
+          val (scoped_tyvars, Type) = 
+	    case (GrammarInfo.getPostElabTypeInfo i)
+	      of Some(TypeInfo.PLAINvalbind_INFO{tyvars, Type}) => (tyvars, Type)
+	       | _ => Crash.impossible "RefObject.ref_valbind"
+          val (succeeded1, VE1, srt1, out_pat1) = ref_pat'(C, pat1, findMLSort(C, i))
+          val (T1, VE, out_i, out_succeeded, out_pat, out_exp) =
+	    if succeeded1 then
+                case ref_exp(C, exp2, Some srt1)
+	          of (T, Some _, out_exp) => (T, VE1, okConv i, true, out_pat1, out_exp)
+	           | (T, None, out_exp) => (T, VE1, okConv i, false, out_pat1, out_exp)
+	    else
+	       case ref_exp(C, exp2, None)        (* Use the sort of exp *)
+	         of (T, Some srt, out_exp) =>
+		    (case ref_pat_max(C, pat1, SORTps srt) 
+		       of (succeeded, VEs, out_patsort, out_pat) => 
+			  case (VEs, patSort_to_Sorts (C, out_patsort))
+                            of ([VE], []) => (T, VE, okConv i, succeeded, out_pat, out_exp)
+			     | ([VE], _::_) => (T, VE, errorConv(i, REI.UNMATCHED srt), false, 
+				                out_pat, out_exp)
+                             | (_, _) => (T, VE1, errorConv(i, REI.MULTIPLE_BINDINGS), 
+					  false, out_pat, out_exp))
+		  | (T, None, out_exp) => (T, VE1, okConv i, false, out_pat1, out_exp)
+          val scoped_sortvars = map SO.SVofTV scoped_tyvars
+          val out_VE1 = Env.closVE(VE, scoped_sortvars)
+          val (T2, out_VE2, out_valbind_opt) = 
+	    case valbind_opt
+	      of None => (Env.emptyT, Env.emptyVE, None)
+	       | Some valbind' => case ref_valbind(C, valbind') 
+		                    of (T2, _, VE', o_valbind) => (T2, VE', Some o_valbind)
+          val out_VE = Env.VE_plus_VE (out_VE1, out_VE2)
+	  val out_T = Env.T_plus_T(T1, T2)
+	in
+	  (out_T, out_succeeded, 
+	   out_VE, OG.PLAINvalbind(out_i, out_pat, out_exp, out_valbind_opt))
+        end
+
+    (****** types ******)
+    (* essentially treat type as a sort *)
+    (* Check covariance here - set both to true if no checking *)
+
+    and ref_ty (C :  Context, ty : IG.ty, (covar:bool, contra:bool))
+           : (SO.Sort * OG.ty) =
+
+	case ty of
+
+	  (* Explicit type variable *)
+	  IG.TYVARty(i, tyvar) =>
+	    let
+	      val sortvar = SortVar.mk_SortVar (TyVar.pr_tyvar tyvar)
+	      val out_i =
+		case (SortVar.variance sortvar, covar, contra)
+		  of (SortVar.COVARIANT, true, _) => okConv i
+		   | (SortVar.CONTRAVARIANT, _, true) => okConv i
+                   | (SortVar.MIXED, _, _) => okConv i
+                   | (SortVar.IGNORED, true, true) => okConv i
+		   | _ => errorConv (i, REI.VARIANCE)
+	    in
+	      (SO.mkSortSortVar (SO.SVofTV 
+		  		       (StatObject.mkExplicitTyVar tyvar)),
+	       OG.TYVARty(out_i,tyvar))
+	    end
+
+	  (* Record type *)
+	| IG.RECORDty(i, None) =>
+	    (SO.SortUnit, OG.RECORDty(okConv i,None))
+
+	  (* Record type *)
+	| IG.RECORDty(i, Some tyrow) =>
+	    let
+	      val (rho, out_tyrow) = ref_tyrow(C, tyrow, (covar, contra))
+	    in
+	      (SO.mkSortRecSort rho,
+	       OG.RECORDty(okConv i, Some out_tyrow))
+	    end
+
+	(* Constructed type *)
+	| IG.CONty(i, ty_list, longtycon) =>
+	    let
+	      val longsortcon = SortCon.mk_TypeLongSortCon longtycon
+	      val sortfcn = 
+		case Env.Lookup_longsortcon(C, longsortcon)
+		  of Some sortfcn => sortfcn
+ 	           | None => Crash.impossible "RefDec.ref_ty : CONty(1)"
+	      val sortfcn' =
+		case Env.Lookup_longtycon(C, longtycon)
+		  of Some sortfcn' => sortfcn'
+		   | None => Crash.impossible "RefDec.ref_ty : CONty(2)"
+
+	      val out_i =
+		case SO.compatible_SortFcn(sortfcn, sortfcn')
+		  of true => okConv i
+		   | false => errorConv (i, REI.SHADOWED longsortcon)
+	      val res_list = 
+		map (fn (ty, variance) =>
+		       ref_ty (C, ty, calc_variance (variance, covar, contra)))
+		    (ListPair.zip (ty_list, SO.varianceSortFcn sortfcn))
+	      val sort_list   = map #1 res_list
+	      val out_ty_list = map #2 res_list
+	    in
+	      (SO.applySortFcn(sortfcn, sort_list), 
+	       OG.CONty(out_i, out_ty_list, longtycon))
+	    end
+
+	  (* Function type *)
+	| IG.FNty(i, ty, ty') =>
+	    let
+	      val (sort , out_ty ) = ref_ty(C, ty, (contra, covar))
+	      val (sort', out_ty') = ref_ty(C, ty', (covar, contra))
+	    in
+	      (SO.mkSortArrow(sort, sort'),
+	       OG.FNty(okConv i, out_ty, out_ty'))
+	    end
+
+	  (* Parenthesised type *)
+	| IG.PARty(i, ty) =>
+	    let
+	      val (sort, out_ty) = ref_ty(C, ty, (covar, contra))
+	    in
+	      (sort, OG.PARty(okConv i, out_ty))
+	    end
+
+    (****** type rows ******)
+
+    and ref_tyrow (C :  Context, tyrow : IG.tyrow, (covar, contra)) :
+	(SO.RecSort * OG.tyrow) =
+
+	case tyrow of IG.TYROW(i, lab, ty, tyrow_opt) =>
+	    let
+	      val (sort, out_ty) = ref_ty(C, ty, (covar, contra))
+	      val (rho, out_tyrow_opt) = 
+		case tyrow_opt
+		  of Some tyrow => 
+		    let
+		      val (rho1, out_tyrow) = ref_tyrow(C, tyrow, (covar, contra))
+		    in
+		      (rho1, Some out_tyrow)
+		    end
+		   | None => (SO.emptyRecSort, None)
+	    in
+	      (SO.addField (lab,sort) rho,
+		 OG.TYROW(okConv i, lab, out_ty, out_tyrow_opt))
+	    end
+
+    and ref_sort (C :  Context, sort : IG.sort, (covar:bool, contra:bool))
+           : (SO.Sort * OG.sort) =
+
+	case sort of
+
+	  (* Explicit sort variable *)
+	  IG.TYVARsort(i, sortvar) =>
+	    let
+	      val out_i =
+		case (SortVar.variance sortvar, covar, contra)
+		  of (SortVar.COVARIANT, true, _) => okConv i
+		   | (SortVar.CONTRAVARIANT, _, true) => okConv i
+                   | (SortVar.MIXED, _, _) => okConv i
+                   | (SortVar.IGNORED, true, true) => okConv i
+		   | _ => errorConv (i, REI.VARIANCE)
+	    in
+	      (SO.mkSortSortVar (sortvar_to_sv sortvar),
+	       OG.TYVARsort(out_i,sortvar))
+	    end
+
+	  (* Record sort *)
+	| IG.RECORDsort(i, None) =>
+	    (SO.SortUnit, OG.RECORDsort(okConv i,None))
+
+	  (* Record sort *)
+	| IG.RECORDsort(i, Some sortrow) =>
+	    let
+	      val (rho, out_sortrow) = ref_sortrow(C, sortrow, (covar, contra))
+	    in
+	      (SO.mkSortRecSort rho,
+	       OG.RECORDsort(okConv i, Some out_sortrow))
+	    end
+
+	(* Constructed sort *)
+	| IG.CONsort(i, sort_list, longsortcon) =>
+	    let
+	      fun error_result err = 
+	        (bogus_sort,
+		 OG.CONsort(errorConv(i, err),
+			    map (fn sort => #2 (ref_sort (C, sort, (true, true))))
+			        sort_list,
+			    longsortcon)
+	        )
+	    in
+		case Env.Lookup_longsortcon(C, longsortcon)
+ 	          of None => error_result (REI.LOOKUP_LONGSORTCON longsortcon)
+		   | Some sortfcn => 
+ 	        let
+		  val res_list = 
+		    map (fn (sort, variance) => 
+		          ref_sort (C, sort, calc_variance (variance, covar, contra)))
+		        (ListPair.zip (sort_list, SO.varianceSortFcn sortfcn))
+		  val srt_list   = map #1 res_list
+		  val out_sort_list = map #2 res_list
+	        in
+		  (SO.applySortFcn(sortfcn, srt_list), 
+		   OG.CONsort(okConv i, out_sort_list, longsortcon))
+	        end 
+	        handle ListPair.Zip => 
+		  error_result (REI.WRONG_ARITY 
+			          {expected=SO.arity_SortFcn sortfcn,
+				   actual=List.size sort_list})
+	    end
+
+	  (* Function sort *)
+	| IG.FNsort(i, sort, sort') =>
+	    let
+	      val (srt , out_sort ) = ref_sort(C, sort, (contra, covar))
+	      val (srt', out_sort') = ref_sort(C, sort', (covar, contra))
+	    in
+	      (SO.mkSortArrow(srt, srt'),
+	       OG.FNsort(okConv i, out_sort, out_sort'))
+	    end
+
+	  (* Parenthesised sort *)
+	| IG.PARsort(i, sort) =>
+	    let
+	      val (srt, out_sort) = ref_sort(C, sort, (covar, contra))
+	    in
+	      (srt, OG.PARsort(okConv i, out_sort))
+	    end
+
+	| IG.CNJsort(i, sort1, sort2) =>
+	    let
+	      val (srt1, out_sort1) = ref_sort(C, sort1, (covar, contra))
+	      val (srt2, out_sort2) = ref_sort(C, sort2, (covar, contra))
+	      val conjSortName = Env.conjSortNameT' (Env.T_of_C C)
+	    in	      
+	      case SO.compatible_Sort (srt1, srt2)
+		of true => 
+		    (SO.mkSortConj conjSortName (srt1, srt2), 
+		     OG.CNJsort(okConv i, out_sort1, out_sort2))
+		 | false => 
+		   let
+		     val sortScheme1 = SO.Sort_in_SortScheme srt1
+		     val sortScheme2 = SO.Sort_in_SortScheme srt2
+		     val out_i = errorConv (i, REI.INCOMPATIBLE
+				                 (sortScheme1, sortScheme2))
+		   in
+		     (bogus_sort, OG.CNJsort(out_i, out_sort1, out_sort2))
+		   end
+	    end
+
+    (****** sort rows ******)
+
+    and ref_sortrow (C :  Context, sortrow : IG.sortrow, (covar, contra)) :
+	(SO.RecSort * OG.sortrow) =
+
+	case sortrow of IG.SORTROW(i, lab, sort, sortrow_opt) =>
+	    let
+	      val (srt, out_sort) = ref_sort(C, sort, (covar, contra))
+	      val (rho, out_sortrow_opt) = 
+		case sortrow_opt
+		  of Some sortrow => 
+		    let
+		      val (rho1, out_sortrow) = ref_sortrow(C, sortrow, (covar, contra))
+		    in
+		      (rho1, Some out_sortrow)
+		    end
+		   | None => (SO.emptyRecSort, None)
+	    in
+	      (SO.addField (lab,srt) rho,
+		 OG.SORTROW(okConv i, lab, out_sort, out_sortrow_opt))
+	    end
+
+    (***** patSorts, to support ref_pat *****)
+    and patSort_to_Sorts (C, SORTps srt) : SO.Sort list = 
+        if (SO.emptySort (Env.conjSortNameC C) srt) then [] else [srt]
+      | patSort_to_Sorts (C, VALCONSps (longid, instances, patsort_opt)) =
+	let
+	  val srt = case Env.Lookup_longresid(C, longid)
+	              of Some (Env.LONGCON sscheme) => 
+			   full_instance(C, sscheme, instances)
+		       | Some (Env.LONGEXCON srt) => srt
+		       | _ => Crash.impossible "RefDec.patSort_to_Sorts(1)"
+	in
+	  case patsort_opt
+	    of None => [srt]
+	     | Some patsort => 
+	       List.foldR (fn srt2 => fn srts =>
+			      case SO.applySort (Env.conjSortNameC C) (srt, srt2)
+				of None => Crash.impossible "RefDec.patSort_to_Sorts(2)"
+				 | Some srt3 => 
+				   SO.addSortToMaximals (Env.conjSortNameC C) (srt3, srts))
+                          [] (patSort_to_Sorts (C, patsort))
+	end
+      | patSort_to_Sorts (C, ADDFIELDps(lab1, patsort1, patsort2)) =
+	let
+	  val srts1 = patSort_to_Sorts (C, patsort1)
+          val srts2 = patSort_to_Sorts (C, patsort2)
+          fun addsrts1 srt acc = 
+	    case (SO.unSortRecSort srt) 
+	      of Some recsrt => 
+		 (map (fn srt1 => SO.mkSortRecSort(SO.addField(lab1, srt1) recsrt)) srts1)
+		 @ acc
+               | None => Crash.impossible "RefDec.patSort_to_Sorts(3)"
+        in
+	  List.foldL addsrts1 [] srts2
+        end
+      | patSort_to_Sorts (C, UNITps) = [SO.SortUnit]
+      | patSort_to_Sorts (C, UNIONps (patsort1, patsort2)) = 
+        List.foldR (fn srt1 => fn srts2 =>
+		      SO.addSortToMaximals (Env.conjSortNameC C) (srt1, srts2))
+		   (patSort_to_Sorts (C, patsort2))
+	           (patSort_to_Sorts (C, patsort1))
+      | patSort_to_Sorts (C, EMPTYps) = []
+
+
+    (* Divide a patsort on a constructor to get residual and argument patsorts.
+       Argument patsort will be "Some (empty)" if no match, even if no argument.  *)
+    and dividePatsort (C : Env.Context, ps : PatSort, longid : R.longid) 
+          : PatSort * PatSort Option =
+     case ps 
+     of SORTps srt =>
+       (case longid 
+	of R.LONGVAR _ => Crash.impossible "RefDec.dividePatsort(-1)"
+         | R.LONGEXCON longexcon =>
+	   let
+	     val srt' = case Env.Lookup_longexcon(C, longexcon) 
+	                 of None => Crash.impossible "RefDec.dividePatsort(0)"
+                          | Some srt' => srt'
+             val out_patsort_opt = case (SO.unSortArrow srt') 
+	                             of None => None 
+				      | Some (srt1, srt2) => Some (SORTps srt1)
+	   in
+             (SORTps srt, out_patsort_opt)  (* srt should be SortExn *)
+           end
+         | R.LONGCON longcon =>  
+        case (SO.unSortCons (SO.firstConjunct srt)) 
+	  of None => (EMPTYps, Some EMPTYps)
+           | Some (srts, sortname) =>
+        let
+          val srts_list = 
+	    map (fn cnjct => case SO.unSortCons cnjct 
+		               of Some (srts, _) => srts
+			        | None => Crash.impossible "RefDec.dividePatsort(0.5)")
+                (SO.list_Conjuncts srt)
+          val (path, con) = Con.decompose longcon
+          val RC = case Env.lookupT(Env.T_of_C C, SortName.tyname sortname)
+	             of None => Crash.impossible "RefDec.dividePatsort(1)"
+                      | Some tystr => 
+	                case Env.lookupR(Env.R_of_TyStr tystr, sortname) 
+	                  of None => Crash.impossible "RefDec.dividePatsort(2)"
+                           | Some RC => RC
+          val match_sfs_opt = case Env.lookupRC(RC, con)
+	                        of None => Some []
+                                 | Some sfs_opt => sfs_opt
+          fun conjoin_apply sf = 
+	    List.foldL' (fn s1 => fn s2 => 
+			   SO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C)) (s1, s2))
+                        (map (fn srts' => SO.applySortFcn(sf, srts')) srts_list)
+          fun sfsopt_to_psopt None = None
+	    | sfsopt_to_psopt (Some sfs) =
+	      Some (List.foldL (fn sf => fn b => 
+				  PS.mkUNION(SORTps(conjoin_apply sf), b))
+                               EMPTYps
+			       sfs)
+          val patsort_opt = sfsopt_to_psopt match_sfs_opt
+          val patsort = 
+	    Env.RCFold 
+	      (fn ((con2, sfsopt2), r) => 
+		 if (con2 = con) then r
+		 else PS.mkUNION(PS.mkVALCONS(R.LONGCON(Con.implode_LongCon(path, con2)), 
+					map SO.tyOfSort srts, sfsopt_to_psopt sfsopt2), 
+			      r))
+	      EMPTYps
+	      RC
+        in
+	  (patsort, patsort_opt)
+        end)
+      | VALCONSps(longid1, _, patsort_opt) =>
+	if (longid1 = longid) then (EMPTYps, patsort_opt) else (ps, Some EMPTYps)
+      | UNIONps(ps1, ps2) =>
+        let
+	  val (patsort1, patsort1_opt) = dividePatsort(C, ps1, longid)
+	  val (patsort2, patsort2_opt) = dividePatsort(C, ps2, longid)
+          val patsort = PS.mkUNION(patsort1, patsort2)
+	  val patsort_opt = case (patsort1_opt, patsort2_opt)
+                              of (Some ps1', Some ps2') => Some(PS.mkUNION(ps1', ps2'))
+                               | _ => None
+	in
+	  (patsort, patsort_opt)
+	end
+      | EMPTYps => (EMPTYps, Some EMPTYps)
+      | _ => Crash.impossible "RefDec.dividePatsort"
+
+    (* Project a pattern-sort on a label, to get a list of possibilies for the
+       projection and the corresponding remaining fields. *)
+    and projectPatsort (C : Env.Context, ps : PatSort, lab: IG.lab) 
+          : (PatSort * PatSort) list =
+     case ps 
+     of SORTps srt =>
+       (case (SO.unSortRecSort srt) 
+	  of None => []   (* Error caught elsewhere *)
+           | Some recsort =>
+             let
+	       val recmap = SO.recSortToMap recsort
+               val out_patsort1 = case (SortedFinMap.lookup recmap lab)
+				    of None => EMPTYps
+				     | Some srt => SORTps srt
+               val recmap' = case (SortedFinMap.remove(lab, recmap))
+		               of General.OK recmap' => recmap'
+				| _ => recmap
+               val out_patsort2 = 
+		 SortedFinMap.Fold (fn ((lb, srt), b) => PS.mkADDFIELD(lb, SORTps srt, b))
+		                   UNITps recmap'
+	     in
+               [(out_patsort1, out_patsort2)]
+             end)
+      | ADDFIELDps(lab1, ps1, ps2) =>
+	if (lab1 = lab) then [(ps1, ps2)]
+        else map (fn (out_ps1, out_ps2) => (out_ps1, PS.mkADDFIELD(lab1, ps1, out_ps2)))
+	         (projectPatsort(C, ps2, lab))
+      | UNIONps(ps1, ps2) => (projectPatsort(C, ps1, lab)) @ (projectPatsort(C, ps2, lab))
+      | EMPTYps => []
+      | _ => Crash.impossible "RefDec.projectPatsort"
+
+
+    and ref_patrow_opt (C: Context, patrow_opt: IG.patrow Option, patsort: PatSort) 
+          : bool * (Env.VarEnv * SO.RecSort) list * PatSort * PatSort * OG.patrow Option =
+     case patrow_opt
+     of Some (IG.PATROW(i, lab1, pat1, patrow_opt2)) => 
+        let
+	  fun productVEs (VEs1, VEs2) = 
+	    List.foldL (fn (VE1, srt1) => fn b => 
+			  b @ (map (fn (VE2, recsrt2) => (Env.VE_plus_VE(VE1, VE2), 
+							  SO.addField (lab1, srt1) recsrt2)) 
+			           VEs2))
+	               [] VEs1
+	  val patsort_pairs = case projectPatsort(C, patsort, lab1) 
+	                        of [] => [(EMPTYps, EMPTYps)]  (* Need at least one *)
+                                 | ps_pair => ps_pair	      
+          fun ref_patsort_pair(patsort1, patsort2) =
+	    let
+	      val (succ1, VEs1, match_ps1, out_patsort1, out_pat1) = ref_pat(C, pat1, patsort1)
+	      val (succ2, VEs2, match_ps2, out_patsort2, out_patrow_opt2) = 
+		ref_patrow_opt(C, patrow_opt2, patsort2)
+	    in
+	      (succ1 andalso succ2, productVEs(VEs1, VEs2),
+               PS.mkADDFIELD(lab1, match_ps1, match_ps2),
+	       PS.mkUNION(PS.mkADDFIELD(lab1, out_patsort1, out_patsort2), 
+			 PS.mkUNION(PS.mkADDFIELD(lab1, out_patsort1, match_ps2), 
+		                   PS.mkADDFIELD(lab1, match_ps1, out_patsort2))),
+	       Some (OG.PATROW(okConv i, lab1, out_pat1, out_patrow_opt2)))	       
+	    end
+	  fun combine_results (succ1, VEs1, match_ps1, out_patsort1, out_patrow_opt1)
+                              (succ2, VEs2, match_ps2, out_patsort2, out_patrow_opt2) =
+	    if succ2 then 
+	         (succ1, VEs1 @ VEs2, PS.mkUNION(match_ps1, match_ps2), 
+		  PS.mkUNION(out_patsort1, out_patsort2), out_patrow_opt1)
+            else (false, VEs1 @ VEs2, PS.mkUNION(match_ps1, match_ps2),
+		  PS.mkUNION(out_patsort1, out_patsort2), out_patrow_opt2)
+	  val res = List.foldL' combine_results (map ref_patsort_pair patsort_pairs)
+          val _ = () (* out_debug ("PATROW: " ^ (Int.string(List.size (#2 res))) ^ "\n") *)
+	in
+	  res
+	end                  
+     | _ => (true, map (fn srt => case (SO.unSortRecSort srt)
+			            of None => (Env.emptyVE, SO.emptyRecSort) (* error *)
+			             | Some recsort => (Env.emptyVE, recsort))
+		       (patSort_to_Sorts(C, patsort)),		       
+	     patsort, EMPTYps, None)     (* Case for None or Some DOTDOTDOT *)
+
+    and ref_atpat (C: Context, atpat: IG.atpat, patsort: PatSort) 
+          : bool * (Env.VarEnv * SO.Sort) list * PatSort * PatSort * OG.atpat =
+     case atpat
+     of IG.LONGIDatpat(i, IG.OP_OPT(R.LONGVAR longvar, withOp)) => 
+        (case (Var.decompose longvar)
+	   of (_::_, _) => Crash.impossible "RefDec.ref_atpat"  (* Caught in elaboration. *)
+            | ([], var) =>
+	      (true, 
+	       map (fn srt => (Env.singleVarVE(var, SO.Sort_in_SortScheme srt), srt))
+	           (patSort_to_Sorts (C, patsort)),
+	       patsort, EMPTYps,
+	       OG.LONGIDatpat(okConv i, OG.OP_OPT(R.LONGVAR longvar, withOp))))
+      | IG.LONGIDatpat(i, IG.OP_OPT (longid, withOp)) =>
+        let
+	  val instances = case (GrammarInfo.getPostElabTypeInfo i)
+			    of Some (TypeInfo.CON_INFO {instances, ...}) => 
+			       ListHacks.reverse instances  (* reversed! *)
+			     | Some (TypeInfo.EXCON_INFO _) => []
+			     | _ => Crash.impossible "RefDec.ref_atpat(2)"
+          val (out_patsort, arg_ps) = dividePatsort(C, patsort, longid)     
+          val srt = case Env.Lookup_longresid(C, longid)
+		      of None => Crash.impossible "ref_atpat(2.5)"
+		       | Some ver => 
+			 case ver of Env.LONGCON ssch => full_instance(C, ssch, instances)
+                                   | Env.LONGEXCON srt => srt
+			           | Env.LONGVAR _ => Crash.impossible "RefDec.ref_atpat(3)"
+          val VEs = case arg_ps of None => [(Env.emptyVE, srt)] | Some _ => []
+	in
+	   (true, VEs, PS.mkVALCONS(longid, instances, arg_ps), out_patsort, 
+	    OG.LONGIDatpat(okConv i, OG.OP_OPT (longid, withOp)))
+	end
+      | IG.RECORDatpat(i, patrow_opt) => 
+	(case ref_patrow_opt(C, patrow_opt, patsort)
+	   of (succeeded, VEs, match_patsort, out_patsort, out_patrow_opt) => 
+	      (succeeded, map (fn (VE, recsort) => (VE, SO.mkSortRecSort recsort)) VEs,
+               match_patsort, out_patsort, OG.RECORDatpat(okConv i, out_patrow_opt)))
+      | IG.WILDCARDatpat i => 
+	(true, map (fn srt => (Env.emptyVE, srt)) (patSort_to_Sorts(C, patsort)),
+         patsort, EMPTYps, OG.WILDCARDatpat (okConv i))
+      | IG.SCONatpat (i, scon) =>   (* no refinements currently *)
+	(true, map (fn srt => (Env.emptyVE, srt)) (patSort_to_Sorts(C, patsort)),
+         EMPTYps, patsort, OG.SCONatpat(okConv i, scon))
+      | IG.PARatpat(i, pat) =>
+	(case ref_pat(C, pat, patsort) of (succeeded, VEs, match_patsort, out_patsort, out_pat) => 
+	      (succeeded, VEs, match_patsort, out_patsort, OG.PARatpat(okConv i, out_pat)))
+
+    (****** Patterns (patsort input).  ******)
+    (* Returns possible VE's with corresponding sorts of pattern + matched and remaining PatSort *)
+    and ref_pat0 (C: Env.Context, pat: IG.pat, patsort: PatSort) 
+          : bool * (Env.VarEnv * SO.Sort) list * PatSort * PatSort * OG.pat =
+     case pat         
+     of IG.ATPATpat(i1, atpat) =>
+        (case ref_atpat(C, atpat, patsort) of (succeeded, VEs, match_ps, out_patsort, out_pat) =>
+           (succeeded, VEs, match_ps, out_patsort, OG.ATPATpat(okConv i1, out_pat)))
+      | IG.TYPEDpat(i, pat, ty) =>
+        let 
+	  val (succeeded, VEs, match_ps, out_patsort, out_pat) = ref_pat(C, pat, patsort)
+	  val (_, out_ty) = ref_ty(C, ty, (true, false))
+	in
+	  (succeeded, VEs, match_ps, out_patsort, OG.TYPEDpat(okConv i, out_pat, out_ty))
+	end
+      | IG.SORTEDpat(i, pat, sort) =>
+	let
+	  val (srt0, out_sort) = ref_sort(C, sort, (true, false)) 
+          val srtML = findMLSort(C, i)
+          val (srt2, out_i1) = 
+	    if SO.compatible_Sort(srt0, srtML) then (srt0, okConv i)
+	    else (srtML, errorConv(i, REI.WRONG_TYPE(srt0, SO.tyOfSort srtML)))
+          val (succeeded, VEs, match_ps, out_patsort, out_pat) = ref_pat(C, pat, patsort)
+          val (out_succeeded, out_i) = 
+	    case List.all (fn (_, srt) => not (SO.subSort (Env.conjSortNameC C) (srt, srt2)))
+	                  VEs
+	      of [] => (succeeded, out_i1)
+	       | (_, srt)::_ => (false, errorConv(i, REI.NOT_SUBSORT(srt, srt2)))
+	in
+	  (out_succeeded, VEs, match_ps, out_patsort, OG.SORTEDpat(out_i, out_pat, out_sort))
+	end
+      | IG.CONSpat(i, IG.OP_OPT(longid, withOp), atpat1) =>
+        let
+	  val instances = case (GrammarInfo.getPostElabTypeInfo i)
+			    of Some (TypeInfo.CON_INFO {instances, ...}) => 
+			       ListHacks.reverse instances
+			     | Some (TypeInfo.EXCON_INFO _) => []
+			     | _ => Crash.impossible "RefDec.ref_pat(1)"
+	  val (out_ps, ps_opt) = dividePatsort(C, patsort, longid)
+          val ps1 = case ps_opt of None => EMPTYps | Some ps1 => ps1  (* None is error *)
+          val srt = case Env.Lookup_longresid(C, longid)
+		      of None => Crash.impossible "RefDec.ref_pat(1.5)"
+		       | Some ver => 
+			 case ver of Env.LONGCON ssch => full_instance(C, ssch, instances)
+                                   | Env.LONGEXCON srt => srt
+			           | Env.LONGVAR _ => Crash.impossible "RefDec.ref_pat(2)"
+          val (succeeded, VEs, match_ps1, out_ps1, out_atpat1) = ref_atpat(C, atpat1, ps1)
+          val out_VEs = map (fn (VE, srt1) => 
+			       case SO.applySort (Env.conjSortNameC C) (srt, srt1)
+				 of None => Crash.impossible "RefDec.ref_pat(3)"
+				  | Some srt2 => (VE, srt2))
+	                    VEs
+        in
+	  (succeeded, out_VEs, PS.mkVALCONS(longid, instances, Some match_ps1),
+	   PS.mkUNION(out_ps, PS.mkVALCONS(longid, instances, Some out_ps1)),
+	   OG.CONSpat(okConv i, OG.OP_OPT(longid, withOp), out_atpat1))
+	end
+      | IG.LAYEREDpat(i, IG.OP_OPT(id, withOp), ty_opt, pat) =>
+	let
+	  val out_ty_opt = case ty_opt 
+	                     of None => None
+			      | Some ty => Some(#2(ref_ty(C, ty, (true, false))))
+          val (success, VEs, match_ps, out_patsort, out_pat) = ref_pat(C, pat, patsort)
+          val out_VEs = 
+	    map (fn (VE, srt) =>
+		  (Env.VE_plus_VE (VE, Env.singleVarVE(id, SO.Sort_in_SortScheme srt)),
+		   srt))
+	        VEs
+        in
+          (success, out_VEs, match_ps, out_patsort,
+	   OG.LAYEREDpat(okConv i, OG.OP_OPT(id, withOp), out_ty_opt, out_pat))
+	end        
+      | IG.UNRES_INFIXpat _ => Crash.unimplemented "RefDec.ref_pat"
+    
+    and ref_pat (C: Env.Context, pat: IG.pat, patsort: PatSort) =
+     (out_debug ("ref_pat: START " ^ (pr_PatSort patsort) ^ "\n");
+      debug_indent:= (!debug_indent) + 2;
+      case ref_pat0(C, pat, patsort) of res =>
+        (debug_indent:= (!debug_indent) - 2;       
+	 out_debug ("ref_pat: END " ^ (pr_PatSort patsort) ^ 
+                    " RESIDUAL: " ^ (pr_PatSort (#4 res)) ^ "\n"); 
+        res))
+
+    (***** Remove non-maximal environments *****)
+    and ref_pat_max(C: Env.Context, pat: IG.pat, patsort: PatSort) 
+          : bool * Env.VarEnv list * PatSort * OG.pat =
+      case ref_pat(C, pat, patsort) of (succ, VEs, match_ps, patsort, out_pat) =>
+	(succ, List.foldR (fn (VE, _) => fn accVEs => 
+			     ListHacks.addMax (Env.subVE(Env.T_of_C C)) (VE, accVEs))
+	                  [] VEs, 
+         patsort, out_pat)
+
+    (****** Patterns (sort output) ******)
+    (* Pattern should have a sort constraint at or near the top. *)
+    (* If not, the environment returned is still okay if a variable pattern (for recursion). *)
+    (* Returns a boolean for whether a constraint was found.  srt0 is the ML Sort. *)
+    and ref_pat' (C, IG.SORTEDpat(i, pat, sort), srt0) : bool * Env.VarEnv * SO.Sort * OG.pat =
+	let 
+	  val (srt1, out_sort) = ref_sort(C, sort, (true, false)) 
+          val ty = case (GrammarInfo.getPostElabTypeInfo i)
+	             of Some (TypeInfo.VAR_PAT_INFO {Type, ...}) => Type
+          val (srt, out_i1) = if SO.compatible_Sort(srt0, srt1) then (srt1, okConv i)
+			      else (srt0, errorConv(i, REI.WRONG_TYPE(srt1, ty)))
+          val (_, VEs, out_patsort, out_pat) = ref_pat_max(C, pat, SORTps srt)
+	in
+	  case (VEs, patSort_to_Sorts (C, out_patsort))
+	    of ([VE], []) => (true, VE, srt, OG.SORTEDpat(out_i1, out_pat, out_sort))
+             | ([VE], _::_) => 
+	       (false, VE, srt, 
+		OG.SORTEDpat(errorConv(i, REI.UNMATCHED srt), out_pat, out_sort))
+	     | _ => case ref_pat_max(C, pat, SORTps srt0) 
+	              of (_, VE::_, _, _) =>
+	                 (false, VE, srt, 
+		          OG.SORTEDpat(errorConv(i, REI.MULTIPLE_BINDINGS), out_pat, out_sort))
+		       | _ => Crash.impossible "RefDec.ref_pat'"  (* MLSort must match *)
+	end
+      | ref_pat' (C, IG.TYPEDpat(i, pat, typ), srt0) = 
+	(case (ref_pat'(C, pat, srt0), ref_ty(C, typ, (true, false)))
+           of ((succeeded, VE, srt, out_pat), (_, out_typ)) => 
+ 	      (succeeded, VE, srt, OG.TYPEDpat(okConv i, out_pat, out_typ)))
+      | ref_pat' (C, IG.ATPATpat(i1, IG.PARatpat(i2, pat)), srt0) = 
+	(case ref_pat'(C, pat, srt0) 
+           of (succeeded, VE, srt, out_pat) => 
+	      (succeeded, VE, srt, OG.ATPATpat(okConv i1, OG.PARatpat(okConv i2, out_pat))))
+      | ref_pat' (C, pat, srt0) = 
+        (case ref_pat_max(C, pat, SORTps srt0) 
+	    of (_, VE::_, _, out_pat) => (false, VE, srt0, out_pat)
+	     | _ => Crash.impossible "RefDec.ref_pat'")  (* MLSort must match *)
+
+    (* Used in ref_exp below - may actually overwrite another error! *)
+    and add_error_exp (err, OG.ATEXPexp(i, atexp)) = 
+        OG.ATEXPexp(addError(err, i), atexp)
+      | add_error_exp (err, OG.APPexp(i, exp, atexp)) = 
+	OG.APPexp(addError(err, i), exp, atexp)
+      | add_error_exp (err, OG.TYPEDexp(i, exp, ty)) = OG.TYPEDexp(addError(err,i), exp, ty)
+      | add_error_exp (err, OG.SORTEDexp(i, exp, srt)) = 
+        OG.SORTEDexp(addError(err,i), exp, srt)
+      | add_error_exp (err, OG.HANDLEexp(i, exp, match)) = 
+        OG.HANDLEexp(addError(err,i), exp, match)
+      | add_error_exp (err, OG.RAISEexp(i, exp)) = OG.RAISEexp(addError(err,i), exp)
+      | add_error_exp (err, OG.FNexp(i, match)) = OG.FNexp(addError(err,i), match)
+      | add_error_exp (err, OG.UNRES_INFIXexp(i, atexps)) = 
+	OG.UNRES_INFIXexp(addError(err,i), atexps)
+    and add_error_atexp (err, OG.SCONatexp(i, scon)) = OG.SCONatexp(addError(err,i), scon)
+      | add_error_atexp (err, OG.IDENTatexp(i, longid_op)) = 
+        OG.IDENTatexp(addError(err,i), longid_op)
+      | add_error_atexp (err, OG.RECORDatexp(i, exprow_opt)) = 
+        OG.RECORDatexp(addError(err,i), exprow_opt)
+      | add_error_atexp (err, OG.LETatexp(i, dec, exp)) = 
+        OG.LETatexp(addError(err,i), dec, exp)
+      | add_error_atexp (err, OG.PARatexp(i, atexp)) = OG.PARatexp(addError(err,i), atexp)
+
+
+
+    (****** Matches  ******)
+    and ref_match (C, IG.MATCH(i1, IG.MRULE(i2, pat', exp'), match_opt), ps1, gsrt2)
+           : TyNameEnv * bool * PatSort * OG.match =
+      let
+	val (succeeded, VEs, residPatsort, out_pat') = ref_pat_max(C, pat', ps1)
+	val results = 
+	  map (fn VE => ref_exp (Env.C_plus_VE (C, VE), exp', Some gsrt2)) VEs
+	val (T, srt_opt, out_exp') =
+	  case List.all (fn (_, None, _) => true | _ => false) results 
+	    of h::t => h  (* An error found in at least one case *)
+	     | [] =>      (* No errors found *)
+               case results 
+		 of h::t => h
+	          | [] =>     (* Empty result VEs from pattern matching *)
+                    let 
+		      val Some(srtML, _) = SO.unSortArrow(findMLSort(C, i1))  (* Always -> *)
+                      val (_, VE::_, _, _) = ref_pat_max(C, pat', SORTps srtML) (*must match*)
+                      val (T, _, out_exp) = ref_exp(Env.C_plus_VE(C, VE), exp', Some gsrt2) 
+		    in
+		      (T, Some gsrt2,
+		       OG.map_exp_info GrammarInfo.removePostRefineErrorInfo out_exp)
+                    end
+	val (T2, success2, endPatsort, out_match_opt) = 
+	  case match_opt 
+	    of None => (Env.emptyT, true, residPatsort, None)
+	     | Some match2 => 
+	       case ref_match(C, match2, residPatsort, gsrt2)
+		 of (T2, success2, endPatSort, out_match) =>
+		    (T2, success2, endPatSort, Some out_match)
+        val success = case srt_opt of None => false | Some _ => success2 andalso succeeded
+      in
+	(Env.T_plus_T(T, T2), success, endPatsort,		     
+	 OG.MATCH(okConv i1, OG.MRULE(okConv i2, out_pat', out_exp'), 
+		  out_match_opt))
+      end
+
+    (****** Expressions  ******)
+    (* goal sort is None for synthesis.
+       Result sort is Some on success, i.e if no errors marked in this phrase. 
+       The goal sort and environment must correctly refine the corresponding types. *)
+    and ref_exp (C, exp : IG.exp, gsrt_opt : SO.Sort Option) 
+           : Env.TyNameEnv * SO.Sort Option * OG.exp =
+      case exp
+	of IG.FNexp(i, match) =>
+          let
+	    val gsrt = case gsrt_opt of Some gsrt => gsrt | None => findMLSort(C, i)
+	  in
+	     case (SO.unSortConj gsrt)
+	       of Some (srt1, srt2) =>
+	          (case (ref_exp (C, exp, Some srt1))
+		     of (T, None, out_exp1) => (T, None, out_exp1)
+		      | (T, Some _, _) => 
+		        case ref_exp(C, exp, Some srt2)
+			  of (T, None, out_exp2) => (T, None, out_exp2)
+			   | (T, Some _, out_exp2) => (T, Some gsrt, out_exp2))
+	        | None =>
+		  let
+		    val (srt1, srt2) =
+		      case (SO.unSortArrow gsrt)
+			of None => Crash.impossible "RefDec.ref_exp:FNexp"
+		         | Some(srt1, srt2) => (srt1, srt2)
+                    val (T, success, endPatSort, out_match) = 
+		      ref_match(C, match, SORTps srt1, srt2)
+                    val (out_succ, out_i) = 
+		      case patSort_to_Sorts (C, endPatSort)
+			of _::_ => (false, errorConv(i, REI.UNMATCHED srt1))
+			 | [] => (success, okConv i)
+		    val rsrt_opt = if out_succ then (Some gsrt) else None
+		  in
+		    (T, rsrt_opt, OG.FNexp(out_i, out_match))
+		  end
+	  end
+         | IG.ATEXPexp(i, atexp) => 
+	   (case ref_atexp(C, atexp, gsrt_opt) 
+	      of (T, rsrt_opt, out_atexp) => (T, rsrt_opt, OG.ATEXPexp(okConv i, out_atexp)))
+         | IG.TYPEDexp(i, exp1, typ2) =>
+	   (case (ref_exp(C, exp1, gsrt_opt), ref_ty(C, typ2, (true, false)))
+	      of ((T, rsrt_opt, out_exp1), (_, out_typ2)) => 
+		 (T, rsrt_opt, OG.TYPEDexp(okConv i, out_exp1, out_typ2)))
+         | IG.SORTEDexp(i, exp1, sort2) =>
+           let
+	     val (srt2, out_sort2) = ref_sort(C, sort2, (true, false))
+             val (T, srt_opt, out_exp1) = ref_exp(C, exp1, Some srt2)
+             val (rsrt_opt, out_i) =
+	       case gsrt_opt 
+		 of None => (case (GrammarInfo.getPostElabTypeInfo i) 
+		               of Some (TypeInfo.EXP_INFO {Type}) =>
+                                   (* Try to unify types here? *)
+		                   if StatObject.equal_Type(Type, SO.tyOfSort srt2) then
+			   	     (srt_opt, okConv i)
+				   else
+				     (None, errorConv(i, REI.WRONG_TYPE(srt2, Type)))
+				| _ => Crash.impossible "RefDec.ref_exp:SORTEDexp")     
+	          | Some gsrt =>  
+	            if (SO.compatible_Sort (srt2, gsrt) andalso 
+		        SO.subSort (Env.conjSortNameC C) (srt2, gsrt)) then
+		      (gsrt_opt, okConv i)
+		    else
+		      (None, errorConv(i, REI.NOT_SUBSORT(gsrt, srt2)))
+	   in
+	     (T, rsrt_opt, OG.SORTEDexp(out_i, out_exp1, out_sort2))
+	   end
+         | IG.APPexp(i, exp1 as (IG.FNexp(i1, _)), atexp2) =>  (* expansion of case *)
+	   let          (* Use the ML-sort if no goal (avoids upper bound of fun cases) *)
+	     val gsrt = case gsrt_opt of (Some gsrt) => gsrt | None => findMLSort(C, i)
+             val (T2, srt2_opt, out_atexp2) = ref_atexp(C, atexp2, None)
+             val srt2 = case srt2_opt 
+		          of Some srt2 => srt2
+			   | None => case SO.unSortArrow (findMLSort(C, i1))
+			               of Some(srt2, _) => srt2
+				        | None => Crash.impossible "RefDec.ref_exp:CASE"
+	     val (T1, srt_opt, out_exp1) =
+	       ref_exp(Env.C_plus_T(C, T2), exp1, Some (SO.mkSortArrow(srt2, gsrt)))
+	     val out_T = Env.T_plus_T(T1, T2)
+	     val rsrt_opt = case (srt2_opt, srt_opt) of (Some _, Some _) => Some gsrt
+					              | _ => None
+	   in
+	     (out_T, rsrt_opt, OG.APPexp(okConv i, out_exp1, out_atexp2))
+	   end
+         | IG.APPexp(i, exp1, atexp2) =>
+           let 
+	     val (T1, srt1_opt, out_exp1) = ref_exp(C, exp1, None)
+             val srt1 = case srt1_opt of Some srt1 => srt1 
+	                               | None => findMLSort(C, IG.get_info_exp exp1)  (* error *)
+	     val (T2, srt_opt, out_atexp2) =  (* could optimize if sort of atexp2 can be found *)
+	       apply_sort_to_atexp(Env.C_plus_T(C, T1), srt1, atexp2)
+	     val out_T = Env.T_plus_T(T1, T2)
+	   in
+	    case (srt1_opt, srt_opt, gsrt_opt)
+	      of (Some _, Some srt, None) =>
+		 (out_T, Some srt, OG.APPexp(okConv i, out_exp1, out_atexp2))
+	       | (Some _, Some srt, Some gsrt) =>   
+		 if (SO.compatible_Sort (srt, gsrt) andalso
+		     SO.subSort (Env.conjSortNameC C) (srt, gsrt)) then
+		   (out_T, Some gsrt, OG.APPexp(okConv i, out_exp1, out_atexp2))
+		 else
+		   (out_T, None, 
+		    add_error_exp(REI.NOT_SUBSORT(gsrt, srt),
+				  OG.APPexp(okConv i, out_exp1, out_atexp2)))
+	       | _ => (out_T, None, OG.APPexp(okConv i, out_exp1, out_atexp2))
+	   end
+	 | IG.RAISEexp(i, exp) =>
+	   let
+	     val (out_T, srt_opt, out_exp) = ref_exp(C, exp, Some SO.SortExn)
+	     val out_srtopt = 
+	       case (srt_opt, gsrt_opt) 
+		 of (None, _)  => None 
+	          | (Some _, Some _) => gsrt_opt
+		  | (Some _, None) => 
+		    case (GrammarInfo.getPostElabTypeInfo i) 
+		      of Some (TypeInfo.EXP_INFO {Type}) =>
+			 Some (full_instance(C, SO.Close_Sort(SO.mkSortSortVar(SO.fresh_sv())),
+					     [Type]))  (* very inefficient *)
+		       | _ => Crash.impossible "RefDec.ref_exp:RAISE"
+	   in
+	     (out_T, out_srtopt, OG.RAISEexp(okConv i, out_exp))
+	   end
+	 | IG.HANDLEexp(i, exp1, match2) =>
+	   let
+	     val gsrt = case gsrt_opt of (Some gsrt) => gsrt | None => findMLSort(C, i)
+	     val (T1, srt_opt1, out_exp1) = ref_exp(C, exp1, Some gsrt)
+	     val (T2, success2, _, out_match2) =
+	       ref_match(C, match2, SORTps SO.SortExn, gsrt)
+	     val out_srt_opt = case (success2, srt_opt1) of (true, Some _) => Some gsrt
+							  | _ => None
+	   in
+	     (Env.T_plus_T(T1, T2), out_srt_opt, OG.HANDLEexp(okConv i, out_exp1, out_match2))
+	   end
+	 | IG.UNRES_INFIXexp _ => Crash.unimplemented "RefDec.ref_exp"
+
+
+    (****** Atomic Expressions ******)
+    and ref_atexp (C, atexp : IG.atexp, gsrt_opt : SO.Sort Option) 
+           : Env.TyNameEnv * SO.Sort Option * OG.atexp =
+      case atexp
+	of IG.IDENTatexp(i, IG.OP_OPT(longid, withOp)) =>
+	   let
+	     val instances = ListHacks.reverse  (* info is in reverse! *)
+	                       (case (GrammarInfo.getPostElabTypeInfo i)
+			          of Some (TypeInfo.VAR_INFO {instances}) => instances
+				   | Some (TypeInfo.CON_INFO {instances, ...}) => instances
+                                   | Some (TypeInfo.EXCON_INFO _) => []
+				   | _ => Crash.impossible "RefObject.ref_atexp'(1)")
+             val srt_opt =		   
+ 	        case Env.Lookup_longresid(C, longid) 
+		  of Some(Env.LONGVAR sscheme) => Some (full_instance (C, sscheme, instances))
+	           | Some(Env.LONGCON sscheme) => Some (full_instance (C, sscheme, instances))
+	           | Some(Env.LONGEXCON sort) => Some sort
+                   | None => gsrt_opt (* Error caught in elaboration or at variable binding *)
+             val (out_i, rsrt_opt) =
+	       case (gsrt_opt, srt_opt)
+		 of (Some gsrt, Some srt) => 
+		      if (SO.compatible_Sort (srt, gsrt) andalso
+			  SO.subSort (Env.conjSortNameC C) (srt, gsrt)) then
+			(okConv i, gsrt_opt)
+		      else
+			(errorConv(i, REI.NOT_SUBSORT(gsrt, srt)), None)
+		  | _ => (okConv i, srt_opt)
+	   in
+             (Env.emptyT, rsrt_opt, OG.IDENTatexp(out_i, OG.OP_OPT(longid, withOp)))
+	   end
+         | IG.LETatexp(i, dec, exp) =>
+	   let
+	     val (T1, success, E, out_dec) = ref_dec'(C, dec)
+             val (T2, srt_opt, out_exp) = ref_exp(Env.C_plus_T(Env.C_plus_E(C, E), T1), 
+						   exp, gsrt_opt)
+	     val rsrt_opt = if success then srt_opt else None
+           in
+             (Env.T_plus_T(T1, T2), rsrt_opt, OG.LETatexp(okConv i, out_dec, out_exp))
+	   end
+         | IG.PARatexp(i, exp) => 
+	     (case ref_exp(C, exp, gsrt_opt) of (T, rsrt_opt, out_exp) =>
+		(T, rsrt_opt, OG.PARatexp(okConv i, out_exp)))
+         | IG.RECORDatexp(i, exprow_opt) =>
+           let
+	     val grecmap_opt : (SO.lab, SO.Sort) SortedFinMap.map Option = 
+	        case gsrt_opt 
+		  of None => None 
+		   | Some gsrt => 
+		     case (SO.unSortRecSort gsrt)
+		       of None => None     (* Conjunctions pushed down by mkConjSort *)
+		        | Some recsort => Some(SO.recSortToMap recsort)
+             val (T, rrecsrt_opt, out_exprow_opt) = 
+	         ref_exprow_opt(C, exprow_opt, grecmap_opt)
+	     val rsrt_opt = case (rrecsrt_opt, gsrt_opt)
+	                      of (None, _) => None 
+	                       | (Some rrecsrt, None) => Some (SO.mkSortRecSort rrecsrt)
+			       | (Some _, Some gsrt) => Some gsrt	
+	   in
+             (T, rsrt_opt, OG.RECORDatexp(okConv i, out_exprow_opt))
+	   end
+         | IG.SCONatexp(i, scon) =>
+	   let  (* No type error, so no possible sort error.  *)
+	     val out_srt_opt = case gsrt_opt of None => Some (SO.GetSortscon scon)
+                                              | Some _ => gsrt_opt
+           in
+	     (Env.emptyT, out_srt_opt, OG.SCONatexp(okConv i, scon))
+           end
+     
+    and ref_exprow_opt(C, None : IG.exprow Option, 
+		       _ : (SO.lab, SO.Sort) SortedFinMap.map Option) 
+          : TyNameEnv * SO.RecSort Option * OG.exprow Option = 
+	(Env.emptyT, Some SO.emptyRecSort, None)
+      | ref_exprow_opt(C, Some (IG.EXPROW(i, lab, exp, exprow_opt)), grecmap_opt) = 
+        let
+	  val gsrt_opt = 
+	    case grecmap_opt of None => None 
+	                      | Some grecmap => SortedFinMap.lookup grecmap lab
+          val (T1, srt_opt, out_exp) = ref_exp(C, exp, gsrt_opt)
+          val (T2, recsrt_opt, out_exprow_opt) = ref_exprow_opt(C, exprow_opt, grecmap_opt)
+          val rrecsrt_opt = case (srt_opt, recsrt_opt) 
+	                      of (Some srt, Some recsrt) => 
+				 Some (SO.addField (lab, srt) recsrt)
+			       | _ => None
+	in
+	  (Env.T_plus_T (T1, T2), rrecsrt_opt, 
+	   Some (OG.EXPROW(okConv i, lab, out_exp, out_exprow_opt)))
+	end
+
+    and apply_sort_to_atexp(C, srt: SO.Sort, atexp: IG.atexp) 
+          : Env.TyNameEnv * SO.Sort Option * OG.atexp = 
+      case (SO.unSortConj srt) 
+        of Some (srt1, srt2) =>
+           if (princ_atexp atexp) then   (* optimize when argument is "inferrable" *)
+	     case ref_atexp (C, atexp, None)            (* This could be improved. *)
+	       of (T, None, out_atexp) => Crash.impossible "RefDec.apply_sort_to_atexp:1"
+                | (T, Some srt', out_atexp) => 
+                  case SO.applySort (Env.conjSortNameC C) (srt, srt')
+                    of None => (T, None, add_error_atexp(REI.CANT_APPLY srt, out_atexp))
+                     | Some out_srt => (T, Some out_srt, out_atexp)
+	   else
+	     let
+	       val (T1, srt_opt1', out_atexp1) = apply_sort_to_atexp(C, srt1, atexp)
+	       val (T2, srt_opt2', out_atexp2) = apply_sort_to_atexp(C, srt2, atexp)
+	     in
+	       case (srt_opt1', srt_opt2') 
+		 of (None, None) => (T2, None, add_error_atexp(REI.CANT_APPLY srt, out_atexp2))
+		  | (Some srt1', None) => (T1, Some srt1', out_atexp1)
+		  | (None, Some srt2') => (T2, Some srt2', out_atexp2)
+		  | (Some srt1', Some srt2') => 
+		    (T1, 
+		     Some (SO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C)) (srt1', srt2')), 
+		     out_atexp1)
+	     end
+         | None => case (SO.unSortArrow srt) 
+	             of None => Crash.impossible "RefDec.apply_sort_to_atexp:2"
+		      | Some (srt1, srt2) => 
+		        case ref_atexp(C, atexp, Some srt1)
+			  of (T, Some _, out_atexp) => (T, Some srt2, out_atexp)
+			   | (T, None, out_atexp) => (T, None, out_atexp)
+
+   and princ_exp (IG.ATEXPexp(_, atexp)) = princ_atexp atexp
+     | princ_exp (IG.APPexp(_, exp, atexp)) = princ_exp exp  (* check head *)
+     | princ_exp (IG.TYPEDexp(_, exp, _)) = princ_exp exp
+     | princ_exp (IG.SORTEDexp(_, exp, _)) = princ_exp exp
+     | princ_exp _ = false
+   and princ_atexp (IG.SCONatexp _) = true
+     | princ_atexp (IG.IDENTatexp _) = true
+     | princ_atexp (IG.RECORDatexp (_, exprow_opt)) = princ_exprowopt exprow_opt
+     | princ_atexp (IG.PARatexp (_, exp)) = princ_exp exp
+     | princ_atexp _ = false
+   and princ_exprowopt None = true
+     | princ_exprowopt (Some (IG.EXPROW(_, _, exp, exprow_opt))) = 
+       (princ_exp exp) andalso (princ_exprowopt exprow_opt)
+  end; 

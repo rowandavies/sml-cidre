@@ -1,0 +1,85 @@
+
+(*** Implementations of Mihaescu/Tarjan real-time purely functional
+     lists.
+
+     Kevin Watkins
+     10 May 2004
+
+     Being converted to CDuce to test that system. - Rowan, 23sep04
+     
+ ***)
+
+(*  datatype 'a bal = Leaf of 'a | Pair of 'a bal * 'a bal *)
+
+
+(*
+  infixr 3 $
+  infixr 2 $$
+  infixr 1 $$$
+  nonfix @ @@ @@@
+*)         
+
+(*  datatype 'a word = @ | $ of 'a bal list * 'a word *)
+
+type bal = <leaf> Char | <pair> (bal, bal)
+type balList = <nil> [] | <cons> (bal, balList)
+type word = <wleaf> [] | <wpair> (balList, word)
+type sentence = <sleaf>[] | <spair> ((word, word), sentence)
+type paragraph = <pleaf>[] | <ppair> (sentence, paragraph)
+
+
+  type  zero = <nil>[]
+  type  one = <cons> (bal, zero)
+  type  two = <cons> (bal,  one)
+  
+  type  ones_w = <wleaf>[] | <wpair> (  one,  ones_w)
+  type  zero_ones_w = <wpair> (  zero,  ones_w)
+  type  two_ones_w = <wpair> (  two,  ones_w)
+
+  type switch_w = <wpair> (  zero,  ones_w)
+                       | <wpair> (  two,  ones_w)
+
+  type empty_s = <sleaf>[]
+  type short_s = <spair> ( ( word,  word),  empty_s)
+  type left_s  = <spair> ( ( switch_w,  word),  sentence)
+  type right_s = <spair> ( ( word,  switch_w),  sentence)
+
+  type lzero_end_s = <spair> ( ( zero_ones_w,  word)       ,  empty_s)
+                          | <spair> ( ( word       ,  word)       ,  lzero_end_s)
+  type ltwo_end_s  = <spair> ( ( two_ones_w ,  word)       ,  empty_s)
+                          | <spair> ( ( word       ,  word)       ,  ltwo_end_s)
+  type rzero_end_s = <spair> ( ( word       ,  zero_ones_w),  empty_s)
+                          | <spair> ( ( word       ,  word)       ,  rzero_end_s)
+  type rtwo_end_s  = <spair> ( ( word       ,  zero_ones_w),  empty_s)
+                          | <spair> ( ( word       ,  word)       ,  rtwo_end_s)
+
+  type lzero_s = <sleaf>[] | <spair> ( ( zero_ones_w,  word)       ,  ltwo_s)
+  type       ltwo_s  = <sleaf>[] | <spair> ( ( two_ones_w ,  word)       ,  lzero_s)
+  type Lone_s  = <sleaf>[] | <spair> ( ( ones_w     ,  word)       ,  Lone_s)
+  type rzero_s = <sleaf>[] | <spair> ( ( word       ,  zero_ones_w),  rtwo_s)
+  type       rtwo_s  = <sleaf>[] | <spair> ( ( word       ,  two_ones_w) ,  rzero_s)
+  type Rone_s  = <sleaf>[] | <spair> ( ( word       ,  ones_w)     ,  Rone_s)
+
+  type switch_p = <pleaf>[]
+                       | <ppair> (  short_s,  switch_p)
+                       | <ppair> (  left_s ,  switch_p)
+                       | <ppair> (  right_s,  switch_p)
+
+  type lzero_p = <ppair> ( ( lzero_s &  lzero_end_s),  ltwo_p)
+                      | <ppair> ( ( lzero_s &  ltwo_end_s) ,  lzero_p)
+                      | <ppair> (   Lone_s                   ,  lzero_p)
+  type       ltwo_p  = <pleaf>[]
+                      | <ppair> ( ( ltwo_s  &  lzero_end_s),  ltwo_p)
+                      | <ppair> ( ( ltwo_s  &  ltwo_end_s) ,  lzero_p)
+                      | <ppair> (   Lone_s                   ,  ltwo_p)
+  type rzero_p = <ppair> ( ( rzero_s &  rzero_end_s),  rtwo_p)
+                      | <ppair> ( ( rzero_s &  rtwo_end_s) ,  rzero_p)
+                      | <ppair> (   Rone_s                   ,  rzero_p)
+
+  type       rtwo_p  = <pleaf>[]
+                      | <ppair> ( ( rtwo_s  &  rzero_end_s),  rtwo_p)
+                      | <ppair> ( ( rtwo_s  &  rtwo_end_s) ,  rzero_p)
+                      | <ppair> (   Rone_s                   ,  rtwo_p)
+
+let f ((rtwo_p & switch_p) -> (switch_p & ltwo_p))
+    x -> x

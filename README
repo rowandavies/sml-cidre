@@ -1,0 +1,172 @@
+
+=============================================================
+SML CIDRE (Checker for Intersection and Datasort Refinements)
+=============================================================
+
+Author: Rowan Davies (rowan@cs.cmu.edu)
+(Built using the ML Kit: see the file kit-copyright.)
+
+Version: 0.99b (pre-public release, code name "Ready-for-bottling")
+Date: December 9, 2004
+
+
+Introduction
+------------
+
+This directory contains SML CIDRE (pronounced "cider"), an implementation of a
+refinement-type checker for the Standard ML programming language.  SML CIDRE
+checks properties of programs following programmer supplied annotations, and is
+intended to be used similarly to a type checker.  However, it includes features
+specifically for capturing program properties, in particular intersection and
+datasort refinements.
+
+SML CIDRE is built on top of parts of the ML Kit version 3.  Currently some of
+the unused ML Kit files are still in place, which could potentially lead to
+confusion, particularly when browsing the source code.
+
+To run this version of SML CIDRE, you will need SML/NJ version 110.0.7.  Other
+versions are unlikely to work, due to the way sharing specifications are used
+in the ML Kit version 3.  (This is likely to be resolved in future versions.)
+
+
+Obtaining SML/NJ 110.0.7
+------------------------
+
+SML/NJ 110.0.7 has been the official "current release" for a few years, so if
+you already have SML/NJ installed, you quite likely have this version.  (E.g.,
+at CMU on CS hosts you can choose this version by setting the environment
+variable SML_VERSION to 110.0.7.)
+
+Otherwise, you can download and install SML/NJ 110.0.7 via the following url.
+   http://www.smlnj.org/software.html
+
+
+Building and using SML CIDRE
+-------------------------------
+
+Change to the src subdirectory of this directory, start SML/NJ, and make the
+system using the compilation manager, as follows.  (If you have previously
+built the system, the compilation manager will load the system rather than
+rebuilding it.)
+
+  # cd ./src                       
+  # sml @SMLdebug=/dev/null        ## The option redirects SML/NJ GC messages
+  Standard ML of New Jersey, Version 110.0.7, September 28, 2000 [CM; autoload enabled]
+  - CM.make();
+
+Then, to refinement-type check a file containing SML code with annotations, use
+"R.refine_file", as in the following.
+
+  - R.refine_file "../test-ssml/large-examples/red-black.sml";
+
+To check a file without reporting signatures, use a command like the following.
+
+  - R.refine_file_report false "../test-ssml/large-examples/red-black.sml";
+
+
+Syntax for refinement annotations
+---------------------------------
+
+The following SML code illustrates the syntax of SML CIDRE refinement
+annotations.  (Note: refinement-types are also called "sorts".)
+
+    datatype 'a stream = Stream of unit -> 'a front
+         and 'a front = Empty | Cons of 'a * 'a stream
+
+    (*[ datasort 'a infStream = Stream of unit -> 'a infFront
+             and 'a infFront = Cons of 'a * 'a infStream     ]*)
+
+    (*[ sortdef intInfStream = int infStream
+            and intInfFront = int infFront   ]*)
+
+    (*[ val delay <:  (unit -> 'a front) -> 'a stream
+                    & (unit -> 'a infFront) -> 'a infStream  ]*)
+    fun delay d = Stream(d)
+
+    (*[ map  <:  ('a -> 'b) -> 'a stream -> 'b stream
+               & ('a -> 'b) -> 'a infStream -> 'b infStream  ]*)
+    (*[ map' <:  ('a -> 'b) -> 'a front -> 'b front
+               & ('a -> 'b) -> 'a infFront -> 'b infFront    ]*)
+    fun map f s = delay (fn () => map' f (expose s))
+    and map' f Empty = Empty
+      | map' f (Cons(x,s)) = Cons (f(x), map f s)
+
+The "val" has been omitted from the annotations for map and map'.  It is
+optional for an annotation containing only a sort annotation for a single
+variable.
+
+An older syntax used ":>" and ":" instead of "<:".  These are depreciated, but
+there may still be some code around which uses them.
+
+Refinement annotation declarations (datasort, val and sortdef) may appear
+anywhere that an SML declaration (like datatype, val, type) is allowed.
+Similar specifications in signatures are supported.  
+
+See my forthcoming PhD disseration "Practical Refinement-Type Checking" for
+more details, including a grammar that describes the language of annotations
+more precisely.  If you want to use this pre-release version of SML CIDRE, and
+do not have access to a draft of my dissertation, and do not want to wait for
+the final version, feel free to contact me via rowan@cs.cmu.edu.
+
+
+Files of interest when using SML CIDRE
+--------------------------------------
+
+The following files may be of particular interest to those wanting to use 
+SML CIDRE.
+
+ ./test-ssml/                   A directory containing some test files, which
+                                may be useful as examples of the use of sorts.
+
+ ./emacs/sml-refinements.el     Extends the emacs sml-mode with fonts for
+                                refinement annotations, so that they can be
+                                easily distinguished from ordinary
+                                comments
+
+Note: SML CIDRE was previously called "SSML" (Sorts for SML).
+
+
+Files of interest in the source of SML CIDRE
+--------------------------------------------
+
+The following files and directories may be of particular interest to those
+wanting to browse the source code of SML CIDRE.
+
+ ./src/                         Contains the source code for the checker.
+
+ ./src/Common/                  These two directories contain most of the
+ ./src/Parsing/                 source files for the ML Kit front end.  Many of
+                                these files have been modified to support
+                                refinement checking, and many new files have
+                                been added.
+
+ ./src/Common/RefObject.sml     Low-level code for representations of sorts,
+                                sort schemes, sort functions, realisations, etc.
+
+ ./src/Common/RefinedEnvironments.sml
+                                Representations of environments, and related
+                                functions, including calculation of lattices
+                                of refinements.
+
+ ./src/Common/RefDec.sml        High-level code for refinement checking of
+                                core declarations and expressions.
+
+ ./src/Common/ElabDec.sml       High-level code for elaboration of
+                                core declarations and expressions.
+
+ ./src/Common/ElabTopdec.sml    High-level code for elaboration of modules.
+                                Refinement checking for module-level constructs
+                                is built directly into this module.
+
+ ./src/Common/Elaboration.sml   Contains most of the functor applications
+                                that build the front end.
+
+ ./src/Manager/ParseElab.sml    Contains top-level functions for checking files,
+                                reporting errors, managing the current basis.
+
+ ./src/Common/RefineCheck.sml   The top-level module in the refinement checker.
+
+ ./src/sources.cm               SML/NJ Compilation Manager setup files, 
+ ./src/Common/common.cm         which contain the names of all the files
+ ./src/Parsing/parsing.cm       needed to build the refinement
+                                checker.

@@ -1,0 +1,20 @@
+(** This file is intended to demonstrate that CDuce doesn't do case
+    analysis, at least not in the same sense as the sort checker. 
+
+    It is rejected, while the ssml system accepts the corresponding code.
+    - Rowan  **)
+
+
+Type bool = <true> | <false>;;
+
+Type c2 = (<c1> * <true> * <false>) | (<c1> * <false> * <true>);;
+
+Type tt = <true>;;
+
+let fun orelse (tt * bool -> tt ; bool * tt -> tt ; bool * bool -> bool)
+      | <false>, <false> -> <false>
+      | _ -> <true>;;
+
+let fun f (c2 -> tt)
+  <c1>, x, y -> orelse (x, y)
+;;

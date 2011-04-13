@@ -1,0 +1,69 @@
+ R.refine_file "../basisstubs/current/GENERAL.sml";
+R.refine_file "../basisstubs/current/General.sml";
+R.refine_file "../basisstubs/current/OPTION.sml";
+R.refine_file "../basisstubs/current/Option.sml";
+R.refine_file "../basisstubs/current/LIST.sml";
+R.refine_file "../basisstubs/current/List.sml";
+R.refine_file "../basisstubs/current/LIST_PAIR.sml";
+R.refine_file "../basisstubs/current/ListPair.sml";
+R.refine_file "../basisstubs/current/LIST_SORT.sml";
+ R.refine_file "../basisstubs/current/ListSort.sml";
+(* R.refine_file "../basisstubs/current/wordtables.sml"; *)
+R.refine_file "../basisstubs/current/VECTOR.sml";
+R.refine_file "../basisstubs/current/Vector.sml";
+R.refine_file "../basisstubs/current/ARRAY.sml";
+R.refine_file "../basisstubs/current/Array.sml";
+R.refine_file "../basisstubs/current/MONO_VECTOR.sml";
+R.refine_file "../basisstubs/current/MONO_ARRAY.sml";
+R.refine_file "../basisstubs/current/MonoVector.sml";
+R.refine_file "../basisstubs/current/MonoArray.sml"; 
+
+R.refine_file "../basisstubs/current/ByteVector.sml";
+R.refine_file "../basisstubs/current/ByteArray.sml"; 
+
+R.refine_file "../basisstubs/current/STRING_CVT.sml";
+R.refine_file "../basisstubs/current/StringCvt.sml";
+R.refine_file "../basisstubs/current/STR_BASE.sml";
+R.refine_file "../basisstubs/current/StrBase.sml";
+(* R.refine_file "../basisstubs/current/Char.sml"; *)
+(* R.refine_file "../basisstubs/current/String.sml"; *)
+R.refine_file "../basisstubs/current/CHAR.sml";
+R.refine_file "../basisstubs/current/STRING.sml";
+R.refine_file "../basisstubs/current/SUBSTRING.sml";
+R.refine_file "../basisstubs/current/Substring.sml";
+R.refine_file "../basisstubs/current/BOOL.sml";
+R.refine_file "../basisstubs/current/Bool.sml";
+R.refine_file "../basisstubs/current/Word.sml";
+(*R.refine_file "../basisstubs/current/Word8.sml";*)
+R.refine_file "../basisstubs/current/WORD.sml";
+R.refine_file "../basisstubs/current/BYTE.sml";
+R.refine_file "../basisstubs/current/Byte.sml";
+R.refine_file "../basisstubs/current/Int.sml";
+R.refine_file "../basisstubs/current/INTEGER.sml";
+R.refine_file "../basisstubs/current/MATH.sml";
+R.refine_file "../basisstubs/current/Math.sml";
+R.refine_file "../basisstubs/current/REAL.sml";
+R.refine_file "../basisstubs/current/Real.sml";
+R.refine_file "../basisstubs/current/IO.sml";
+R.refine_file "../basisstubs/current/TEXT_IO.sml";
+R.refine_file "../basisstubs/current/TextIO.sml";
+R.refine_file "../basisstubs/current/BIN_IO.sml";
+R.refine_file "../basisstubs/current/BinIO.sml";
+R.refine_file "../basisstubs/current/TIME.sml";
+R.refine_file "../basisstubs/current/Time.sml";
+R.refine_file "../basisstubs/current/OS_PATH.sml";
+R.refine_file "../basisstubs/current/Path.sml";
+R.refine_file "../basisstubs/current/OS_FILE_SYS.sml";
+R.refine_file "../basisstubs/current/FileSys.sml";
+R.refine_file "../basisstubs/current/OS_PROCESS.sml";
+R.refine_file "../basisstubs/current/Process.sml";
+R.refine_file "../basisstubs/current/OS.sml";
+R.refine_file "../basisstubs/current/COMMAND_LINE.sml";
+R.refine_file "../basisstubs/current/CommandLine.sml";
+R.refine_file "../basisstubs/current/DATE.sml";
+R.refine_file "../basisstubs/current/Date.sml";
+R.refine_file "../basisstubs/current/TIMER.sml";
+R.refine_file "../basisstubs/current/Timer.sml";
+R.refine_file "../basisstubs/current/RANDOM.sml";
+R.refine_file "../basisstubs/current/Random.sml";
+R.refine_file "../basisstubs/current/SML90.sml";
