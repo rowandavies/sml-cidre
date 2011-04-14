@@ -17,8 +17,6 @@ functor Parse (structure TopdecGrammar : TOPDEC_GRAMMAR
 		           = InfixBasis.Report
 		           = Report.Report
                structure PrettyPrint: PRETTYPRINT
-               sharing type TopdecGrammar.StringTree = PrettyPrint.StringTree
-		  = LexBasics.StringTree
 	       sharing type PrettyPrint.Report = Report.Report
                structure FinMap: FINMAP
                structure BasicIO: BASIC_IO

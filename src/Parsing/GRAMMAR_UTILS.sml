@@ -6,9 +6,6 @@
 signature GRAMMAR_UTILS =
   sig
     structure TopdecGrammar : TOPDEC_GRAMMAR
-    (*these two are abbreviations: (get rid of them)*)
-    structure M : TOPDEC_GRAMMAR   sharing M = TopdecGrammar
-    structure C : DEC_GRAMMAR      sharing C = TopdecGrammar.DecGrammar
     type info = TopdecGrammar.info
     type Report
 
@@ -18,36 +15,36 @@ signature GRAMMAR_UTILS =
     type pos
     exception LAYERPAT_ERROR of (pos * pos) 
 
-    val topdecOfExp: C.exp -> M.topdec
-    val composeStrDec: info * M.strdec * M.strdec -> M.strdec
-    val composeSpec: info * M.spec * M.spec -> M.spec
-    val inventStrId: unit -> M.strid
-    val composeDec: info * C.dec * C.dec -> C.dec
-    val tuple_atexp_with_info : info -> C.exp list -> C.atexp
-    val tuple_atexp : C.exp list -> C.atexp
-    val case_exp : info -> C.exp * C.match -> C.exp
-    val sequenceExp: C.exp list -> C.exp
-    val inventId: unit -> C.id
-    val inventId_from_atpat: C.atpat -> C.id
-    val atexpOfIdent : info -> C.id -> C.atexp
-    val patOfIdent : info -> C.id * bool -> C.pat
-    val patOfAtpat: C.atpat -> C.pat
-    val expOfAtexp: C.atexp -> C.exp
-    val list_atexp : info -> C.exp list -> C.atexp
-    val hash : info -> C.lab -> C.atexp
-    val exp_true : info -> C.exp
-    val exp_false : info -> C.exp
-    val if_then_else_exp : info -> C.exp * C.exp * C.exp -> C.exp
-    val while_exp : info -> C.exp * C.exp -> C.exp
-    val rewriteDatBind: C.datbind * C.typbind -> C.datbind
-    val tuple_atpat_with_info : info -> C.pat list -> C.atpat
-    val tuple_atpat : C.pat list -> C.atpat
-    val list_atpat : info -> C.pat list -> C.atpat
-    val layeredPat: info * C.pat * C.pat -> C.pat
-    val tuple_type : info -> C.ty list -> C.ty
-    val rewrite_type_abbreviation_spec: M.tyvar list * M.tycon * M.ty *
-          M.info * M.info -> info * M.spec
-    val fold_specs_to_spec : (info * M.spec) list -> M.spec
+    val topdecOfExp: TopdecGrammar.DecGrammar.exp -> TopdecGrammar.topdec
+    val composeStrDec: info * TopdecGrammar.strdec * TopdecGrammar.strdec -> TopdecGrammar.strdec
+    val composeSpec: info * TopdecGrammar.spec * TopdecGrammar.spec -> TopdecGrammar.spec
+    val inventStrId: unit -> TopdecGrammar.strid
+    val composeDec: info * TopdecGrammar.DecGrammar.dec * TopdecGrammar.DecGrammar.dec -> TopdecGrammar.DecGrammar.dec
+    val tuple_atexp_with_info : info -> TopdecGrammar.DecGrammar.exp list -> TopdecGrammar.DecGrammar.atexp
+    val tuple_atexp : TopdecGrammar.DecGrammar.exp list -> TopdecGrammar.DecGrammar.atexp
+    val case_exp : info -> TopdecGrammar.DecGrammar.exp * TopdecGrammar.DecGrammar.match -> TopdecGrammar.DecGrammar.exp
+    val sequenceExp: TopdecGrammar.DecGrammar.exp list -> TopdecGrammar.DecGrammar.exp
+    val inventId: unit -> TopdecGrammar.DecGrammar.id
+    val inventId_from_atpat: TopdecGrammar.DecGrammar.atpat -> TopdecGrammar.DecGrammar.id
+    val atexpOfIdent : info -> TopdecGrammar.DecGrammar.id -> TopdecGrammar.DecGrammar.atexp
+    val patOfIdent : info -> TopdecGrammar.DecGrammar.id * bool -> TopdecGrammar.DecGrammar.pat
+    val patOfAtpat: TopdecGrammar.DecGrammar.atpat -> TopdecGrammar.DecGrammar.pat
+    val expOfAtexp: TopdecGrammar.DecGrammar.atexp -> TopdecGrammar.DecGrammar.exp
+    val list_atexp : info -> TopdecGrammar.DecGrammar.exp list -> TopdecGrammar.DecGrammar.atexp
+    val hash : info -> TopdecGrammar.DecGrammar.lab -> TopdecGrammar.DecGrammar.atexp
+    val exp_true : info -> TopdecGrammar.DecGrammar.exp
+    val exp_false : info -> TopdecGrammar.DecGrammar.exp
+    val if_then_else_exp : info -> TopdecGrammar.DecGrammar.exp * TopdecGrammar.DecGrammar.exp * TopdecGrammar.DecGrammar.exp -> TopdecGrammar.DecGrammar.exp
+    val while_exp : info -> TopdecGrammar.DecGrammar.exp * TopdecGrammar.DecGrammar.exp -> TopdecGrammar.DecGrammar.exp
+    val rewriteDatBind: TopdecGrammar.DecGrammar.datbind * TopdecGrammar.DecGrammar.typbind -> TopdecGrammar.DecGrammar.datbind
+    val tuple_atpat_with_info : info -> TopdecGrammar.DecGrammar.pat list -> TopdecGrammar.DecGrammar.atpat
+    val tuple_atpat : TopdecGrammar.DecGrammar.pat list -> TopdecGrammar.DecGrammar.atpat
+    val list_atpat : info -> TopdecGrammar.DecGrammar.pat list -> TopdecGrammar.DecGrammar.atpat
+    val layeredPat: info * TopdecGrammar.DecGrammar.pat * TopdecGrammar.DecGrammar.pat -> TopdecGrammar.DecGrammar.pat
+    val tuple_type : info -> TopdecGrammar.DecGrammar.ty list -> TopdecGrammar.DecGrammar.ty
+    val rewrite_type_abbreviation_spec: TopdecGrammar.tyvar list * TopdecGrammar.tycon * TopdecGrammar.ty *
+          TopdecGrammar.info * TopdecGrammar.info -> info * TopdecGrammar.spec
+    val fold_specs_to_spec : (info * TopdecGrammar.spec) list -> TopdecGrammar.spec
 
     val raise_lexical_error_if_none : pos -> 'a option -> 'a
         (*raise LexBasics.LEXICAL_ERROR (pos, "grr") if the option is NONE.*)
@@ -55,23 +52,23 @@ signature GRAMMAR_UTILS =
    (* The following all come from the appropriate modules, but they're here
       for convenience and brevity. *)
 
-    val mk_IdentLab: string -> C.lab
-    val mk_IntegerLab: int -> C.lab
-    val mk_Id: string -> C.id
-    val mk_LongId: string list -> C.longid
-    val mk_FunId: string -> M.funid
-    val mk_StrId: string -> M.strid
-    val longStrIdOfStrId : M.strid -> M.longstrid
-    val mk_SigId: string -> M.sigid
-    val mk_LongStrId: string list -> M.longstrid
-    val mk_TyVar: string -> C.tyvar
-    val mk_TyCon: string -> C.tycon
-    val mk_LongTyCon: string list -> M.longtycon
-    val mk_IntSCon: int -> C.scon
-    val mk_WordSCon: int -> C.scon
-    val mk_StringSCon: string -> C.scon
-    val mk_CharSCon: int -> C.scon
-    val mk_RealSCon: string -> C.scon
+    val mk_IdentLab: string -> TopdecGrammar.DecGrammar.lab
+    val mk_IntegerLab: int -> TopdecGrammar.DecGrammar.lab
+    val mk_Id: string -> TopdecGrammar.DecGrammar.id
+    val mk_LongId: string list -> TopdecGrammar.DecGrammar.longid
+    val mk_FunId: string -> TopdecGrammar.funid
+    val mk_StrId: string -> TopdecGrammar.strid
+    val longStrIdOfStrId : TopdecGrammar.strid -> TopdecGrammar.longstrid
+    val mk_SigId: string -> TopdecGrammar.sigid
+    val mk_LongStrId: string list -> TopdecGrammar.longstrid
+    val mk_TyVar: string -> TopdecGrammar.DecGrammar.tyvar
+    val mk_TyCon: string -> TopdecGrammar.DecGrammar.tycon
+    val mk_LongTyCon: string list -> TopdecGrammar.longtycon
+    val mk_IntSCon: int -> TopdecGrammar.DecGrammar.scon
+    val mk_WordSCon: int -> TopdecGrammar.DecGrammar.scon
+    val mk_StringSCon: string -> TopdecGrammar.DecGrammar.scon
+    val mk_CharSCon: int -> TopdecGrammar.DecGrammar.scon
+    val mk_RealSCon: string -> TopdecGrammar.DecGrammar.scon
     val impossible : string -> 'a
     val span_info : info * info -> info
     val PP : pos -> pos -> info	(* `PP L R' generates position
@@ -86,7 +83,7 @@ signature GRAMMAR_UTILS =
                                     ('c -> info) -> 'c option ->
                                     ('d -> info) -> 'd option -> pos
     val right : info -> pos
-    val wi_Convert: ('a -> 'b) -> 'a C.WithInfo list -> 'b C.WithInfo list
+    val wi_Convert: ('a -> 'b) -> 'a TopdecGrammar.DecGrammar.WithInfo list -> 'b TopdecGrammar.DecGrammar.WithInfo list
 					(* Conversion of "with-info" tagged
 					   lists (of identifiers etc.) *)
     val reportPosition_from_info : info -> Report

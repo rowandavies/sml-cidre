@@ -1,7 +1,7 @@
 (*$INFIX_BASIS*)
 signature INFIX_BASIS =
   sig
-    type id
+    eqtype id
     type Basis
 
     val emptyB: Basis

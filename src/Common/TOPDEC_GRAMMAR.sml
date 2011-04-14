@@ -9,11 +9,10 @@ signature TOPDEC_GRAMMAR =
 
     (* Various kinds of module identifiers. *)
 
-    structure StrId : STRID sharing StrId = DecGrammar.StrId
     structure FunId : FUNID
     structure SigId : SIGID
-    type strid = StrId.strid
-    type longstrid = StrId.longstrid 
+    type strid = DecGrammar.StrId.strid
+    type longstrid = DecGrammar.StrId.longstrid 
     type funid = FunId.funid
     type sigid = SigId.sigid
 
@@ -23,7 +22,7 @@ signature TOPDEC_GRAMMAR =
     type longid = DecGrammar.longid
     type tyvar = DecGrammar.tyvar
     type ty = DecGrammar.ty
-    eqtype tycon sharing type tycon = DecGrammar.tycon
+    type tycon = DecGrammar.tycon
     type longtycon = DecGrammar.longtycon
 
     (* info place-holder. *)
@@ -146,13 +145,12 @@ signature TOPDEC_GRAMMAR =
     val map_strexp_info : (info -> info) -> strexp -> strexp
       (* does not proceed into sigexp's *)
 
-    type StringTree sharing type StringTree = DecGrammar.StringTree
 
-    val layoutStrexp  : strexp  -> StringTree
-    and layoutStrdec  : strdec  -> StringTree
-    and layoutStrbind : strbind -> StringTree
-    and layoutSigexp  : sigexp  -> StringTree
-    and layoutSpec    : spec    -> StringTree
-    and layoutFunbind : funbind -> StringTree
-    and layoutTopdec  : topdec  -> StringTree
+    val layoutStrexp  : strexp  -> StringTree.t
+    and layoutStrdec  : strdec  -> StringTree.t
+    and layoutStrbind : strbind -> StringTree.t
+    and layoutSigexp  : sigexp  -> StringTree.t
+    and layoutSpec    : spec    -> StringTree.t
+    and layoutFunbind : funbind -> StringTree.t
+    and layoutTopdec  : topdec  -> StringTree.t
   end;

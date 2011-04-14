@@ -9,16 +9,17 @@ sig
   structure SCon  : SCON  (* special constants *)                            
   structure Ident : IDENT (* identifiers - variables or constructors *)      
   structure TyVar : TYVAR (* type variables *)                               
-  structure TyCon : TYCON (* type constructors *)                            
+  structure TyCon : TYCON (* type constructors *)     
+     where type strid = Ident.strid                       
   structure StrId : STRID (* structure identifiers *)
-                 sharing type StrId.strid = Ident.strid = TyCon.strid
+     where type strid = Ident.strid
 
   type scon = SCon.scon
   type lab = Lab.lab
   type id = Ident.id
   type longid = Ident.longid
   type tyvar = TyVar.SyntaxTyVar (*very confusing*)
-  eqtype tycon sharing type tycon = TyCon.tycon
+  type tycon = TyCon.tycon
   type longtycon = TyCon.longtycon
   type longstrid = StrId.longstrid
 

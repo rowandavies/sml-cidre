@@ -5,18 +5,17 @@
 functor RefInfo (structure ElabInfo : ELAB_INFO
 		 structure REnv : REFINED_ENVIRONMENTS
                  structure RefObject : REFOBJECT
-                      sharing type RefObject.SortName = REnv.SortName
-                      sharing type RefObject.SortFcn = REnv.SortFcn
-                      sharing type RefObject.SortScheme = REnv.SortScheme
-                      sharing type RefObject.TypeFcn = REnv.TypeFcn
-                      sharing type RefObject.TyName = REnv.TyName
-                      sharing type RefObject.Type = REnv.Type
-                      sharing type RefObject.SortVar = REnv.SortVar
-                      sharing type RefObject.Sort = REnv.Sort
+                      where type SortName = REnv.SortName
+                      where type SortFcn = REnv.SortFcn
+                      where type SortScheme = REnv.SortScheme
+                      where type TypeFcn = REnv.TypeFcn
+                      where type TyName = REnv.TyName
+                      where type Type = REnv.Type
+                      where type SortVar = REnv.SortVar
+                      where type Sort = REnv.Sort
                  structure FinMapEq : FINMAPEQ
                  structure Comp : COMP
                  structure PP : PRETTYPRINT
-		    sharing type PP.StringTree = ElabInfo.StringTree
  )  : REF_INFO =
   struct
     structure ElabInfo       = ElabInfo
@@ -29,7 +28,6 @@ functor RefInfo (structure ElabInfo : ELAB_INFO
     type Env = REnv.Env
     type VarEnv = REnv.VarEnv
     type Sort = REnv.Sort
-    type StringTree           = PP.StringTree
     type 'a Memo = 'a Comp.Memo
 
     type ('a, 'b) MemoTable = ('a, 'b Memo ref) FinMapEq.map ref  (* Fix later *)
@@ -95,21 +93,21 @@ functor RefInfo (structure ElabInfo : ELAB_INFO
 
 
     fun layoutWrapper ElabInfo childNodes = 
-      PP.NODE
+      StringTree.NODE
 	    {start="RefInfo{",
 	     finish="}",
 	     indent=3,
              children = (ElabInfo.layout ElabInfo)::childNodes,
-             childsep=PP.RIGHT "; "}
+             childsep=StringTree.RIGHT "; "}
 
-    fun layout (ei, ref EMPTY) = layoutWrapper ei [PP.LEAF "EMPTY"]
+    fun layout (ei, ref EMPTY) = layoutWrapper ei [StringTree.LEAF "EMPTY"]
       | layout (ei, ref (INFERABLE_EXP memoTable)) = 
           layoutWrapper ei
-            [PP.LEAF "INFERABLE_EXP", PP.LEAF "<TyNameEnv>" , PP.LEAF "<MemoTable>"]
+            [StringTree.LEAF "INFERABLE_EXP", StringTree.LEAF "<TyNameEnv>" , StringTree.LEAF "<MemoTable>"]
       | layout (ei, ref (CHECKABLE_EXP memoTable)) = 
           layoutWrapper ei
-            [PP.LEAF "CHECKABLE_EXP", PP.LEAF "<TyNameEnv>" , PP.LEAF "<MemoTable>"]
+            [StringTree.LEAF "CHECKABLE_EXP", StringTree.LEAF "<TyNameEnv>" , StringTree.LEAF "<MemoTable>"]
       | layout (ei, ref (DEC_NODEPEND _ )) = 
           layoutWrapper ei
-            [PP.LEAF "DEC_NODEPEND", PP.LEAF "<TyNameEnv>" , PP.LEAF "<REnv>", PP.LEAF "<errs>"]
+            [StringTree.LEAF "DEC_NODEPEND", StringTree.LEAF "<TyNameEnv>" , StringTree.LEAF "<REnv>", StringTree.LEAF "<errs>"]
   end;

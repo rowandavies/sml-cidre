@@ -4,7 +4,6 @@ functor TopdecGrammar(structure FunId: FUNID
 		      structure SigId: SIGID
 		      structure DecGrammar : DEC_GRAMMAR
 		      structure PrettyPrint : PRETTYPRINT
-		        sharing type DecGrammar.StringTree = PrettyPrint.StringTree
 			  ) : TOPDEC_GRAMMAR =
   struct
 
@@ -225,10 +224,10 @@ functor TopdecGrammar(structure FunId: FUNID
     end
 
     local
+      open StringTree
       open PrettyPrint
     in
 
-    type StringTree = StringTree
     val INDENT = 3			(* standard indentation level. *)
 
     fun makeList (f: 'a -> 'a option) (x: 'a) =

@@ -1,13 +1,11 @@
 
 functor ElabInfo (structure ParseInfo : PARSE_INFO
 		  structure ErrorInfo : ERROR_INFO
-		    sharing type ErrorInfo.Report = ParseInfo.SourceInfo.Report
-                    sharing type ErrorInfo.RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
+		    where type RefineErrorInfo.Report = ParseInfo.SourceInfo.Report
+            where type RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
 		  structure TypeInfo : TYPE_INFO
 		  structure OverloadingInfo : OVERLOADING_INFO
 		  structure PrettyPrint : PRETTYPRINT
-		    sharing type ParseInfo.StringTree = TypeInfo.StringTree
-			            = OverloadingInfo.StringTree = PrettyPrint.StringTree 
 		  structure Crash : CRASH
 		    ) : ELAB_INFO =
   struct
@@ -22,7 +20,6 @@ functor ElabInfo (structure ParseInfo : PARSE_INFO
     type ErrorInfo            = ErrorInfo.ErrorInfo
     type TypeInfo             = TypeInfo.TypeInfo
     type OverloadingInfo      = OverloadingInfo.OverloadingInfo
-    type StringTree           = PrettyPrint.StringTree
     structure SourceInfo      = ParseInfo.SourceInfo
 
     (*the type provided by this module:*)
@@ -95,18 +92,18 @@ functor ElabInfo (structure ParseInfo : PARSE_INFO
     end (*local*)
 
     fun layout (ELAB_INFO {ParseInfo, ErrorInfo, TypeInfo, OverloadingInfo}) =
-          PrettyPrint.NODE
+          StringTree.NODE
 	    {start="ElabInfo{",
 	     finish="}",
 	     indent=3,
 	     children=
 	       [ParseInfo.layout ParseInfo,
 		PrettyPrint.layout_opt
-		  (fn _ => PrettyPrint.LEAF "<ErrorInfo>") ErrorInfo,
+		  (fn _ => StringTree.LEAF "<ErrorInfo>") ErrorInfo,
 		  (*TODO 28/02/1997 00:57. tho.  there oughtabe a
 		   layout function in module ErrorInfo*)
 		PrettyPrint.layout_opt TypeInfo.layout TypeInfo,
 		PrettyPrint.layout_opt OverloadingInfo.layout
 		  OverloadingInfo],
-	     childsep=PrettyPrint.RIGHT "; "}
+	     childsep=StringTree.RIGHT "; "}
   end;

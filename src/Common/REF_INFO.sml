@@ -10,7 +10,6 @@ signature REF_INFO =
     type Env = REnv.Env
     type VarEnv = REnv.VarEnv
     type Sort = REnv.Sort
-    type StringTree
     type 'a Memo = 'a Comp.Memo
 
     (* Make a new structure for MemoTable? *)
@@ -35,7 +34,7 @@ signature REF_INFO =
     val to_ElabInfo : RefInfo -> ElabInfo.ElabInfo
     val to_RefDecMemo : RefInfo -> RefDecMemo ref
 
-    val layout : RefInfo -> StringTree
+    val layout : RefInfo -> StringTree.t
 
   end
 

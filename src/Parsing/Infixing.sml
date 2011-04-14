@@ -1,19 +1,16 @@
 
-functor Infixing(structure InfixBasis: INFIX_BASIS
+functor Infixing(structure Report: REPORT
+                 structure InfixBasis: INFIX_BASIS
+                   where type Report = Report.Report
                  structure GrammarUtils: GRAMMAR_UTILS
-                   sharing type GrammarUtils.TopdecGrammar.DecGrammar.id = InfixBasis.id
-
-                 structure Report: REPORT
-                 sharing type InfixBasis.Report
-                   = GrammarUtils.Report 
-                   = Report.Report 
+                   where type Report = Report.Report
+                   where type TopdecGrammar.DecGrammar.Ident.id = InfixBasis.id
 
                  structure ParseInfo : PARSE_INFO
-                   sharing type ParseInfo.ParseInfo = GrammarUtils.TopdecGrammar.info
-                   sharing type ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
+                   where type ParseInfo = GrammarUtils.TopdecGrammar.info
+                   where type DFInfo.InfixBasis = InfixBasis.Basis
 
                  structure PP: PRETTYPRINT
-                   sharing type GrammarUtils.TopdecGrammar.DecGrammar.StringTree = PP.StringTree
                    sharing type PP.Report = Report.Report
 
                  structure Crash: CRASH

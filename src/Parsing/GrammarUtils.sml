@@ -1,18 +1,14 @@
 
 functor GrammarUtils (structure TopdecGrammar : TOPDEC_GRAMMAR
-		      structure LexBasics : LEX_BASICS
-		      structure ParseInfo : PARSE_INFO
-		      sharing type ParseInfo.SourceInfo.pos = LexBasics.pos
-		      sharing type ParseInfo.ParseInfo = TopdecGrammar.info			
 		      structure Report : REPORT 
-		      sharing type LexBasics.Report
-			         = Report.Report
-			         = ParseInfo.SourceInfo.Report
+		      structure LexBasics : LEX_BASICS
+              where type Report = Report.Report
+		      structure ParseInfo : PARSE_INFO
+              where type SourceInfo.Report = Report.Report
+		      where type SourceInfo.pos = LexBasics.pos
+		      where type ParseInfo = TopdecGrammar.info			
 		      structure PrettyPrint : PRETTYPRINT
-		      sharing type PrettyPrint.StringTree
-			= TopdecGrammar.StringTree
-			= LexBasics.StringTree
-		      sharing type PrettyPrint.Report = Report.Report
+		      where type Report = Report.Report
 		      structure Crash : CRASH
 			) : GRAMMAR_UTILS =
   struct
