@@ -7,12 +7,9 @@ functor TypeInfo (structure Crash: CRASH
 		  structure PP: PRETTYPRINT
 		  structure OpacityEnv : OPACITY_ENV
 		  structure StatObject : STATOBJECT
-		    sharing type PP.StringTree = StatObject.StringTree
 		  structure Environments : ENVIRONMENTS
-		    sharing type Environments.StringTree = PP.StringTree = StatObject.TyName.StringTree
-		    sharing type Environments.realisation = StatObject.realisation
+		    where type realisation = StatObject.realisation
 		  structure ModuleEnvironments : MODULE_ENVIRONMENTS
-		    sharing type ModuleEnvironments.StringTree = PP.StringTree
 		    ) : TYPE_INFO =
   struct
 
@@ -109,109 +106,108 @@ functor TypeInfo (structure Crash: CRASH
     fun normalise (DELAYED_REALISATION(phi,ti)) = on_TypeInfo'(phi, ti)
       | normalise ti = ti 
 
-    type StringTree = PP.StringTree
     fun layout_tyvars tyvars = 
-      PP.NODE{start="[",finish="]",indent=0,childsep=PP.RIGHT",",
+      StringTree.NODE{start="[",finish="]",indent=0,childsep=StringTree.RIGHT",",
 	      children=map layoutTyVar tyvars}
 
     fun layout_list (s, lay_elem) elems = 
-      PP.NODE{start=s ^ " = [",finish="]",indent=0,childsep=PP.RIGHT",",
+      StringTree.NODE{start=s ^ " = [",finish="]",indent=0,childsep=StringTree.RIGHT",",
 	      children=map lay_elem elems}
 
-    val layout_strids = layout_list ("strids", PP.LEAF o StrId.pr_StrId)
-    val layout_tycons = layout_list ("tycons", PP.LEAF o TyCon.pr_TyCon)
-    val layout_ids = layout_list ("ids", PP.LEAF o Ident.pr_id)
+    val layout_strids = layout_list ("strids", StringTree.LEAF o StrId.pr_StrId)
+    val layout_tycons = layout_list ("tycons", StringTree.LEAF o TyCon.pr_TyCon)
+    val layout_ids = layout_list ("ids", StringTree.LEAF o Ident.pr_id)
 
     fun layout info =
       case info
 	of LAB_INFO{index} => 
-	  PP.LEAF ("LAB_INFO{index=" ^ Int.toString index ^ "}")
+	  StringTree.LEAF ("LAB_INFO{index=" ^ Int.toString index ^ "}")
 
          | RECORD_ATPAT_INFO {Type} =>
-	     PP.NODE{start="RECORD_ATPAT_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="RECORD_ATPAT_INFO(",finish=")",indent=2,
 		  children=[layoutType Type],
-		  childsep = PP.NOSEP}
+		  childsep = StringTree.NOSEP}
          | VAR_INFO {instances} => 
-	     PP.NODE{start="VAR_INFO(", finish=")",indent=2,
+	     StringTree.NODE{start="VAR_INFO(", finish=")",indent=2,
 		     children=map layoutType instances,
-		     childsep = PP.RIGHT ","}
+		     childsep = StringTree.RIGHT ","}
 	 | VAR_PAT_INFO {tyvars, Type} =>
-	     PP.NODE{start="VAR_PAT_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="VAR_PAT_INFO(",finish=")",indent=2,
 		     children=[layout_tyvars tyvars,
 			       layoutType Type],
-		     childsep=PP.RIGHT ","}
+		     childsep=StringTree.RIGHT ","}
 	 | CON_INFO{numCons, index, longid, instances} =>
-	     PP.NODE{start="CON_INFO(",  finish=")", indent=2,
-		     children=[PP.LEAF("numCons: " ^ Int.toString numCons),
-			       PP.LEAF("index: " ^ Int.toString index),
-			       PP.NODE{start="instances: ",finish="",
+	     StringTree.NODE{start="CON_INFO(",  finish=")", indent=2,
+		     children=[StringTree.LEAF("numCons: " ^ Int.toString numCons),
+			       StringTree.LEAF("index: " ^ Int.toString index),
+			       StringTree.NODE{start="instances: ",finish="",
 				       indent=4,
 				       children=map layoutType instances,
-				       childsep = PP.RIGHT ","},
-			       PP.LEAF("longid: " ^ Ident.pr_longid longid)
+				       childsep = StringTree.RIGHT ","},
+			       StringTree.LEAF("longid: " ^ Ident.pr_longid longid)
 			      ],
-		     childsep=PP.RIGHT ", "
+		     childsep=StringTree.RIGHT ", "
 		    }
 
          | EXCON_INFO{Type,longid} =>
-	     PP.NODE{start="EXCON_INFO(",finish=")",indent=2,
-		     children=[PP.NODE{start="Type: ",finish="",
+	     StringTree.NODE{start="EXCON_INFO(",finish=")",indent=2,
+		     children=[StringTree.NODE{start="Type: ",finish="",
 				       indent=4,
 				       children=[layoutType Type],
-				       childsep = PP.NOSEP},
-			       PP.LEAF("longid: " ^ Ident.pr_longid longid)],
-		       childsep = PP.NOSEP}
+				       childsep = StringTree.NOSEP},
+			       StringTree.LEAF("longid: " ^ Ident.pr_longid longid)],
+		       childsep = StringTree.NOSEP}
 	 | EXBIND_INFO{TypeOpt} =>
-	     PP.NODE{start="EXBIND_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="EXBIND_INFO(",finish=")",indent=2,
 		     children=[case TypeOpt
-				 of NONE => PP.LEAF "NONE"
+				 of NONE => StringTree.LEAF "NONE"
 				  | SOME tau => layoutType tau],
-		     childsep = PP.NOSEP}
+		     childsep = StringTree.NOSEP}
 	 | TYENV_INFO TE =>
-	     PP.NODE{start="TYENV_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="TYENV_INFO(",finish=")",indent=2,
 		     children=[layoutTyEnv TE],
-		     childsep = PP.NOSEP}
+		     childsep = StringTree.NOSEP}
 	 | ABSTYPE_INFO (TE,phi) =>
-	     PP.NODE{start="ABSTYPE_INFO(",finish=")",indent=2,
-		     children=[layoutTyEnv TE, PP.LEAF "phi"],
-		     childsep = PP.RIGHT ", "}
+	     StringTree.NODE{start="ABSTYPE_INFO(",finish=")",indent=2,
+		     children=[layoutTyEnv TE, StringTree.LEAF "phi"],
+		     childsep = StringTree.RIGHT ", "}
 	 | DATBIND_INFO{TyName} => 
-	     PP.NODE{start="DATBIND_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="DATBIND_INFO(",finish=")",indent=2,
 		     children=[TyName.layout TyName],
-		     childsep = PP.NOSEP}
+		     childsep = StringTree.NOSEP}
 	 | EXP_INFO{Type} => 
-	     PP.NODE{start="EXP_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="EXP_INFO(",finish=")",indent=2,
 		     children=[layoutType Type],
-		     childsep = PP.NOSEP}
+		     childsep = StringTree.NOSEP}
 	 | MATCH_INFO{Type} => 
-	     PP.NODE{start="MATCH_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="MATCH_INFO(",finish=")",indent=2,
 		     children=[layoutType Type],
-		     childsep = PP.NOSEP}
+		     childsep = StringTree.NOSEP}
 	 | PLAINvalbind_INFO{tyvars, Type, Uenv} =>  (* doesn't print Uenv *)
-	     PP.NODE{start="PLAINvalbind_INFO(",finish=")",indent=2,
+	     StringTree.NODE{start="PLAINvalbind_INFO(",finish=")",indent=2,
 		     children=[layout_tyvars tyvars,
 			       layoutType Type],
-		     childsep = PP.NOSEP}
-	 | OPEN_INFO (strids,tycons,ids) => PP.NODE{start="OPEN_INFO(",finish=")",indent=2,childsep=PP.RIGHT ", ",
+		     childsep = StringTree.NOSEP}
+	 | OPEN_INFO (strids,tycons,ids) => StringTree.NODE{start="OPEN_INFO(",finish=")",indent=2,childsep=StringTree.RIGHT ", ",
 						    children=[layout_strids strids,
 							      layout_tycons tycons,
 							      layout_ids ids]}
-	 | INCLUDE_INFO (strids,tycons) => PP.NODE{start="INCLUDE_INFO(",finish=")",indent=2,childsep=PP.RIGHT ", ",
+	 | INCLUDE_INFO (strids,tycons) => StringTree.NODE{start="INCLUDE_INFO(",finish=")",indent=2,childsep=StringTree.RIGHT ", ",
 						   children=[layout_strids strids,
 							     layout_tycons tycons]}
-	 | FUNCTOR_APP_INFO {rea_inst,rea_gen,Env} => PP.LEAF "FUNCTOR_APP_INFO{rea_inst,rea_gen,Env}"
-	 | FUNBIND_INFO {argE,elabBref,T,resE,opaq_env_opt} => PP.NODE{start="FUNBIND_INFO(", finish=")",
-								    indent=2,childsep=PP.NOSEP,
+	 | FUNCTOR_APP_INFO {rea_inst,rea_gen,Env} => StringTree.LEAF "FUNCTOR_APP_INFO{rea_inst,rea_gen,Env}"
+	 | FUNBIND_INFO {argE,elabBref,T,resE,opaq_env_opt} => StringTree.NODE{start="FUNBIND_INFO(", finish=")",
+								    indent=2,childsep=StringTree.NOSEP,
 								    children=[layoutEnv argE]}
-	 | TRANS_CONSTRAINT_INFO Env => PP.NODE{start="TRANS_CONSTRAINT_INFO(", finish=")",
-						indent=2,childsep=PP.NOSEP,
+	 | TRANS_CONSTRAINT_INFO Env => StringTree.NODE{start="TRANS_CONSTRAINT_INFO(", finish=")",
+						indent=2,childsep=StringTree.NOSEP,
 						children=[layoutEnv Env]}
-	 | OPAQUE_CONSTRAINT_INFO (Env,phi) => PP.NODE{start="OPAQUE_CONSTRAINT_INFO(", finish=")",
-						indent=2,childsep=PP.RIGHT ", ",
-						children=[layoutEnv Env, PP.LEAF "phi"]}
-	 | SIGBIND_INFO T => PP.NODE{start="SIGBIND_INFO(", finish=")",
-				     indent=2,childsep=PP.NOSEP,
+	 | OPAQUE_CONSTRAINT_INFO (Env,phi) => StringTree.NODE{start="OPAQUE_CONSTRAINT_INFO(", finish=")",
+						indent=2,childsep=StringTree.RIGHT ", ",
+						children=[layoutEnv Env, StringTree.LEAF "phi"]}
+	 | SIGBIND_INFO T => StringTree.NODE{start="SIGBIND_INFO(", finish=")",
+				     indent=2,childsep=StringTree.NOSEP,
 				     children=[TyName.Set.layoutSet {start="", finish="", sep=", "}
-					       (PP.LEAF o TyName.pr_TyName) T]}
+					       (StringTree.LEAF o TyName.pr_TyName) T]}
          | DELAYED_REALISATION(phi,ti) => layout (on_TypeInfo'(phi,ti))
   end;

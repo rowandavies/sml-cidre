@@ -12,7 +12,8 @@ signature MODULE_ENVIRONMENTS =
     type SigEnv 
 
     structure rEnv : REFINED_ENVIRONMENTS 
-    structure TyName : TYNAME 
+    eqtype tycon
+    structure TyName : TYNAME where type tycon = tycon
 
     (*types from other modules:*)
     type TyName = TyName.TyName
@@ -29,7 +30,6 @@ signature MODULE_ENVIRONMENTS =
     eqtype id
     type longid
     type strid (* = rEnv.strid *)
-    type tycon = TyName.tycon
     type longstrid (* = rEnv.longstrid *)
     type longtycon (* = rEnv.longtycon *)
     type sigid

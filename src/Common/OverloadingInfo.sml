@@ -6,7 +6,6 @@ functor OverloadingInfo (structure StatObject : STATOBJECT
   struct
     type RecType = StatObject.RecType
     type TyVar = StatObject.TyVar
-    type StringTree = PrettyPrint.StringTree
 
     datatype OverloadingInfo =
       UNRESOLVED_IDENT of TyVar
@@ -27,6 +26,6 @@ functor OverloadingInfo (structure StatObject : STATOBJECT
       | string RESOLVED_WORD8 =   "RESOLVED_WORD8"
       | string RESOLVED_WORD =   "RESOLVED_WORD"
 
-    val layout = PrettyPrint.LEAF o string
+    val layout = StringTree.LEAF o string
 
   end;

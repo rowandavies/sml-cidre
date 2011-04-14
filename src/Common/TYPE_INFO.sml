@@ -132,6 +132,5 @@ signature TYPE_INFO =
     val on_TypeInfo : realisation * TypeInfo -> TypeInfo  (* delayed realisation *)
     val normalise : TypeInfo -> TypeInfo                  (* force realisations *)
 
-    type StringTree
-    val layout : TypeInfo -> StringTree
+    val layout : TypeInfo -> StringTree.t
   end;

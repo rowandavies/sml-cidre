@@ -5,7 +5,6 @@ signature OVERLOADING_INFO =
   sig
     type TyVar
     type RecType
-    type StringTree
 
     datatype OverloadingInfo =
       UNRESOLVED_IDENT of TyVar
@@ -18,5 +17,5 @@ signature OVERLOADING_INFO =
     | RESOLVED_WORD
 
     val string : OverloadingInfo -> string
-    val layout : OverloadingInfo -> StringTree
+    val layout : OverloadingInfo -> StringTree.t
 end;

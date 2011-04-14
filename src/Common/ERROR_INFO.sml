@@ -16,7 +16,6 @@ signature ERROR_INFO =         (* ErrorInfo is part of the ElabInfo.  See ELAB_I
     type longstrid 
     eqtype funid
     type SigMatchError
-    type StringTree
 
     structure RefineErrorInfo : REFINE_ERROR_INFO (* where type longsortcon = longtycon *)
       sharing type RefineErrorInfo.longsortcon = longtycon

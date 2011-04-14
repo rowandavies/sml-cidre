@@ -20,7 +20,7 @@ signature STATOBJECT =
     (*types from other modules:*)
     eqtype ExplicitTyVar (*the type of type variables explicit in the source*)
     type TyName
-    type tycon 
+    eqtype tycon 
     structure TyName : TYNAME 
        where type TyName = TyName 
        where type tycon = tycon

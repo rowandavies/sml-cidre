@@ -10,8 +10,11 @@ signature MODULE_STATOBJECT =
     type rT and rEnv
 
     (*types from other modules:*)
-    structure TyName : TYNAME
-    type TyName sharing type TyName = TyName.TyName
+    type TyName 
+    eqtype tycon
+    structure TyName : TYNAME 
+       where type TyName = TyName
+       where type tycon = tycon
 
     type TyVar
     type Type
@@ -26,7 +29,6 @@ signature MODULE_STATOBJECT =
     eqtype id
     type strid
     type longstrid
-    type tycon
     type longtycon
 
     datatype SigMatchError =

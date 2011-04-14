@@ -1,33 +1,46 @@
 (* Error information *)
 
-functor ErrorInfo(structure StatObject : STATOBJECT
-		  structure ModuleStatObject : MODULE_STATOBJECT
-		    sharing ModuleStatObject.TyName = StatObject.TyName
-		    sharing type ModuleStatObject.TyVar = StatObject.TyVar
-		    sharing type ModuleStatObject.Type = StatObject.Type
-		    sharing type ModuleStatObject.TypeScheme = StatObject.TypeScheme
-		    sharing type ModuleStatObject.TypeFcn = StatObject.TypeFcn
-                  structure RefObject : REFOBJECT
-                     sharing type RefObject.SortScheme = ModuleStatObject.SortScheme
-                     sharing type RefObject.Sort = ModuleStatObject.Sort
-                  structure RefineErrorInfo : REFINE_ERROR_INFO 
-                  structure Ident: IDENT
-		    sharing type Ident.id = ModuleStatObject.id
-                  structure Lab:   LAB
-                  structure TyCon: TYCON
-		    sharing type TyCon.tycon = ModuleStatObject.tycon 
-		    sharing type TyCon.longtycon = ModuleStatObject.longtycon 
-                                                 = RefineErrorInfo.longsortcon
-                  structure SigId: SIGID
-                  structure StrId: STRID
-		    sharing type StrId.strid = ModuleStatObject.strid
-		    sharing type StrId.longstrid = ModuleStatObject.longstrid
-                  structure FunId: FUNID
-                  structure Report: REPORT
-		  structure PrettyPrint : PRETTYPRINT
-		    sharing type StatObject.StringTree = PrettyPrint.StringTree
-                    sharing type Report.Report = PrettyPrint.Report
-                    sharing type RefineErrorInfo.Report = Report.Report
+functor ErrorInfo(
+
+structure StatObject : STATOBJECT
+
+structure ModuleStatObject : MODULE_STATOBJECT
+where type TyName = StatObject.TyName
+where type tycon = StatObject.tycon
+where type TyVar = StatObject.TyVar
+where type Type = StatObject.Type
+where type TypeScheme = StatObject.TypeScheme
+where type TypeFcn = StatObject.TypeFcn
+
+
+structure RefObject : REFOBJECT
+where type SortScheme = ModuleStatObject.SortScheme
+where type Sort = ModuleStatObject.Sort
+
+structure RefineErrorInfo : REFINE_ERROR_INFO 
+where type longsortcon = ModuleStatObject.longtycon
+
+structure Ident: IDENT
+where type id = ModuleStatObject.id
+
+structure Lab:   LAB
+structure TyCon: TYCON
+where type tycon = ModuleStatObject.tycon
+where type longtycon = ModuleStatObject.longtycon 
+
+structure SigId: SIGID
+
+structure StrId: STRID
+where type strid = ModuleStatObject.strid
+where type longstrid = ModuleStatObject.longstrid
+
+structure FunId: FUNID
+
+structure Report: REPORT
+where type Report = RefineErrorInfo.Report 
+
+structure PrettyPrint : PRETTYPRINT
+where type Report = Report.Report
 		    ) : ERROR_INFO (* with RefineErrorInfo = RefineErrorInfo *)  =
   struct
 
@@ -56,7 +69,6 @@ functor ErrorInfo(structure StatObject : STATOBJECT
     type strid             = StrId.strid
     type longstrid         = StrId.longstrid
     type funid             = FunId.funid
-    type StringTree        = PrettyPrint.StringTree
 
     structure RefineErrorInfo = RefineErrorInfo
 

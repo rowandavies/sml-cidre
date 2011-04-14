@@ -1,59 +1,62 @@
 
 functor ModuleEnvironments(
-	  structure StrId  : STRID
-	  structure SigId  : SIGID
-	  structure FunId  : FUNID
-	  structure TyCon  : TYCON where type strid = StrId.strid
-	  structure Ident  : IDENT
+       structure StrId  : STRID
+       structure SigId  : SIGID
+       structure FunId  : FUNID
+       structure TyCon  : TYCON where type strid = StrId.strid
+       structure Ident  : IDENT
 
-	  structure StatObject : STATOBJECT
+structure StatObject : STATOBJECT 
+where type tycon = TyCon.tycon
 (*            sharing type StatObject.TyName.tycon = TyCon.tycon *)
 
-	  structure Environments : ENVIRONMENTS 
-	    where type TyName = StatObject.TyName
-	    where type Environments.longstrid = StrId.longstrid
-	    where type strid      = TyCon.strid
-	    where type tycon      = TyCon.tycon
-	    where type longtycon      = TyCon.longtycon
-	    where type TypeScheme = StatObject.TypeScheme
-	    where type TyVar = StatObject.TyVar
-	    where type Type = StatObject.Type
-	    where type realisation = StatObject.realisation
-	    where type id = Ident.id
-	    where type longid = Ident.longid
+structure Environments : ENVIRONMENTS 
+where type TyName = StatObject.TyName
+where type TyName.Set.Set = StatObject.TyName.Set.Set
+where type longstrid = StrId.longstrid
+where type strid      = TyCon.strid
+where type tycon      = TyCon.tycon
+where type longtycon      = TyCon.longtycon
+where type TypeScheme = StatObject.TypeScheme
+where type TyVar = StatObject.TyVar
+where type Type = StatObject.Type
+where type realisation = StatObject.realisation
+where type id = Ident.id
+where type longid = Ident.longid
+where type TypeFcn = StatObject.TypeFcn
 
-          structure RefObject : REFOBJECT
+structure RefObject : REFOBJECT
 
-          structure RefinedEnvironments : REFINED_ENVIRONMENTS
-            sharing type RefinedEnvironments.id = Ident.id
-            sharing type RefinedEnvironments.SortVar = RefObject.SortVar
-            sharing type RefinedEnvironments.SortName    = RefObject.SortName
-            sharing type RefinedEnvironments.strid = StrId.strid
-            sharing type RefinedEnvironments.longstrid = StrId.longstrid
+structure RefinedEnvironments : REFINED_ENVIRONMENTS
+where type id = Ident.id
+where type SortVar = RefObject.SortVar
+where type SortName    = RefObject.SortName
+where type strid = StrId.strid
+where type longstrid = StrId.longstrid
 (*            sharing type RefinedEnvironments.longtycon = TyCon.longtycon *)
 
+structure ModuleStatObject : MODULE_STATOBJECT
+where type TyName = StatObject.TyName
+where type TyName.Set.Set = StatObject.TyName.Set.Set
+where type id = Environments.id
+where type Env = Environments.Env
+where type realisation = StatObject.realisation
+where type TyVar = StatObject.TyVar
 
-	  structure ModuleStatObject : MODULE_STATOBJECT
-	    sharing Environments.TyName = ModuleStatObject.TyName
-	    sharing type Environments.TypeFcn = StatObject.TypeFcn
-	    sharing type ModuleStatObject.id = Environments.id
-	    sharing type ModuleStatObject.Env = Environments.Env
-	    sharing type ModuleStatObject.realisation = StatObject.realisation
-	    sharing type ModuleStatObject.TyVar = StatObject.TyVar
+structure PP : PRETTYPRINT
 
-	  structure PP : PRETTYPRINT
+structure Report: REPORT
+where type Report = PP.Report
 
-	  structure Report: REPORT
-            sharing type Report.Report = PP.Report
-	  structure Flags : FLAGS
+structure Flags : FLAGS
 
-	  structure FinMap : FINMAP
-	    sharing type FinMap.Report = Report.Report
+structure FinMap : FINMAP
+where type Report = Report.Report
 
-	  structure FinMapEq : FINMAPEQ
-	    sharing type FinMapEq.Report = Report.Report
+structure FinMapEq : FINMAPEQ
+where type Report = Report.Report
 
-	  structure Crash : CRASH
+structure Crash : CRASH
           ) : MODULE_ENVIRONMENTS =
   struct
 
@@ -133,15 +136,15 @@ functor ModuleEnvironments(
 	          concat ["signature ", SigId.pr_SigId sigid, " : "]
 
 	    fun layoutPair (sigid, Sig) = 
-	          PP.NODE {start=format_id sigid, finish="", indent=3,
+	          StringTree.NODE {start=format_id sigid, finish="", indent=3,
 			   children=[Sigma.layout Sig],
-			   childsep=PP.NOSEP}
+			   childsep=StringTree.NOSEP}
 	    in 
 	      (case l of
-		[] => PP.LEAF ""		(* No signatures => no printout *)
+		[] => StringTree.LEAF ""		(* No signatures => no printout *)
 	      | _ =>
-		  PP.NODE {start="", finish="", indent=0, 
-			   children=map layoutPair l, childsep=PP.RIGHT " "})
+		  StringTree.NODE {start="", finish="", indent=0, 
+			   children=map layoutPair l, childsep=StringTree.RIGHT " "})
 	    end
       fun report (report_sigid_Sigma : sigid * Sig -> Report, SIGENV m) =
 	    FinMap.reportMapSORTED (SigId.<) report_sigid_Sigma m
@@ -185,15 +188,15 @@ functor ModuleEnvironments(
 	    let val l = FinMap.Fold op :: nil m
 	    fun format_id funid = concat ["functor ", FunId.pr_FunId funid, " : "]
 	    fun layoutPair (funid, (_,FunSig)) = 
-	          PP.NODE {start=format_id funid, finish="", indent=3,
+	          StringTree.NODE {start=format_id funid, finish="", indent=3,
 			   children=[Phi.layout FunSig],
-			   childsep=PP.NOSEP}
+			   childsep=StringTree.NOSEP}
 	    in
 	      case l of
-		[] => PP.LEAF ""		(* No functors => no printout *)
+		[] => StringTree.LEAF ""		(* No functors => no printout *)
 	      | _ =>
-		  PP.NODE {start="", finish="", indent=0, 
-			   children=map layoutPair l, childsep=PP.RIGHT " "}
+		  StringTree.NODE {start="", finish="", indent=0, 
+			   children=map layoutPair l, childsep=StringTree.RIGHT " "}
 	    end
       fun report (report_funid_Phi : funid * FunSig -> Report, FUNENV m) =
 	let fun report_funid_Phi' (funid,(_,FunSig)) = report_funid_Phi(funid,FunSig)
@@ -233,9 +236,9 @@ functor ModuleEnvironments(
       fun to_C (BASIS {F, G, E, rC}) = C.from_E E
       fun to_rC (BASIS {F, G, E, rC}) = rC
       fun layout (BASIS {F, G, E, rC}) =
-	    PP.NODE {start="", finish="", indent = 0,
+	    StringTree.NODE {start="", finish="", indent = 0,
 		     children = [F.layout F, G.layout G, E.layout E, rEnv.layoutC rC],
-		     childsep = PP.RIGHT " "}
+		     childsep = StringTree.RIGHT " "}
 
   (*E component*)
       fun plus_E (BASIS {F, G, E, rC}, E') = BASIS {F=F, G=G, E=E.plus (E, E'), rC=rC}
