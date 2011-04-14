@@ -202,15 +202,13 @@ sig
   val is_'true'_'nil'_etc : id -> bool
   val is_'it' : id -> bool
 
-  type StringTree
-
-  val layoutTyvarseq : tyvar list -> StringTree option
-  val layoutTy :       ty	  -> StringTree
-  val layoutAtpat :    atpat	  -> StringTree
-  val layoutPat :      pat	  -> StringTree
-  val layoutExp :      exp	  -> StringTree
-  val layoutAtexp :    atexp	  -> StringTree
-  val layoutDec :      dec	  -> StringTree
-  val layout_datatype_replication : info * tycon * longtycon -> StringTree
-  val layoutMatch :    match      -> StringTree
+  val layoutTyvarseq : tyvar list -> StringTree.t option
+  val layoutTy :       ty	  -> StringTree.t
+  val layoutAtpat :    atpat	  -> StringTree.t
+  val layoutPat :      pat	  -> StringTree.t
+  val layoutExp :      exp	  -> StringTree.t
+  val layoutAtexp :    atexp	  -> StringTree.t
+  val layoutDec :      dec	  -> StringTree.t
+  val layout_datatype_replication : info * tycon * longtycon -> StringTree.t
+  val layoutMatch :    match      -> StringTree.t
 end;

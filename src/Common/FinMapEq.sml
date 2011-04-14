@@ -75,25 +75,25 @@ functor FinMapEq(structure Report: REPORT
     fun reportMapSORTED lt f m =
       reportMap f (ListSort.sort (fn (a, _) => fn (b, _) => lt(a, b)) m)
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
 
     fun layoutMapSep {start, eq, sep, finish} layoutDom layoutRan m =
       let
-	fun doit(x, y) = PP.NODE{start="", finish="", indent=0,
-				 childsep=PP.RIGHT eq,
+	fun doit(x, y) = StringTree.NODE{start="", finish="", indent=0,
+				 childsep=StringTree.RIGHT eq,
 				 children=[layoutDom x, layoutRan y]
 				}
       in
-	PP.NODE{start=start, finish=finish, indent=0,
+	StringTree.NODE{start=start, finish=finish, indent=0,
 		childsep=sep, children=map doit m
 	       }
       end
 
     fun layoutMap {start, eq, sep, finish} layoutDom layoutRan m =
-        layoutMapSep {start=start, eq=eq, sep=PP.RIGHT sep, finish=finish} 
+        layoutMapSep {start=start, eq=eq, sep=StringTree.RIGHT sep, finish=finish} 
 	             layoutDom layoutRan m 
 
     fun layoutMapLeftSep {start, eq, sep, finish} layoutDom layoutRan m =
-        layoutMapSep {start=start, eq=eq, sep=PP.LEFT sep, finish=finish} 
+        layoutMapSep {start=start, eq=eq, sep=StringTree.LEFT sep, finish=finish} 
 	             layoutDom layoutRan m 
   end;

@@ -203,11 +203,9 @@ functor QuasiSet(structure IntFinMap : MONO_FINMAP where type dom = int
       in size s1 = size s2 andalso f s1
       end
 
-
-    type StringTree = PP.StringTree
       
     fun layoutSet {start, sep, finish} pp_elt m =
-      PP.NODE{start=start,finish=finish,indent=1,childsep=PP.RIGHT sep,
+      StringTree.NODE{start=start,finish=finish,indent=1,childsep=StringTree.RIGHT sep,
 	      children = List.map pp_elt (list m)}
 
   end

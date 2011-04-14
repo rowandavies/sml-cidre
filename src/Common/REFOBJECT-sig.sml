@@ -288,13 +288,11 @@ signature REFOBJECT =
     PrettyPrinter hooks
     ********)
 
-    type StringTree
-
-    val layoutSortName: SortName -> StringTree
-    val layoutSortVar: SortVar -> StringTree
-    val layoutSort : Sort -> StringTree
-    val layoutSortScheme : SortScheme -> StringTree
-    val layoutSortFcn : SortFcn -> StringTree
+    val layoutSortName: SortName -> StringTree.t
+    val layoutSortVar: SortVar -> StringTree.t
+    val layoutSort : Sort -> StringTree.t
+    val layoutSortScheme : SortScheme -> StringTree.t
+    val layoutSortFcn : SortFcn -> StringTree.t
 
     type realisation 
      and trealisation (* realisations for tynames (see StatObject) *)
@@ -323,7 +321,7 @@ signature REFOBJECT =
 	val dom                     : realisation -> SortName.Set.Set
         val plus                    : realisation -> realisation -> realisation
 (*	val eq                      : realisation * realisation -> bool *)
-	val layout                  : realisation -> StringTree
+	val layout                  : realisation -> StringTree.t
 
       end (*Realisation*)
 

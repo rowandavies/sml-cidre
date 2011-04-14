@@ -34,7 +34,6 @@ signature MODULE_ENVIRONMENTS =
     type longtycon (* = rEnv.longtycon *)
     type sigid
     type funid
-    type StringTree = TyName.Set.StringTree
     type Report
 
 (*    structure TyName : TYNAME 
@@ -62,7 +61,7 @@ signature MODULE_ENVIRONMENTS =
 	val lookup           : SigEnv -> sigid -> Sig option
 	val tynames          : SigEnv -> TyName.Set.Set
 	val dom              : SigEnv -> sigid EqSet.Set
-	val layout           : SigEnv -> StringTree
+	val layout           : SigEnv -> StringTree.t
 	val report           : (sigid * Sig -> Report) * SigEnv -> Report
       end
 
@@ -80,7 +79,7 @@ signature MODULE_ENVIRONMENTS =
 	val tyvars           : FunEnv -> TyVar list
 	val tyvars'          : FunEnv -> (id * TyVar list) list
 	val dom              : FunEnv -> funid EqSet.Set
-	val layout           : FunEnv -> StringTree
+	val layout           : FunEnv -> StringTree.t
 	val report           : (funid * FunSig -> Report) * FunEnv -> Report
       end
 
@@ -98,7 +97,7 @@ signature MODULE_ENVIRONMENTS =
 	val tynames          : Basis -> TyName.Set.Set
 	val to_C             : Basis -> Context
         val to_rC            : Basis -> rContext
-	val layout           : Basis -> StringTree
+	val layout           : Basis -> StringTree.t
 	val tyvars'          : Basis -> (id * TyVar list) list
 
                      	(*E component*)

@@ -134,17 +134,17 @@ functor FinMap(structure Report: REPORT
       Report.flatten
       (map f (ListSort.sort (fn (a,_) => fn (b,_) => lt(a,b)) (list m)))
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
 
     fun layoutMap {start, eq, sep, finish} layoutDom layoutRan m =
       let
-	fun doit(x, y) = PP.NODE{start="", finish="", indent=0,
-				 childsep=PP.RIGHT eq,
+	fun doit(x, y) = StringTree.NODE{start="", finish="", indent=0,
+				 childsep=StringTree.RIGHT eq,
 				 children=[layoutDom x, layoutRan y]
 				}
       in
-	PP.NODE{start=start, finish=finish, indent=0,
-		childsep=PP.RIGHT sep, children=map doit (list m)
+	StringTree.NODE{start=start, finish=finish, indent=0,
+		childsep=StringTree.RIGHT sep, children=map doit (list m)
 	       }
       end
   end;

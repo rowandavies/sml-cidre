@@ -14,7 +14,6 @@ signature SORTNAME =
 
     type SortName
     type Variance
-    type StringTree
 
     (* Pervasive sort names (Definition p. 74) *)
 
@@ -67,12 +66,10 @@ signature SORTNAME =
     val pr_SortName : (string * SortName) -> string
     val pr_SortName_parens : (string * SortName) -> string    (* Adds parentheses if >1 conjunct *)
     val pr_SortName_noprefix : SortName -> string
-    val layout : SortName -> StringTree
+    val layout : SortName -> StringTree.t
 
-    structure Map : MONO_FINMAP
-    structure Set : KIT_MONO_SET
-    sharing type SortName = Set.elt = Map.dom
-    sharing type StringTree = Set.StringTree = Map.StringTree
+    structure Map : MONO_FINMAP where type dom = SortName
+    structure Set : KIT_MONO_SET where type elt = SortName
 
   end;
 

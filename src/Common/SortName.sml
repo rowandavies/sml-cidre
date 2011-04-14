@@ -17,7 +17,6 @@ functor SortName(structure TyName: TYNAME
     type sortcon = TyCon.tycon
     type Variance = TyVar.Variance
     type TyName = TyName.TyName
-    type StringTree = PP.StringTree
 
     fun debug_print _= () (* Flags.debug_print *)
 
@@ -97,8 +96,8 @@ functor SortName(structure TyName: TYNAME
     fun improve_variance (SORTNAME (_, _, _, varianceRef, _, _, _)) variance2 =
 	varianceRef := join_variance (!varianceRef, variance2)
 
-    fun layout sn = PP.layout_pair (PP.layout_list (fn sn2 => PP.LEAF (pr_SortName ("", sn2))))
-                                   (fn () => PP.LEAF (pr_SortName ("", sn)))
+    fun layout sn = PP.layout_pair (PP.layout_list (fn sn2 => StringTree.LEAF (pr_SortName ("", sn2))))
+                                   (fn () => StringTree.LEAF (pr_SortName ("", sn)))
                                     (sortNameConjuncts sn, ())
 
     fun newConjSortName (sn1, sn2, empty, var_bound: Variance list, tyname: TyName) = 

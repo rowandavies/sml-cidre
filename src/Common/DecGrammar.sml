@@ -534,9 +534,11 @@ struct
   fun is_'it' id = id = Ident.id_IT
 
 
-  local open PrettyPrint
+  local 
+    open PrettyPrint
+    open StringTree
+    type StringTree = StringTree.t
   in
-    type StringTree = StringTree
     type minipage = minipage
 
     fun list_from_opt (SOME x) = [x]

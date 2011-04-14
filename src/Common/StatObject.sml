@@ -16,8 +16,6 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 		    structure FinMapEq : FINMAPEQ
 		    structure PP : PRETTYPRINT
 		      sharing type PP.Report = Report.Report
-		      sharing type SortedFinMap.StringTree = PP.StringTree = IntFinMap.StringTree
-		       = TyName.StringTree
 		    structure Crash : CRASH
 		      ) : STATOBJECT =
   struct
@@ -28,7 +26,7 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
     val print_type_levels = Flags.DEBUG_TYPES     (* for debugging *)
 
     (* added for debugging - Rowan 03jan02 *)
-    fun pr_debug (msg : string, t : PP.StringTree) : unit =
+    fun pr_debug (msg : string, t : StringTree.t) : unit =
         Report.print (Report.decorate (msg, PP.reportStringTree t))
 
     fun die s = Crash.impossible ("StatObject." ^ s)
@@ -39,7 +37,7 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
     fun map_opt f (SOME x) = SOME (f x)
       | map_opt f NONE = NONE
     fun pr s = TextIO.output (TextIO.stdOut, s)
-    val print_node = Report.print o PP.reportStringTree o PP.NODE
+    val print_node = Report.print o PP.reportStringTree o StringTree.NODE
     fun pr_st st = PP.outputTree (print, st, 100)
 
     type tycon = TyCon.tycon
@@ -53,7 +51,6 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
     val THREE = Lab.mk_IntegerLab 3
     type scon = SCon.scon
     type strid = Ident.strid
-    type StringTree = PP.StringTree
 
     (* 
      * New, more efficient representation of types and substitutions on types 
@@ -293,11 +290,11 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 	    end
 
       fun string' pr_ty tv = pretty_string NONAMES pr_ty tv
-      fun layout' pr_ty tv = PP.LEAF(string' pr_ty tv)
+      fun layout' pr_ty tv = StringTree.LEAF(string' pr_ty tv)
 
       val pretty_string = fn a => pretty_string a (fn _ => "(ty_link)")
       val string = pretty_string NONAMES 
-      val layout = PP.LEAF o string
+      val layout = StringTree.LEAF o string
 
       (* Operations on sets of type variables *)
 
@@ -351,18 +348,18 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 		case #TypeDesc ty 
 		  of CONSTYPE ([], tyname) =>  TyName.layout tyname
 		   | CONSTYPE (ty_list, tyname) =>
-		    PP.NODE {start="(", finish=") " ^ TyName.pr_TyName tyname, indent=1,
+		    StringTree.NODE {start="(", finish=") " ^ TyName.pr_TyName tyname, indent=1,
 			     children = map layout ty_list,
-			     childsep = PP.LEFT ", "}
+			     childsep = StringTree.LEFT ", "}
 		   | RECTYPE r => RecType_layout r
 		   | ARROW (ty, ty') =>
-		    PP.NODE {start="(", finish=")", indent=1,
+		    StringTree.NODE {start="(", finish=")", indent=1,
 			     children=[layout ty, layout ty'],
-			     childsep=PP.LEFT " -> "}
+			     childsep=StringTree.LEFT " -> "}
 		   | TYVAR tv => TyVar.layout tv
 	  in
-	    if !print_type_levels then PP.NODE{start="[", finish="]",childsep=PP.RIGHT ", ", indent=1,
-					       children=[st, PP.LEAF(Int.toString (!(#level ty)))]}
+	    if !print_type_levels then StringTree.NODE{start="[", finish="]",childsep=StringTree.RIGHT ", ", indent=1,
+					       children=[st, StringTree.LEAF(Int.toString (!(#level ty)))]}
 	    else st
 	  end
 
@@ -1294,8 +1291,8 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 
 	fun pretty_string tvn (_, tau) = Type.pretty_string tvn tau
 	fun layout (alphas, tau) =
-	  PP.NODE{start="all" ^ TyVar.pr_tyvars alphas ^ ".",finish="",
-		  indent=1,childsep=PP.NOSEP,children=[Type.layout tau]}
+	  StringTree.NODE{start="all" ^ TyVar.pr_tyvars alphas ^ ".",finish="",
+		  indent=1,childsep=StringTree.NOSEP,children=[Type.layout tau]}
 	fun string(alphas, tau) = "all" ^ TyVar.pr_tyvars alphas ^ "." ^ Type.string tau
 	fun debug_string s sigma = (s ^ ": sigma= " ^ string sigma ^ "\n")
 
@@ -1491,8 +1488,8 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 
 	fun layout (TYPEFCN {tyvars, tau}) = 
 	  let val tau = findType tau
-	  in PP.NODE {start="/\\" ^ TyVar.pr_tyvars tyvars ^ ".", finish="", indent=0, 
-		      childsep=PP.NOSEP, children=[Type.layout tau]}
+	  in StringTree.NODE {start="/\\" ^ TyVar.pr_tyvars tyvars ^ ".", finish="", indent=0, 
+		      childsep=StringTree.NOSEP, children=[Type.layout tau]}
 	  end
 
 	fun eq (TYPEFCN {tyvars, tau}, TYPEFCN {tyvars=tyvars', tau=tau'}) = 
@@ -1762,7 +1759,7 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
 
       fun layout_TypeFcn' (TYNAME t) = TyName.layout t
 	| layout_TypeFcn' (EXPANDED theta) = TypeFcn.layout theta
-      fun layout Realisation_Id = PP.LEAF "Id"
+      fun layout Realisation_Id = StringTree.LEAF "Id"
 	| layout (Not_Id m) = TyName.Map.layoutMap {start="{",eq=" -> ", finish="}",sep=", "}
 	TyName.layout layout_TypeFcn' m
 	

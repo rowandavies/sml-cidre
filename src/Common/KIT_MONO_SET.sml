@@ -39,8 +39,6 @@ signature KIT_MONO_SET =
     val apply : (elt -> unit) -> Set -> unit
       (* apply f s; applies f to each element of s (in order) *)
 
-    type StringTree
-
     val layoutSet : {start: string, sep: string, finish: string} ->
-      (elt -> StringTree) -> Set -> StringTree
+      (elt -> StringTree.t) -> Set -> StringTree.t
   end;

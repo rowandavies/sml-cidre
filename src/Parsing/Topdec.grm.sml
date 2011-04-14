@@ -1836,6 +1836,8 @@ end
 structure EC=
 struct
 open LrTable
+infix 5 $$
+fun x $$ y = y::x
 val is_keyword =
 fn (T 0) => true | (T 1) => true | (T 2) => true | (T 3) => true | (T 
 4) => true | (T 5) => true | (T 6) => true | (T 7) => true | (T 15)
@@ -1848,7 +1850,7 @@ fn (T 0) => true | (T 1) => true | (T 2) => true | (T 3) => true | (T
  => true | (T 41) => true | (T 42) => true | (T 44) => true | (T 45)
  => true | (T 46) => true | (T 47) => true | (T 10) => true | (T 48)
  => true | (T 50) => true | (T 51) => true | _ => false
-val preferred_change = 
+val preferred_change : (term list * term list) list = 
 nil
 val noShift = 
 fn (T 83) => true | _ => false
@@ -1953,18 +1955,18 @@ fn (T 8) => MlyValue.QUAL_ID(fn () => (["bogus"])) |
 (T 77) => MlyValue.DIGIT(fn () => (0)) | 
 _ => MlyValue.VOID
 end
-val terms = (T 0) :: (T 1) :: (T 2) :: (T 3) :: (T 4) :: (T 5) :: (T 6
-) :: (T 7) :: (T 10) :: (T 11) :: (T 12) :: (T 13) :: (T 14) :: (T 15)
- :: (T 16) :: (T 17) :: (T 18) :: (T 19) :: (T 20) :: (T 21) :: (T 22)
- :: (T 23) :: (T 24) :: (T 25) :: (T 26) :: (T 27) :: (T 28) :: (T 29)
- :: (T 30) :: (T 31) :: (T 32) :: (T 33) :: (T 34) :: (T 35) :: (T 36)
- :: (T 37) :: (T 38) :: (T 39) :: (T 40) :: (T 41) :: (T 42) :: (T 43)
- :: (T 44) :: (T 45) :: (T 46) :: (T 47) :: (T 48) :: (T 49) :: (T 50)
- :: (T 51) :: (T 52) :: (T 53) :: (T 54) :: (T 55) :: (T 56) :: (T 57)
- :: (T 58) :: (T 59) :: (T 60) :: (T 61) :: (T 62) :: (T 63) :: (T 64)
- :: (T 65) :: (T 66) :: (T 67) :: (T 68) :: (T 69) :: (T 70) :: (T 71)
- :: (T 72) :: (T 73) :: (T 83) :: nil
-end
+val terms : term list = nil
+ $$ (T 83) $$ (T 73) $$ (T 72) $$ (T 71) $$ (T 70) $$ (T 69) $$ (T 68)
+ $$ (T 67) $$ (T 66) $$ (T 65) $$ (T 64) $$ (T 63) $$ (T 62) $$ (T 61)
+ $$ (T 60) $$ (T 59) $$ (T 58) $$ (T 57) $$ (T 56) $$ (T 55) $$ (T 54)
+ $$ (T 53) $$ (T 52) $$ (T 51) $$ (T 50) $$ (T 49) $$ (T 48) $$ (T 47)
+ $$ (T 46) $$ (T 45) $$ (T 44) $$ (T 43) $$ (T 42) $$ (T 41) $$ (T 40)
+ $$ (T 39) $$ (T 38) $$ (T 37) $$ (T 36) $$ (T 35) $$ (T 34) $$ (T 33)
+ $$ (T 32) $$ (T 31) $$ (T 30) $$ (T 29) $$ (T 28) $$ (T 27) $$ (T 26)
+ $$ (T 25) $$ (T 24) $$ (T 23) $$ (T 22) $$ (T 21) $$ (T 20) $$ (T 19)
+ $$ (T 18) $$ (T 17) $$ (T 16) $$ (T 15) $$ (T 14) $$ (T 13) $$ (T 12)
+ $$ (T 11) $$ (T 10) $$ (T 7) $$ (T 6) $$ (T 5) $$ (T 4) $$ (T 3) $$ 
+(T 2) $$ (T 1) $$ (T 0)end
 structure Actions =
 struct 
 exception mlyAction of int
@@ -1973,253 +1975,307 @@ val actions =
 fn (i392,defaultPos,stack,
     (()):arg) =>
 case (i392,stack)
-of (0,(_,(MlyValue.ID ID1,ID1left,ID1right))::rest671) => let val 
-result=MlyValue.Ident(fn _ => let val ID as ID1=ID1 ()
- in ( ID ) end
-)
- in (LrTable.NT 132,(result,ID1left,ID1right),rest671) end
-| (1,(_,(_,STAR1left,STAR1right))::rest671) => let val result=
-MlyValue.Ident(fn _ => ( "*" ))
- in (LrTable.NT 132,(result,STAR1left,STAR1right),rest671) end
-| (2,(_,(_,LESS1left,LESS1right))::rest671) => let val result=
-MlyValue.Ident(fn _ => ( "<" ))
- in (LrTable.NT 132,(result,LESS1left,LESS1right),rest671) end
-| (3,(_,(MlyValue.Ident Ident1,Ident1left,Ident1right))::rest671) => 
-let val result=MlyValue.OpIdent(fn _ => let val Ident as Ident1=Ident1
+of  ( 0, ( ( _, ( MlyValue.ID ID1, ID1left, ID1right)) :: rest671)) =>
+ let val  result = MlyValue.Ident (fn _ => let val  (ID as ID1) = ID1
  ()
- in ( OP_OPT(Ident, false) ) end
-)
- in (LrTable.NT 133,(result,Ident1left,Ident1right),rest671) end
-| (4,(_,(MlyValue.Ident Ident1,_,Ident1right))::(_,(_,OP1left,_))::
-rest671) => let val result=MlyValue.OpIdent(fn _ => let val Ident as 
-Ident1=Ident1 ()
- in ( OP_OPT(Ident, true) ) end
-)
- in (LrTable.NT 133,(result,OP1left,Ident1right),rest671) end
-| (5,(_,(MlyValue.Ident Ident1,Ident1left,Ident1right))::rest671) => 
-let val result=MlyValue.EqIdent(fn _ => let val Ident as Ident1=Ident1
- ()
- in ( Ident ) end
-)
- in (LrTable.NT 134,(result,Ident1left,Ident1right),rest671) end
-| (6,(_,(_,EQUALS1left,EQUALS1right))::rest671) => let val result=
-MlyValue.EqIdent(fn _ => ( "=" ))
- in (LrTable.NT 134,(result,EQUALS1left,EQUALS1right),rest671) end
-| (7,(_,(MlyValue.ID ID1,ID1left,ID1right))::rest671) => let val 
-result=MlyValue.TypeIdent(fn _ => let val ID as ID1=ID1 ()
- in ( ID ) end
-)
- in (LrTable.NT 135,(result,ID1left,ID1right),rest671) end
-| (8,(_,(MlyValue.TypeIdent TypeIdent1,TypeIdent1left,TypeIdent1right)
-)::rest671) => let val result=MlyValue.LongTypeIdent(fn _ => let val 
-TypeIdent as TypeIdent1=TypeIdent1 ()
- in ( [TypeIdent] ) end
-)
- in (LrTable.NT 136,(result,TypeIdent1left,TypeIdent1right),rest671)
- end
-| (9,(_,(MlyValue.QUAL_ID QUAL_ID1,QUAL_ID1left,QUAL_ID1right))::
-rest671) => let val result=MlyValue.LongTypeIdent(fn _ => let val 
-QUAL_ID as QUAL_ID1=QUAL_ID1 ()
- in ( QUAL_ID ) end
-)
- in (LrTable.NT 136,(result,QUAL_ID1left,QUAL_ID1right),rest671) end
-| (10,(_,(MlyValue.Ident Ident1,Ident1left,Ident1right))::rest671) => 
-let val result=MlyValue.LongIdent(fn _ => let val Ident as Ident1=
-Ident1 ()
- in ( [Ident] ) end
-)
- in (LrTable.NT 137,(result,Ident1left,Ident1right),rest671) end
-| (11,(_,(MlyValue.QUAL_ID QUAL_ID1,QUAL_ID1left,QUAL_ID1right))::
-rest671) => let val result=MlyValue.LongIdent(fn _ => let val QUAL_ID
- as QUAL_ID1=QUAL_ID1 ()
- in ( QUAL_ID ) end
-)
- in (LrTable.NT 137,(result,QUAL_ID1left,QUAL_ID1right),rest671) end
-| (12,(_,(MlyValue.QUAL_STAR QUAL_STAR1,QUAL_STAR1left,QUAL_STAR1right
-))::rest671) => let val result=MlyValue.LongIdent(fn _ => let val 
-QUAL_STAR as QUAL_STAR1=QUAL_STAR1 ()
- in ( QUAL_STAR ) end
-)
- in (LrTable.NT 137,(result,QUAL_STAR1left,QUAL_STAR1right),rest671)
- end
-| (13,(_,(MlyValue.LongIdent LongIdent1,LongIdent1left,LongIdent1right
-))::rest671) => let val result=MlyValue.LongOpIdent(fn _ => let val 
-LongIdent as LongIdent1=LongIdent1 ()
- in ( OP_OPT(LongIdent, false) ) end
-)
- in (LrTable.NT 138,(result,LongIdent1left,LongIdent1right),rest671)
- end
-| (14,(_,(MlyValue.LongIdent LongIdent1,_,LongIdent1right))::(_,(_,
-OP1left,_))::rest671) => let val result=MlyValue.LongOpIdent(fn _ => 
-let val LongIdent as LongIdent1=LongIdent1 ()
- in ( OP_OPT(LongIdent, true) ) end
-)
- in (LrTable.NT 138,(result,OP1left,LongIdent1right),rest671) end
-| (15,(_,(MlyValue.LongOpIdent LongOpIdent1,LongOpIdent1left,
-LongOpIdent1right))::rest671) => let val result=MlyValue.LongOpEqIdent
-(fn _ => let val LongOpIdent as LongOpIdent1=LongOpIdent1 ()
- in ( LongOpIdent ) end
-)
- in (LrTable.NT 139,(result,LongOpIdent1left,LongOpIdent1right),
-rest671) end
-| (16,(_,(_,EQUALS1left,EQUALS1right))::rest671) => let val result=
-MlyValue.LongOpEqIdent(fn _ => ( OP_OPT(["="], false) ))
- in (LrTable.NT 139,(result,EQUALS1left,EQUALS1right),rest671) end
-| (17,(_,(_,_,EQUALS1right))::(_,(_,OP1left,_))::rest671) => let val 
-result=MlyValue.LongOpEqIdent(fn _ => ( OP_OPT(["="], true) ))
- in (LrTable.NT 139,(result,OP1left,EQUALS1right),rest671) end
-| (18,(_,(MlyValue.DIGIT DIGIT1,DIGIT1left,DIGIT1right))::rest671) => 
-let val result=MlyValue.DIGIT_opt(fn _ => let val DIGIT as DIGIT1=
-DIGIT1 ()
- in ( SOME DIGIT ) end
-)
- in (LrTable.NT 126,(result,DIGIT1left,DIGIT1right),rest671) end
-| (19,rest671) => let val result=MlyValue.DIGIT_opt(fn _ => ( NONE ))
- in (LrTable.NT 126,(result,defaultPos,defaultPos),rest671) end
-| (20,(_,(MlyValue.DECPOSINTEGER DECPOSINTEGER1,DECPOSINTEGERleft as 
-DECPOSINTEGER1left,DECPOSINTEGER1right))::rest671) => let val result=
-MlyValue.DecPosInteger(fn _ => let val DECPOSINTEGER as DECPOSINTEGER1
-=DECPOSINTEGER1 ()
+ in ( ID )
+end)
+ in ( LrTable.NT 132, ( result, ID1left, ID1right), rest671)
+end
+|  ( 1, ( ( _, ( _, STAR1left, STAR1right)) :: rest671)) => let val  
+result = MlyValue.Ident (fn _ => ( "*" ))
+ in ( LrTable.NT 132, ( result, STAR1left, STAR1right), rest671)
+end
+|  ( 2, ( ( _, ( _, LESS1left, LESS1right)) :: rest671)) => let val  
+result = MlyValue.Ident (fn _ => ( "<" ))
+ in ( LrTable.NT 132, ( result, LESS1left, LESS1right), rest671)
+end
+|  ( 3, ( ( _, ( MlyValue.Ident Ident1, Ident1left, Ident1right)) :: 
+rest671)) => let val  result = MlyValue.OpIdent (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ in ( OP_OPT(Ident, false) )
+end)
+ in ( LrTable.NT 133, ( result, Ident1left, Ident1right), rest671)
+end
+|  ( 4, ( ( _, ( MlyValue.Ident Ident1, _, Ident1right)) :: ( _, ( _, 
+OP1left, _)) :: rest671)) => let val  result = MlyValue.OpIdent (fn _
+ => let val  (Ident as Ident1) = Ident1 ()
+ in ( OP_OPT(Ident, true) )
+end)
+ in ( LrTable.NT 133, ( result, OP1left, Ident1right), rest671)
+end
+|  ( 5, ( ( _, ( MlyValue.Ident Ident1, Ident1left, Ident1right)) :: 
+rest671)) => let val  result = MlyValue.EqIdent (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ in ( Ident )
+end)
+ in ( LrTable.NT 134, ( result, Ident1left, Ident1right), rest671)
+end
+|  ( 6, ( ( _, ( _, EQUALS1left, EQUALS1right)) :: rest671)) => let
+ val  result = MlyValue.EqIdent (fn _ => ( "=" ))
+ in ( LrTable.NT 134, ( result, EQUALS1left, EQUALS1right), rest671)
+
+end
+|  ( 7, ( ( _, ( MlyValue.ID ID1, ID1left, ID1right)) :: rest671)) =>
+ let val  result = MlyValue.TypeIdent (fn _ => let val  (ID as ID1) = 
+ID1 ()
+ in ( ID )
+end)
+ in ( LrTable.NT 135, ( result, ID1left, ID1right), rest671)
+end
+|  ( 8, ( ( _, ( MlyValue.TypeIdent TypeIdent1, TypeIdent1left, 
+TypeIdent1right)) :: rest671)) => let val  result = 
+MlyValue.LongTypeIdent (fn _ => let val  (TypeIdent as TypeIdent1) = 
+TypeIdent1 ()
+ in ( [TypeIdent] )
+end)
+ in ( LrTable.NT 136, ( result, TypeIdent1left, TypeIdent1right), 
+rest671)
+end
+|  ( 9, ( ( _, ( MlyValue.QUAL_ID QUAL_ID1, QUAL_ID1left, 
+QUAL_ID1right)) :: rest671)) => let val  result = 
+MlyValue.LongTypeIdent (fn _ => let val  (QUAL_ID as QUAL_ID1) = 
+QUAL_ID1 ()
+ in ( QUAL_ID )
+end)
+ in ( LrTable.NT 136, ( result, QUAL_ID1left, QUAL_ID1right), rest671)
+
+end
+|  ( 10, ( ( _, ( MlyValue.Ident Ident1, Ident1left, Ident1right)) :: 
+rest671)) => let val  result = MlyValue.LongIdent (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ in ( [Ident] )
+end)
+ in ( LrTable.NT 137, ( result, Ident1left, Ident1right), rest671)
+end
+|  ( 11, ( ( _, ( MlyValue.QUAL_ID QUAL_ID1, QUAL_ID1left, 
+QUAL_ID1right)) :: rest671)) => let val  result = MlyValue.LongIdent
+ (fn _ => let val  (QUAL_ID as QUAL_ID1) = QUAL_ID1 ()
+ in ( QUAL_ID )
+end)
+ in ( LrTable.NT 137, ( result, QUAL_ID1left, QUAL_ID1right), rest671)
+
+end
+|  ( 12, ( ( _, ( MlyValue.QUAL_STAR QUAL_STAR1, QUAL_STAR1left, 
+QUAL_STAR1right)) :: rest671)) => let val  result = MlyValue.LongIdent
+ (fn _ => let val  (QUAL_STAR as QUAL_STAR1) = QUAL_STAR1 ()
+ in ( QUAL_STAR )
+end)
+ in ( LrTable.NT 137, ( result, QUAL_STAR1left, QUAL_STAR1right), 
+rest671)
+end
+|  ( 13, ( ( _, ( MlyValue.LongIdent LongIdent1, LongIdent1left, 
+LongIdent1right)) :: rest671)) => let val  result = 
+MlyValue.LongOpIdent (fn _ => let val  (LongIdent as LongIdent1) = 
+LongIdent1 ()
+ in ( OP_OPT(LongIdent, false) )
+end)
+ in ( LrTable.NT 138, ( result, LongIdent1left, LongIdent1right), 
+rest671)
+end
+|  ( 14, ( ( _, ( MlyValue.LongIdent LongIdent1, _, LongIdent1right))
+ :: ( _, ( _, OP1left, _)) :: rest671)) => let val  result = 
+MlyValue.LongOpIdent (fn _ => let val  (LongIdent as LongIdent1) = 
+LongIdent1 ()
+ in ( OP_OPT(LongIdent, true) )
+end)
+ in ( LrTable.NT 138, ( result, OP1left, LongIdent1right), rest671)
+
+end
+|  ( 15, ( ( _, ( MlyValue.LongOpIdent LongOpIdent1, LongOpIdent1left,
+ LongOpIdent1right)) :: rest671)) => let val  result = 
+MlyValue.LongOpEqIdent (fn _ => let val  (LongOpIdent as LongOpIdent1)
+ = LongOpIdent1 ()
+ in ( LongOpIdent )
+end)
+ in ( LrTable.NT 139, ( result, LongOpIdent1left, LongOpIdent1right), 
+rest671)
+end
+|  ( 16, ( ( _, ( _, EQUALS1left, EQUALS1right)) :: rest671)) => let
+ val  result = MlyValue.LongOpEqIdent (fn _ => ( OP_OPT(["="], false) 
+))
+ in ( LrTable.NT 139, ( result, EQUALS1left, EQUALS1right), rest671)
+
+end
+|  ( 17, ( ( _, ( _, _, EQUALS1right)) :: ( _, ( _, OP1left, _)) :: 
+rest671)) => let val  result = MlyValue.LongOpEqIdent (fn _ => (
+ OP_OPT(["="], true) ))
+ in ( LrTable.NT 139, ( result, OP1left, EQUALS1right), rest671)
+end
+|  ( 18, ( ( _, ( MlyValue.DIGIT DIGIT1, DIGIT1left, DIGIT1right)) :: 
+rest671)) => let val  result = MlyValue.DIGIT_opt (fn _ => let val  (
+DIGIT as DIGIT1) = DIGIT1 ()
+ in ( SOME DIGIT )
+end)
+ in ( LrTable.NT 126, ( result, DIGIT1left, DIGIT1right), rest671)
+end
+|  ( 19, ( rest671)) => let val  result = MlyValue.DIGIT_opt (fn _ =>
+ ( NONE ))
+ in ( LrTable.NT 126, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 20, ( ( _, ( MlyValue.DECPOSINTEGER DECPOSINTEGER1, (
+DECPOSINTEGERleft as DECPOSINTEGER1left), DECPOSINTEGER1right)) :: 
+rest671)) => let val  result = MlyValue.DecPosInteger (fn _ => let
+ val  (DECPOSINTEGER as DECPOSINTEGER1) = DECPOSINTEGER1 ()
  in (
  raise_lexical_error_if_none
 			    DECPOSINTEGERleft DECPOSINTEGER )
- end
-)
- in (LrTable.NT 141,(result,DECPOSINTEGER1left,DECPOSINTEGER1right),
-rest671) end
-| (21,(_,(MlyValue.DIGIT DIGIT1,DIGIT1left,DIGIT1right))::rest671) => 
-let val result=MlyValue.DecPosInteger(fn _ => let val DIGIT as DIGIT1=
-DIGIT1 ()
- in ( DIGIT ) end
-)
- in (LrTable.NT 141,(result,DIGIT1left,DIGIT1right),rest671) end
-| (22,(_,(MlyValue.Ident Ident1,Ident1left,Ident1right))::rest671) => 
-let val result=MlyValue.Label(fn _ => let val Ident as Ident1=Ident1 
-()
- in ( mk_IdentLab Ident ) end
-)
- in (LrTable.NT 140,(result,Ident1left,Ident1right),rest671) end
-| (23,(_,(MlyValue.DecPosInteger DecPosInteger1,DecPosInteger1left,
-DecPosInteger1right))::rest671) => let val result=MlyValue.Label(fn _
- => let val DecPosInteger as DecPosInteger1=DecPosInteger1 ()
- in ( mk_IntegerLab DecPosInteger ) end
-)
- in (LrTable.NT 140,(result,DecPosInteger1left,DecPosInteger1right),
-rest671) end
-| (24,(_,(MlyValue.Ident_seq2 Ident_seq21,_,Ident_seq21right))::(_,(
-MlyValue.Ident Ident1,Identleft as Ident1left,Identright))::rest671)
- => let val result=MlyValue.Ident_seq2(fn _ => let val Ident as Ident1
-=Ident1 ()
-val Ident_seq2 as Ident_seq21=Ident_seq21 ()
+
+end)
+ in ( LrTable.NT 141, ( result, DECPOSINTEGER1left, 
+DECPOSINTEGER1right), rest671)
+end
+|  ( 21, ( ( _, ( MlyValue.DIGIT DIGIT1, DIGIT1left, DIGIT1right)) :: 
+rest671)) => let val  result = MlyValue.DecPosInteger (fn _ => let
+ val  (DIGIT as DIGIT1) = DIGIT1 ()
+ in ( DIGIT )
+end)
+ in ( LrTable.NT 141, ( result, DIGIT1left, DIGIT1right), rest671)
+end
+|  ( 22, ( ( _, ( MlyValue.Ident Ident1, Ident1left, Ident1right)) :: 
+rest671)) => let val  result = MlyValue.Label (fn _ => let val  (Ident
+ as Ident1) = Ident1 ()
+ in ( mk_IdentLab Ident )
+end)
+ in ( LrTable.NT 140, ( result, Ident1left, Ident1right), rest671)
+end
+|  ( 23, ( ( _, ( MlyValue.DecPosInteger DecPosInteger1, 
+DecPosInteger1left, DecPosInteger1right)) :: rest671)) => let val  
+result = MlyValue.Label (fn _ => let val  (DecPosInteger as 
+DecPosInteger1) = DecPosInteger1 ()
+ in ( mk_IntegerLab DecPosInteger )
+end)
+ in ( LrTable.NT 140, ( result, DecPosInteger1left, 
+DecPosInteger1right), rest671)
+end
+|  ( 24, ( ( _, ( MlyValue.Ident_seq2 Ident_seq21, _, Ident_seq21right
+)) :: ( _, ( MlyValue.Ident Ident1, (Identleft as Ident1left), 
+Identright)) :: rest671)) => let val  result = MlyValue.Ident_seq2 (fn
+ _ => let val  (Ident as Ident1) = Ident1 ()
+ val  (Ident_seq2 as Ident_seq21) = Ident_seq21 ()
  in (
  WITH_INFO(PP Identleft Identright, Ident)
                           :: Ident_seq2
                         
-) end
 )
- in (LrTable.NT 120,(result,Ident1left,Ident_seq21right),rest671) end
-| (25,(_,(MlyValue.Ident Ident2,Ident2left,Ident2right))::(_,(
-MlyValue.Ident Ident1,Ident1left,Ident1right))::rest671) => let val 
-result=MlyValue.Ident_seq2(fn _ => let val Ident1=Ident1 ()
-val Ident2=Ident2 ()
+end)
+ in ( LrTable.NT 120, ( result, Ident1left, Ident_seq21right), rest671
+)
+end
+|  ( 25, ( ( _, ( MlyValue.Ident Ident2, Ident2left, Ident2right)) :: 
+( _, ( MlyValue.Ident Ident1, Ident1left, Ident1right)) :: rest671))
+ => let val  result = MlyValue.Ident_seq2 (fn _ => let val  Ident1 = 
+Ident1 ()
+ val  Ident2 = Ident2 ()
  in (
  [WITH_INFO(PP Ident1left Ident1right, Ident1),
 			   WITH_INFO(PP Ident2left Ident2right, Ident2)] 
-) end
 )
- in (LrTable.NT 120,(result,Ident1left,Ident2right),rest671) end
-| (26,(_,(MlyValue.EqIdent_seq1 EqIdent_seq11,_,EqIdent_seq11right))::
-(_,(MlyValue.EqIdent EqIdent1,EqIdent1left,_))::rest671) => let val 
-result=MlyValue.EqIdent_seq1(fn _ => let val EqIdent as EqIdent1=
+end)
+ in ( LrTable.NT 120, ( result, Ident1left, Ident2right), rest671)
+end
+|  ( 26, ( ( _, ( MlyValue.EqIdent_seq1 EqIdent_seq11, _, 
+EqIdent_seq11right)) :: ( _, ( MlyValue.EqIdent EqIdent1, EqIdent1left
+, _)) :: rest671)) => let val  result = MlyValue.EqIdent_seq1 (fn _ =>
+ let val  (EqIdent as EqIdent1) = EqIdent1 ()
+ val  (EqIdent_seq1 as EqIdent_seq11) = EqIdent_seq11 ()
+ in ( EqIdent :: EqIdent_seq1 )
+end)
+ in ( LrTable.NT 121, ( result, EqIdent1left, EqIdent_seq11right), 
+rest671)
+end
+|  ( 27, ( ( _, ( MlyValue.EqIdent EqIdent1, EqIdent1left, 
+EqIdent1right)) :: rest671)) => let val  result = 
+MlyValue.EqIdent_seq1 (fn _ => let val  (EqIdent as EqIdent1) = 
 EqIdent1 ()
-val EqIdent_seq1 as EqIdent_seq11=EqIdent_seq11 ()
- in ( EqIdent :: EqIdent_seq1 ) end
-)
- in (LrTable.NT 121,(result,EqIdent1left,EqIdent_seq11right),rest671)
- end
-| (27,(_,(MlyValue.EqIdent EqIdent1,EqIdent1left,EqIdent1right))::
-rest671) => let val result=MlyValue.EqIdent_seq1(fn _ => let val 
-EqIdent as EqIdent1=EqIdent1 ()
- in ( [EqIdent] ) end
-)
- in (LrTable.NT 121,(result,EqIdent1left,EqIdent1right),rest671) end
-| (28,(_,(MlyValue.LongIdent_seq1 LongIdent_seq11,_,
-LongIdent_seq11right))::(_,(MlyValue.LongIdent LongIdent1,
-LongIdentleft as LongIdent1left,LongIdentright))::rest671) => let val 
-result=MlyValue.LongIdent_seq1(fn _ => let val LongIdent as LongIdent1
-=LongIdent1 ()
-val LongIdent_seq1 as LongIdent_seq11=LongIdent_seq11 ()
+ in ( [EqIdent] )
+end)
+ in ( LrTable.NT 121, ( result, EqIdent1left, EqIdent1right), rest671)
+
+end
+|  ( 28, ( ( _, ( MlyValue.LongIdent_seq1 LongIdent_seq11, _, 
+LongIdent_seq11right)) :: ( _, ( MlyValue.LongIdent LongIdent1, (
+LongIdentleft as LongIdent1left), LongIdentright)) :: rest671)) => let
+ val  result = MlyValue.LongIdent_seq1 (fn _ => let val  (LongIdent
+ as LongIdent1) = LongIdent1 ()
+ val  (LongIdent_seq1 as LongIdent_seq11) = LongIdent_seq11 ()
  in (
  WITH_INFO(PP LongIdentleft LongIdentright,
                                     LongIdent
                                    ) :: LongIdent_seq1
                         
-) end
 )
- in (LrTable.NT 122,(result,LongIdent1left,LongIdent_seq11right),
-rest671) end
-| (29,(_,(MlyValue.LongIdent LongIdent1,LongIdentleft as 
-LongIdent1left,LongIdentright as LongIdent1right))::rest671) => let 
-val result=MlyValue.LongIdent_seq1(fn _ => let val LongIdent as 
-LongIdent1=LongIdent1 ()
+end)
+ in ( LrTable.NT 122, ( result, LongIdent1left, LongIdent_seq11right),
+ rest671)
+end
+|  ( 29, ( ( _, ( MlyValue.LongIdent LongIdent1, (LongIdentleft as 
+LongIdent1left), (LongIdentright as LongIdent1right))) :: rest671)) =>
+ let val  result = MlyValue.LongIdent_seq1 (fn _ => let val  (
+LongIdent as LongIdent1) = LongIdent1 ()
  in (
  [WITH_INFO(PP LongIdentleft LongIdentright,
                                      LongIdent
                                     )
                           ]
                         
-) end
 )
- in (LrTable.NT 122,(result,LongIdent1left,LongIdent1right),rest671)
- end
-| (30,(_,(MlyValue.LongIdent_conjseq1 LongIdent_conjseq11,_,
-LongIdent_conjseq11right))::_::(_,(MlyValue.LongIdent LongIdent1,
-LongIdentleft as LongIdent1left,LongIdentright))::rest671) => let val 
-result=MlyValue.LongIdent_conjseq1(fn _ => let val LongIdent as 
-LongIdent1=LongIdent1 ()
-val LongIdent_conjseq1 as LongIdent_conjseq11=LongIdent_conjseq11 ()
+end)
+ in ( LrTable.NT 122, ( result, LongIdent1left, LongIdent1right), 
+rest671)
+end
+|  ( 30, ( ( _, ( MlyValue.LongIdent_conjseq1 LongIdent_conjseq11, _, 
+LongIdent_conjseq11right)) :: _ :: ( _, ( MlyValue.LongIdent 
+LongIdent1, (LongIdentleft as LongIdent1left), LongIdentright)) :: 
+rest671)) => let val  result = MlyValue.LongIdent_conjseq1 (fn _ =>
+ let val  (LongIdent as LongIdent1) = LongIdent1 ()
+ val  (LongIdent_conjseq1 as LongIdent_conjseq11) = 
+LongIdent_conjseq11 ()
  in (
  WITH_INFO(PP LongIdentleft LongIdentright,
                                     LongIdent
                                    ) :: LongIdent_conjseq1
                         
-) end
 )
- in (LrTable.NT 123,(result,LongIdent1left,LongIdent_conjseq11right),
-rest671) end
-| (31,(_,(MlyValue.LongIdent LongIdent1,LongIdentleft as 
-LongIdent1left,LongIdentright as LongIdent1right))::rest671) => let 
-val result=MlyValue.LongIdent_conjseq1(fn _ => let val LongIdent as 
-LongIdent1=LongIdent1 ()
+end)
+ in ( LrTable.NT 123, ( result, LongIdent1left, 
+LongIdent_conjseq11right), rest671)
+end
+|  ( 31, ( ( _, ( MlyValue.LongIdent LongIdent1, (LongIdentleft as 
+LongIdent1left), (LongIdentright as LongIdent1right))) :: rest671)) =>
+ let val  result = MlyValue.LongIdent_conjseq1 (fn _ => let val  (
+LongIdent as LongIdent1) = LongIdent1 ()
  in (
  [WITH_INFO(PP LongIdentleft LongIdentright,
                                      LongIdent
                                     )
                           ]
                         
-) end
 )
- in (LrTable.NT 123,(result,LongIdent1left,LongIdent1right),rest671)
- end
-| (32,(_,(MlyValue.LongIdentEq_seq2 LongIdentEq_seq21,_,
-LongIdentEq_seq21right))::_::(_,(MlyValue.LongIdent LongIdent1,
-LongIdentleft as LongIdent1left,LongIdentright))::rest671) => let val 
-result=MlyValue.LongIdentEq_seq2(fn _ => let val LongIdent as 
-LongIdent1=LongIdent1 ()
-val LongIdentEq_seq2 as LongIdentEq_seq21=LongIdentEq_seq21 ()
+end)
+ in ( LrTable.NT 123, ( result, LongIdent1left, LongIdent1right), 
+rest671)
+end
+|  ( 32, ( ( _, ( MlyValue.LongIdentEq_seq2 LongIdentEq_seq21, _, 
+LongIdentEq_seq21right)) :: _ :: ( _, ( MlyValue.LongIdent LongIdent1,
+ (LongIdentleft as LongIdent1left), LongIdentright)) :: rest671)) =>
+ let val  result = MlyValue.LongIdentEq_seq2 (fn _ => let val  (
+LongIdent as LongIdent1) = LongIdent1 ()
+ val  (LongIdentEq_seq2 as LongIdentEq_seq21) = LongIdentEq_seq21 ()
  in (
  WITH_INFO(PP LongIdentleft LongIdentright, LongIdent)
                           :: LongIdentEq_seq2
                         
-) end
 )
- in (LrTable.NT 124,(result,LongIdent1left,LongIdentEq_seq21right),
-rest671) end
-| (33,(_,(MlyValue.LongIdent LongIdent2,LongIdent2left,LongIdent2right
-))::_::(_,(MlyValue.LongIdent LongIdent1,LongIdent1left,
-LongIdent1right))::rest671) => let val result=
-MlyValue.LongIdentEq_seq2(fn _ => let val LongIdent1=LongIdent1 ()
-val LongIdent2=LongIdent2 ()
+end)
+ in ( LrTable.NT 124, ( result, LongIdent1left, LongIdentEq_seq21right
+), rest671)
+end
+|  ( 33, ( ( _, ( MlyValue.LongIdent LongIdent2, LongIdent2left, 
+LongIdent2right)) :: _ :: ( _, ( MlyValue.LongIdent LongIdent1, 
+LongIdent1left, LongIdent1right)) :: rest671)) => let val  result = 
+MlyValue.LongIdentEq_seq2 (fn _ => let val  LongIdent1 = LongIdent1 ()
+ val  LongIdent2 = LongIdent2 ()
  in (
  [WITH_INFO(PP LongIdent1left LongIdent1right,
                                      LongIdent1
@@ -2229,17 +2285,18 @@ val LongIdent2=LongIdent2 ()
                                     )
                           ]
                         
-) end
 )
- in (LrTable.NT 124,(result,LongIdent1left,LongIdent2right),rest671)
- end
-| (34,(_,(MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,_,
-LongTypeIdentEq_seq21right))::_::(_,(MlyValue.LongTypeIdent 
-LongTypeIdent1,LongTypeIdentleft as LongTypeIdent1left,
-LongTypeIdentright))::rest671) => let val result=
-MlyValue.LongTypeIdentEq_seq2(fn _ => let val LongTypeIdent as 
-LongTypeIdent1=LongTypeIdent1 ()
-val LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21=
+end)
+ in ( LrTable.NT 124, ( result, LongIdent1left, LongIdent2right), 
+rest671)
+end
+|  ( 34, ( ( _, ( MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,
+ _, LongTypeIdentEq_seq21right)) :: _ :: ( _, ( MlyValue.LongTypeIdent
+ LongTypeIdent1, (LongTypeIdentleft as LongTypeIdent1left), 
+LongTypeIdentright)) :: rest671)) => let val  result = 
+MlyValue.LongTypeIdentEq_seq2 (fn _ => let val  (LongTypeIdent as 
+LongTypeIdent1) = LongTypeIdent1 ()
+ val  (LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21) = 
 LongTypeIdentEq_seq21 ()
  in (
  WITH_INFO(PP LongTypeIdentleft LongTypeIdentright,
@@ -2247,16 +2304,18 @@ LongTypeIdentEq_seq21 ()
                                    )
                           :: LongTypeIdentEq_seq2
                         
-) end
 )
- in (LrTable.NT 125,(result,LongTypeIdent1left,
-LongTypeIdentEq_seq21right),rest671) end
-| (35,(_,(MlyValue.LongTypeIdent LongTypeIdent2,LongTypeIdent2left,
-LongTypeIdent2right))::_::(_,(MlyValue.LongTypeIdent LongTypeIdent1,
-LongTypeIdent1left,LongTypeIdent1right))::rest671) => let val result=
-MlyValue.LongTypeIdentEq_seq2(fn _ => let val LongTypeIdent1=
+end)
+ in ( LrTable.NT 125, ( result, LongTypeIdent1left, 
+LongTypeIdentEq_seq21right), rest671)
+end
+|  ( 35, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent2, 
+LongTypeIdent2left, LongTypeIdent2right)) :: _ :: ( _, ( 
+MlyValue.LongTypeIdent LongTypeIdent1, LongTypeIdent1left, 
+LongTypeIdent1right)) :: rest671)) => let val  result = 
+MlyValue.LongTypeIdentEq_seq2 (fn _ => let val  LongTypeIdent1 = 
 LongTypeIdent1 ()
-val LongTypeIdent2=LongTypeIdent2 ()
+ val  LongTypeIdent2 = LongTypeIdent2 ()
  in (
  [WITH_INFO(PP LongTypeIdent1left LongTypeIdent1right,
                                      LongTypeIdent1
@@ -2266,87 +2325,104 @@ val LongTypeIdent2=LongTypeIdent2 ()
                                     )
                           ]
                         
-) end
 )
- in (LrTable.NT 125,(result,LongTypeIdent1left,LongTypeIdent2right),
-rest671) end
-| (36,(_,(MlyValue.TopDec_ TopDec_1,TopDec_1left,TopDec_1right))::
-rest671) => let val result=MlyValue.TopDec(fn _ => let val TopDec_ as 
-TopDec_1=TopDec_1 ()
- in ( TopDec_ ) end
-)
- in (LrTable.NT 0,(result,TopDec_1left,TopDec_1right),rest671) end
-| (37,(_,(MlyValue.Exp_ Exp_1,Exp_1left,Exp_1right))::rest671) => let 
-val result=MlyValue.TopDec(fn _ => let val Exp_ as Exp_1=Exp_1 ()
- in ( topdecOfExp Exp_ ) end
-)
- in (LrTable.NT 0,(result,Exp_1left,Exp_1right),rest671) end
-| (38,rest671) => let val result=MlyValue.TopDec(fn _ => (
+end)
+ in ( LrTable.NT 125, ( result, LongTypeIdent1left, 
+LongTypeIdent2right), rest671)
+end
+|  ( 36, ( ( _, ( MlyValue.TopDec_ TopDec_1, TopDec_1left, 
+TopDec_1right)) :: rest671)) => let val  result = MlyValue.TopDec (fn
+ _ => let val  (TopDec_ as TopDec_1) = TopDec_1 ()
+ in ( TopDec_ )
+end)
+ in ( LrTable.NT 0, ( result, TopDec_1left, TopDec_1right), rest671)
+
+end
+|  ( 37, ( ( _, ( MlyValue.Exp_ Exp_1, Exp_1left, Exp_1right)) :: 
+rest671)) => let val  result = MlyValue.TopDec (fn _ => let val  (Exp_
+ as Exp_1) = Exp_1 ()
+ in ( topdecOfExp Exp_ )
+end)
+ in ( LrTable.NT 0, ( result, Exp_1left, Exp_1right), rest671)
+end
+|  ( 38, ( rest671)) => let val  result = MlyValue.TopDec (fn _ => (
  STRtopdec(PP defaultPos defaultPos,
 				    EMPTYstrdec(PP defaultPos defaultPos), NONE) 
 ))
- in (LrTable.NT 0,(result,defaultPos,defaultPos),rest671) end
-| (39,(_,(MlyValue.TopDec_opt TopDec_opt1,_,TopDec_opt1right))::(_,(
-MlyValue.OneStrDec OneStrDec1,OneStrDecleft as OneStrDec1left,_))::
-rest671) => let val result=MlyValue.TopDec_(fn _ => let val OneStrDec
- as OneStrDec1=OneStrDec1 ()
-val TopDec_opt as TopDec_opt1=TopDec_opt1 ()
+ in ( LrTable.NT 0, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 39, ( ( _, ( MlyValue.TopDec_opt TopDec_opt1, _, TopDec_opt1right
+)) :: ( _, ( MlyValue.OneStrDec OneStrDec1, (OneStrDecleft as 
+OneStrDec1left), _)) :: rest671)) => let val  result = 
+MlyValue.TopDec_ (fn _ => let val  (OneStrDec as OneStrDec1) = 
+OneStrDec1 ()
+ val  (TopDec_opt as TopDec_opt1) = TopDec_opt1 ()
  in (
  STRtopdec (PP OneStrDecleft
 				       (rightmost info_on_strdec OneStrDec
 				                  info_on_topdec TopDec_opt),
 				     OneStrDec, TopDec_opt) 
-) end
 )
- in (LrTable.NT 1,(result,OneStrDec1left,TopDec_opt1right),rest671)
- end
-| (40,(_,(MlyValue.TopDec_opt TopDec_opt1,_,TopDec_opt1right))::(_,(
-MlyValue.SigDec SigDec1,SigDecleft as SigDec1left,_))::rest671) => 
-let val result=MlyValue.TopDec_(fn _ => let val SigDec as SigDec1=
-SigDec1 ()
-val TopDec_opt as TopDec_opt1=TopDec_opt1 ()
+end)
+ in ( LrTable.NT 1, ( result, OneStrDec1left, TopDec_opt1right), 
+rest671)
+end
+|  ( 40, ( ( _, ( MlyValue.TopDec_opt TopDec_opt1, _, TopDec_opt1right
+)) :: ( _, ( MlyValue.SigDec SigDec1, (SigDecleft as SigDec1left), _))
+ :: rest671)) => let val  result = MlyValue.TopDec_ (fn _ => let val 
+ (SigDec as SigDec1) = SigDec1 ()
+ val  (TopDec_opt as TopDec_opt1) = TopDec_opt1 ()
  in (
  SIGtopdec (PP SigDecleft
 				       (rightmost info_on_sigdec SigDec
 				                  info_on_topdec TopDec_opt),
 				     SigDec, TopDec_opt) 
-) end
 )
- in (LrTable.NT 1,(result,SigDec1left,TopDec_opt1right),rest671) end
-| (41,(_,(MlyValue.TopDec_opt TopDec_opt1,_,TopDec_opt1right))::(_,(
-MlyValue.FunDec FunDec1,FunDecleft as FunDec1left,_))::rest671) => 
-let val result=MlyValue.TopDec_(fn _ => let val FunDec as FunDec1=
-FunDec1 ()
-val TopDec_opt as TopDec_opt1=TopDec_opt1 ()
+end)
+ in ( LrTable.NT 1, ( result, SigDec1left, TopDec_opt1right), rest671)
+
+end
+|  ( 41, ( ( _, ( MlyValue.TopDec_opt TopDec_opt1, _, TopDec_opt1right
+)) :: ( _, ( MlyValue.FunDec FunDec1, (FunDecleft as FunDec1left), _))
+ :: rest671)) => let val  result = MlyValue.TopDec_ (fn _ => let val 
+ (FunDec as FunDec1) = FunDec1 ()
+ val  (TopDec_opt as TopDec_opt1) = TopDec_opt1 ()
  in (
  FUNtopdec (PP FunDecleft
 				       (rightmost info_on_fundec FunDec
 				                  info_on_topdec TopDec_opt),
 				     FunDec, TopDec_opt) 
-) end
 )
- in (LrTable.NT 1,(result,FunDec1left,TopDec_opt1right),rest671) end
-| (42,(_,(MlyValue.TopDec_ TopDec_1,TopDec_1left,TopDec_1right))::
-rest671) => let val result=MlyValue.TopDec_opt(fn _ => let val TopDec_
- as TopDec_1=TopDec_1 ()
- in ( SOME TopDec_ ) end
-)
- in (LrTable.NT 2,(result,TopDec_1left,TopDec_1right),rest671) end
-| (43,rest671) => let val result=MlyValue.TopDec_opt(fn _ => ( NONE ))
- in (LrTable.NT 2,(result,defaultPos,defaultPos),rest671) end
-| (44,(_,(MlyValue.AndFunBind_opt AndFunBind_opt1,_,
-AndFunBind_opt1right))::(_,(MlyValue.StrExp StrExp1,_,StrExpright))::_
-::(_,(MlyValue.SigExp_constraint_maybe SigExp_constraint_maybe1,
-SigExp_constraint_maybeleft,_))::_::(_,(MlyValue.SigExp SigExp1,_,_))
-::_::(_,(MlyValue.Ident Ident2,_,_))::_::(_,(MlyValue.Ident Ident1,
-Ident1left,_))::rest671) => let val result=MlyValue.FunBind(fn _ => 
-let val Ident1=Ident1 ()
-val Ident2=Ident2 ()
-val SigExp as SigExp1=SigExp1 ()
-val SigExp_constraint_maybe as SigExp_constraint_maybe1=
+end)
+ in ( LrTable.NT 1, ( result, FunDec1left, TopDec_opt1right), rest671)
+
+end
+|  ( 42, ( ( _, ( MlyValue.TopDec_ TopDec_1, TopDec_1left, 
+TopDec_1right)) :: rest671)) => let val  result = MlyValue.TopDec_opt
+ (fn _ => let val  (TopDec_ as TopDec_1) = TopDec_1 ()
+ in ( SOME TopDec_ )
+end)
+ in ( LrTable.NT 2, ( result, TopDec_1left, TopDec_1right), rest671)
+
+end
+|  ( 43, ( rest671)) => let val  result = MlyValue.TopDec_opt (fn _ =>
+ ( NONE ))
+ in ( LrTable.NT 2, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 44, ( ( _, ( MlyValue.AndFunBind_opt AndFunBind_opt1, _, 
+AndFunBind_opt1right)) :: ( _, ( MlyValue.StrExp StrExp1, _, 
+StrExpright)) :: _ :: ( _, ( MlyValue.SigExp_constraint_maybe 
+SigExp_constraint_maybe1, SigExp_constraint_maybeleft, _)) :: _ :: ( _
+, ( MlyValue.SigExp SigExp1, _, _)) :: _ :: ( _, ( MlyValue.Ident 
+Ident2, _, _)) :: _ :: ( _, ( MlyValue.Ident Ident1, Ident1left, _))
+ :: rest671)) => let val  result = MlyValue.FunBind (fn _ => let val  
+Ident1 = Ident1 ()
+ val  Ident2 = Ident2 ()
+ val  (SigExp as SigExp1) = SigExp1 ()
+ val  (SigExp_constraint_maybe as SigExp_constraint_maybe1) = 
 SigExp_constraint_maybe1 ()
-val StrExp as StrExp1=StrExp1 ()
-val AndFunBind_opt as AndFunBind_opt1=AndFunBind_opt1 ()
+ val  (StrExp as StrExp1) = StrExp1 ()
+ val  (AndFunBind_opt as AndFunBind_opt1) = AndFunBind_opt1 ()
  in (
  let val i_body = PP SigExp_constraint_maybeleft StrExpright
                               val empty_strdec = EMPTYstrdec (PP defaultPos defaultPos)
@@ -2359,21 +2435,23 @@ val AndFunBind_opt as AndFunBind_opt1=AndFunBind_opt1 ()
                                              SigExp_constraint_maybe SigExp_constraint_maybeleft StrExp), 
                                    AndFunBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 7,(result,Ident1left,AndFunBind_opt1right),rest671)
- end
-| (45,(_,(MlyValue.AndFunBind_opt AndFunBind_opt1,_,
-AndFunBind_opt1right))::(_,(MlyValue.StrExp StrExp1,_,StrExpright))::_
-::(_,(MlyValue.SigExp_constraint_maybe SigExp_constraint_maybe1,
-SigExp_constraint_maybeleft,_))::_::(_,(MlyValue.Spec Spec1,_,_))::_::
-(_,(MlyValue.Ident Ident1,Ident1left,_))::rest671) => let val result=
-MlyValue.FunBind(fn _ => let val Ident as Ident1=Ident1 ()
-val Spec as Spec1=Spec1 ()
-val SigExp_constraint_maybe as SigExp_constraint_maybe1=
+end)
+ in ( LrTable.NT 7, ( result, Ident1left, AndFunBind_opt1right), 
+rest671)
+end
+|  ( 45, ( ( _, ( MlyValue.AndFunBind_opt AndFunBind_opt1, _, 
+AndFunBind_opt1right)) :: ( _, ( MlyValue.StrExp StrExp1, _, 
+StrExpright)) :: _ :: ( _, ( MlyValue.SigExp_constraint_maybe 
+SigExp_constraint_maybe1, SigExp_constraint_maybeleft, _)) :: _ :: ( _
+, ( MlyValue.Spec Spec1, _, _)) :: _ :: ( _, ( MlyValue.Ident Ident1, 
+Ident1left, _)) :: rest671)) => let val  result = MlyValue.FunBind (fn
+ _ => let val  (Ident as Ident1) = Ident1 ()
+ val  (Spec as Spec1) = Spec1 ()
+ val  (SigExp_constraint_maybe as SigExp_constraint_maybe1) = 
 SigExp_constraint_maybe1 ()
-val StrExp as StrExp1=StrExp1 ()
-val AndFunBind_opt as AndFunBind_opt1=AndFunBind_opt1 ()
+ val  (StrExp as StrExp1) = StrExp1 ()
+ val  (AndFunBind_opt as AndFunBind_opt1) = AndFunBind_opt1 ()
  in (
  let val strid_nu = inventStrId ()
 			      val i_body = PP SigExp_constraint_maybeleft StrExpright
@@ -2393,127 +2471,155 @@ val AndFunBind_opt as AndFunBind_opt1=AndFunBind_opt1 ()
 				   SigExp_constraint_maybe SigExp_constraint_maybeleft StrExp),
 				AndFunBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 7,(result,Ident1left,AndFunBind_opt1right),rest671)
- end
-| (46,(_,(MlyValue.SigExp_constraint SigExp_constraint1,
-SigExp_constraint1left,SigExp_constraint1right))::rest671) => let val 
-result=MlyValue.SigExp_constraint_maybe(fn _ => let val 
-SigExp_constraint as SigExp_constraint1=SigExp_constraint1 ()
- in ( SigExp_constraint ) end
-)
- in (LrTable.NT 30,(result,SigExp_constraint1left,
-SigExp_constraint1right),rest671) end
-| (47,rest671) => let val result=MlyValue.SigExp_constraint_maybe(fn _
- => ( (fn _ => fn strexp => strexp) ))
- in (LrTable.NT 30,(result,defaultPos,defaultPos),rest671) end
-| (48,(_,(_,COLON1left,COLON1right))::rest671) => let val result=
-MlyValue.OfSort(fn _ => ())
- in (LrTable.NT 130,(result,COLON1left,COLON1right),rest671) end
-| (49,(_,(_,COLONGREATER1left,COLONGREATER1right))::rest671) => let 
-val result=MlyValue.OfSort(fn _ => ())
- in (LrTable.NT 130,(result,COLONGREATER1left,COLONGREATER1right),
-rest671) end
-| (50,(_,(_,HASSORT1left,HASSORT1right))::rest671) => let val result=
-MlyValue.OfSort(fn _ => ())
- in (LrTable.NT 130,(result,HASSORT1left,HASSORT1right),rest671) end
-| (51,(_,(MlyValue.SigExp SigExp1,_,SigExpright as SigExp1right))::(_,
-(_,COLON1left,_))::rest671) => let val result=
-MlyValue.SigExp_constraint(fn _ => let val SigExp as SigExp1=SigExp1 
-()
+end)
+ in ( LrTable.NT 7, ( result, Ident1left, AndFunBind_opt1right), 
+rest671)
+end
+|  ( 46, ( ( _, ( MlyValue.SigExp_constraint SigExp_constraint1, 
+SigExp_constraint1left, SigExp_constraint1right)) :: rest671)) => let
+ val  result = MlyValue.SigExp_constraint_maybe (fn _ => let val  (
+SigExp_constraint as SigExp_constraint1) = SigExp_constraint1 ()
+ in ( SigExp_constraint )
+end)
+ in ( LrTable.NT 30, ( result, SigExp_constraint1left, 
+SigExp_constraint1right), rest671)
+end
+|  ( 47, ( rest671)) => let val  result = 
+MlyValue.SigExp_constraint_maybe (fn _ => (
+ (fn _ => fn strexp => strexp) ))
+ in ( LrTable.NT 30, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 48, ( ( _, ( _, COLON1left, COLON1right)) :: rest671)) => let
+ val  result = MlyValue.OfSort (fn _ => ())
+ in ( LrTable.NT 130, ( result, COLON1left, COLON1right), rest671)
+end
+|  ( 49, ( ( _, ( _, COLONGREATER1left, COLONGREATER1right)) :: 
+rest671)) => let val  result = MlyValue.OfSort (fn _ => ())
+ in ( LrTable.NT 130, ( result, COLONGREATER1left, COLONGREATER1right)
+, rest671)
+end
+|  ( 50, ( ( _, ( _, HASSORT1left, HASSORT1right)) :: rest671)) => let
+ val  result = MlyValue.OfSort (fn _ => ())
+ in ( LrTable.NT 130, ( result, HASSORT1left, HASSORT1right), rest671)
+
+end
+|  ( 51, ( ( _, ( MlyValue.SigExp SigExp1, _, (SigExpright as 
+SigExp1right))) :: ( _, ( _, COLON1left, _)) :: rest671)) => let val  
+result = MlyValue.SigExp_constraint (fn _ => let val  (SigExp as 
+SigExp1) = SigExp1 ()
  in (
  (fn leftpos => fn strexp => 
 			   TRANSPARENT_CONSTRAINTstrexp
 			     (PP leftpos SigExpright, strexp, SigExp)) 
-) end
 )
- in (LrTable.NT 29,(result,COLON1left,SigExp1right),rest671) end
-| (52,(_,(MlyValue.SigExp SigExp1,_,SigExpright as SigExp1right))::(_,
-(_,COLONGREATER1left,_))::rest671) => let val result=
-MlyValue.SigExp_constraint(fn _ => let val SigExp as SigExp1=SigExp1 
-()
+end)
+ in ( LrTable.NT 29, ( result, COLON1left, SigExp1right), rest671)
+end
+|  ( 52, ( ( _, ( MlyValue.SigExp SigExp1, _, (SigExpright as 
+SigExp1right))) :: ( _, ( _, COLONGREATER1left, _)) :: rest671)) =>
+ let val  result = MlyValue.SigExp_constraint (fn _ => let val  (
+SigExp as SigExp1) = SigExp1 ()
  in (
  (fn leftpos => fn strexp => 
 			   OPAQUE_CONSTRAINTstrexp
 			     (PP leftpos SigExpright, strexp, SigExp)) 
-) end
 )
- in (LrTable.NT 29,(result,COLONGREATER1left,SigExp1right),rest671)
- end
-| (53,(_,(MlyValue.FunBind FunBind1,_,FunBind1right))::(_,(_,AND1left,
-_))::rest671) => let val result=MlyValue.AndFunBind_opt(fn _ => let 
-val FunBind as FunBind1=FunBind1 ()
- in ( SOME FunBind ) end
-)
- in (LrTable.NT 31,(result,AND1left,FunBind1right),rest671) end
-| (54,rest671) => let val result=MlyValue.AndFunBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 31,(result,defaultPos,defaultPos),rest671) end
-| (55,(_,(MlyValue.FunBind FunBind1,_,FunBind1right))::(_,(_,
-FUNCTORleft as FUNCTOR1left,_))::rest671) => let val result=
-MlyValue.FunDec(fn _ => let val FunBind as FunBind1=FunBind1 ()
+end)
+ in ( LrTable.NT 29, ( result, COLONGREATER1left, SigExp1right), 
+rest671)
+end
+|  ( 53, ( ( _, ( MlyValue.FunBind FunBind1, _, FunBind1right)) :: ( _
+, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndFunBind_opt (fn _ => let val  (FunBind as FunBind1) = 
+FunBind1 ()
+ in ( SOME FunBind )
+end)
+ in ( LrTable.NT 31, ( result, AND1left, FunBind1right), rest671)
+end
+|  ( 54, ( rest671)) => let val  result = MlyValue.AndFunBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 31, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 55, ( ( _, ( MlyValue.FunBind FunBind1, _, FunBind1right)) :: ( _
+, ( _, (FUNCTORleft as FUNCTOR1left), _)) :: rest671)) => let val  
+result = MlyValue.FunDec (fn _ => let val  (FunBind as FunBind1) = 
+FunBind1 ()
  in (
  FUNCTORfundec (PP FUNCTORleft (right (info_on_funbind FunBind)),
 					 FunBind) 
-) end
 )
- in (LrTable.NT 5,(result,FUNCTOR1left,FunBind1right),rest671) end
-| (56,(_,(MlyValue.AndStrDesc_opt AndStrDesc_opt1,_,
-AndStrDesc_opt1right))::(_,(MlyValue.SigExp SigExp1,_,_))::_::(_,(
-MlyValue.Ident Ident1,Identleft as Ident1left,_))::rest671) => let 
-val result=MlyValue.StrDesc(fn _ => let val Ident as Ident1=Ident1 ()
-val SigExp as SigExp1=SigExp1 ()
-val AndStrDesc_opt as AndStrDesc_opt1=AndStrDesc_opt1 ()
+end)
+ in ( LrTable.NT 5, ( result, FUNCTOR1left, FunBind1right), rest671)
+
+end
+|  ( 56, ( ( _, ( MlyValue.AndStrDesc_opt AndStrDesc_opt1, _, 
+AndStrDesc_opt1right)) :: ( _, ( MlyValue.SigExp SigExp1, _, _)) :: _
+ :: ( _, ( MlyValue.Ident Ident1, (Identleft as Ident1left), _)) :: 
+rest671)) => let val  result = MlyValue.StrDesc (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ val  (SigExp as SigExp1) = SigExp1 ()
+ val  (AndStrDesc_opt as AndStrDesc_opt1) = AndStrDesc_opt1 ()
  in (
  STRDESC (PP Identleft
 				     (rightmost info_on_sigexp SigExp
 				                info_on_strdesc AndStrDesc_opt),
 				   mk_StrId Ident, SigExp, AndStrDesc_opt) 
-) end
 )
- in (LrTable.NT 8,(result,Ident1left,AndStrDesc_opt1right),rest671)
- end
-| (57,(_,(MlyValue.StrDesc StrDesc1,_,StrDesc1right))::(_,(_,AND1left,
-_))::rest671) => let val result=MlyValue.AndStrDesc_opt(fn _ => let 
-val StrDesc as StrDesc1=StrDesc1 ()
- in ( SOME StrDesc ) end
-)
- in (LrTable.NT 34,(result,AND1left,StrDesc1right),rest671) end
-| (58,rest671) => let val result=MlyValue.AndStrDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 34,(result,defaultPos,defaultPos),rest671) end
-| (59,(_,(MlyValue.AndExDesc_opt AndExDesc_opt1,_,AndExDesc_opt1right)
-)::(_,(MlyValue.OfTy_opt OfTy_opt1,_,_))::(_,(MlyValue.Ident Ident1,
-Identleft as Ident1left,Identright))::rest671) => let val result=
-MlyValue.ExDesc(fn _ => let val Ident as Ident1=Ident1 ()
-val OfTy_opt as OfTy_opt1=OfTy_opt1 ()
-val AndExDesc_opt as AndExDesc_opt1=AndExDesc_opt1 ()
+end)
+ in ( LrTable.NT 8, ( result, Ident1left, AndStrDesc_opt1right), 
+rest671)
+end
+|  ( 57, ( ( _, ( MlyValue.StrDesc StrDesc1, _, StrDesc1right)) :: ( _
+, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndStrDesc_opt (fn _ => let val  (StrDesc as StrDesc1) = 
+StrDesc1 ()
+ in ( SOME StrDesc )
+end)
+ in ( LrTable.NT 34, ( result, AND1left, StrDesc1right), rest671)
+end
+|  ( 58, ( rest671)) => let val  result = MlyValue.AndStrDesc_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 34, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 59, ( ( _, ( MlyValue.AndExDesc_opt AndExDesc_opt1, _, 
+AndExDesc_opt1right)) :: ( _, ( MlyValue.OfTy_opt OfTy_opt1, _, _)) ::
+ ( _, ( MlyValue.Ident Ident1, (Identleft as Ident1left), Identright))
+ :: rest671)) => let val  result = MlyValue.ExDesc (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ val  (OfTy_opt as OfTy_opt1) = OfTy_opt1 ()
+ val  (AndExDesc_opt as AndExDesc_opt1) = AndExDesc_opt1 ()
  in (
  EXDESC (PP Identleft
 				    (rightmost_of_three  Identright
 				                get_info_ty OfTy_opt
 						info_on_exdesc AndExDesc_opt),
 				  mk_Id Ident, OfTy_opt, AndExDesc_opt) 
-) end
 )
- in (LrTable.NT 9,(result,Ident1left,AndExDesc_opt1right),rest671) end
-| (60,(_,(MlyValue.ExDesc ExDesc1,_,ExDesc1right))::(_,(_,AND1left,_))
-::rest671) => let val result=MlyValue.AndExDesc_opt(fn _ => let val 
-ExDesc as ExDesc1=ExDesc1 ()
- in ( SOME ExDesc ) end
-)
- in (LrTable.NT 35,(result,AND1left,ExDesc1right),rest671) end
-| (61,rest671) => let val result=MlyValue.AndExDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 35,(result,defaultPos,defaultPos),rest671) end
-| (62,(_,(MlyValue.BarConDesc_opt BarConDesc_opt1,_,
-BarConDesc_opt1right))::(_,(MlyValue.OfTy_opt OfTy_opt1,_,_))::(_,(
-MlyValue.LongOpIdent LongOpIdent1,LongOpIdentleft as LongOpIdent1left,
-LongOpIdentright))::rest671) => let val result=MlyValue.ConDesc(fn _
- => let val LongOpIdent as LongOpIdent1=LongOpIdent1 ()
-val OfTy_opt as OfTy_opt1=OfTy_opt1 ()
-val BarConDesc_opt as BarConDesc_opt1=BarConDesc_opt1 ()
+end)
+ in ( LrTable.NT 9, ( result, Ident1left, AndExDesc_opt1right), 
+rest671)
+end
+|  ( 60, ( ( _, ( MlyValue.ExDesc ExDesc1, _, ExDesc1right)) :: ( _, (
+ _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndExDesc_opt (fn _ => let val  (ExDesc as ExDesc1) = ExDesc1
+ ()
+ in ( SOME ExDesc )
+end)
+ in ( LrTable.NT 35, ( result, AND1left, ExDesc1right), rest671)
+end
+|  ( 61, ( rest671)) => let val  result = MlyValue.AndExDesc_opt (fn _
+ => ( NONE ))
+ in ( LrTable.NT 35, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 62, ( ( _, ( MlyValue.BarConDesc_opt BarConDesc_opt1, _, 
+BarConDesc_opt1right)) :: ( _, ( MlyValue.OfTy_opt OfTy_opt1, _, _))
+ :: ( _, ( MlyValue.LongOpIdent LongOpIdent1, (LongOpIdentleft as 
+LongOpIdent1left), LongOpIdentright)) :: rest671)) => let val  result
+ = MlyValue.ConDesc (fn _ => let val  (LongOpIdent as LongOpIdent1) = 
+LongOpIdent1 ()
+ val  (OfTy_opt as OfTy_opt1) = OfTy_opt1 ()
+ val  (BarConDesc_opt as BarConDesc_opt1) = BarConDesc_opt1 ()
  in (
  let val OP_OPT (id, _) = LongOpIdent
                           in CONDESC
@@ -2523,578 +2629,686 @@ val BarConDesc_opt as BarConDesc_opt1=BarConDesc_opt1 ()
 					      info_on_condesc BarConDesc_opt), 
 				mk_LongId id, OfTy_opt, BarConDesc_opt)
                           end 
-) end
 )
- in (LrTable.NT 10,(result,LongOpIdent1left,BarConDesc_opt1right),
-rest671) end
-| (63,(_,(MlyValue.ConDesc ConDesc1,_,ConDesc1right))::(_,(_,BAR1left,
-_))::rest671) => let val result=MlyValue.BarConDesc_opt(fn _ => let 
-val ConDesc as ConDesc1=ConDesc1 ()
- in ( SOME ConDesc ) end
-)
- in (LrTable.NT 36,(result,BAR1left,ConDesc1right),rest671) end
-| (64,rest671) => let val result=MlyValue.BarConDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 36,(result,defaultPos,defaultPos),rest671) end
-| (65,(_,(MlyValue.AndDatDesc_opt AndDatDesc_opt1,_,
-AndDatDesc_opt1right))::(_,(MlyValue.ConDesc ConDesc1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq TyVarSeq1,
-TyVarSeqleft as TyVarSeq1left,_))::rest671) => let val result=
-MlyValue.DatDesc(fn _ => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConDesc as ConDesc1=ConDesc1 ()
-val AndDatDesc_opt as AndDatDesc_opt1=AndDatDesc_opt1 ()
+end)
+ in ( LrTable.NT 10, ( result, LongOpIdent1left, BarConDesc_opt1right)
+, rest671)
+end
+|  ( 63, ( ( _, ( MlyValue.ConDesc ConDesc1, _, ConDesc1right)) :: ( _
+, ( _, BAR1left, _)) :: rest671)) => let val  result = 
+MlyValue.BarConDesc_opt (fn _ => let val  (ConDesc as ConDesc1) = 
+ConDesc1 ()
+ in ( SOME ConDesc )
+end)
+ in ( LrTable.NT 36, ( result, BAR1left, ConDesc1right), rest671)
+end
+|  ( 64, ( rest671)) => let val  result = MlyValue.BarConDesc_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 36, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 65, ( ( _, ( MlyValue.AndDatDesc_opt AndDatDesc_opt1, _, 
+AndDatDesc_opt1right)) :: ( _, ( MlyValue.ConDesc ConDesc1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq TyVarSeq1, (TyVarSeqleft as TyVarSeq1left), _)) :: 
+rest671)) => let val  result = MlyValue.DatDesc (fn _ => let val  (
+TyVarSeq as TyVarSeq1) = TyVarSeq1 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (ConDesc as ConDesc1) = ConDesc1 ()
+ val  (AndDatDesc_opt as AndDatDesc_opt1) = AndDatDesc_opt1 ()
  in (
  DATDESC (PP TyVarSeqleft
 				     (rightmost info_on_condesc ConDesc
 				                info_on_datdesc AndDatDesc_opt),
 				   TyVarSeq, mk_TyCon TypeIdent,
 				   ConDesc, AndDatDesc_opt) 
-) end
 )
- in (LrTable.NT 11,(result,TyVarSeq1left,AndDatDesc_opt1right),rest671
-) end
-| (66,(_,(MlyValue.AndDatDesc_opt AndDatDesc_opt1,_,
-AndDatDesc_opt1right))::(_,(MlyValue.ConDesc ConDesc1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,TypeIdentleft as TypeIdent1left,_))::
-rest671) => let val result=MlyValue.DatDesc_zero_arity(fn _ => let 
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConDesc as ConDesc1=ConDesc1 ()
-val AndDatDesc_opt as AndDatDesc_opt1=AndDatDesc_opt1 ()
+end)
+ in ( LrTable.NT 11, ( result, TyVarSeq1left, AndDatDesc_opt1right), 
+rest671)
+end
+|  ( 66, ( ( _, ( MlyValue.AndDatDesc_opt AndDatDesc_opt1, _, 
+AndDatDesc_opt1right)) :: ( _, ( MlyValue.ConDesc ConDesc1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, (TypeIdentleft as 
+TypeIdent1left), _)) :: rest671)) => let val  result = 
+MlyValue.DatDesc_zero_arity (fn _ => let val  (TypeIdent as TypeIdent1
+) = TypeIdent1 ()
+ val  (ConDesc as ConDesc1) = ConDesc1 ()
+ val  (AndDatDesc_opt as AndDatDesc_opt1) = AndDatDesc_opt1 ()
  in (
  DATDESC (PP TypeIdentleft
 				     (rightmost info_on_condesc ConDesc
 				                info_on_datdesc AndDatDesc_opt),
 				   [], mk_TyCon TypeIdent,
 				   ConDesc, AndDatDesc_opt) 
-) end
 )
- in (LrTable.NT 12,(result,TypeIdent1left,AndDatDesc_opt1right),
-rest671) end
-| (67,(_,(MlyValue.AndDatDesc_opt AndDatDesc_opt1,_,
-AndDatDesc_opt1right))::(_,(MlyValue.ConDesc ConDesc1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq1 TyVarSeq11
-,TyVarSeq1left as TyVarSeq11left,_))::rest671) => let val result=
-MlyValue.DatDesc_nonzero_arity(fn _ => let val TyVarSeq1 as TyVarSeq11
-=TyVarSeq11 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConDesc as ConDesc1=ConDesc1 ()
-val AndDatDesc_opt as AndDatDesc_opt1=AndDatDesc_opt1 ()
+end)
+ in ( LrTable.NT 12, ( result, TypeIdent1left, AndDatDesc_opt1right), 
+rest671)
+end
+|  ( 67, ( ( _, ( MlyValue.AndDatDesc_opt AndDatDesc_opt1, _, 
+AndDatDesc_opt1right)) :: ( _, ( MlyValue.ConDesc ConDesc1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq1 TyVarSeq11, (TyVarSeq1left as TyVarSeq11left), _))
+ :: rest671)) => let val  result = MlyValue.DatDesc_nonzero_arity (fn
+ _ => let val  (TyVarSeq1 as TyVarSeq11) = TyVarSeq11 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (ConDesc as ConDesc1) = ConDesc1 ()
+ val  (AndDatDesc_opt as AndDatDesc_opt1) = AndDatDesc_opt1 ()
  in (
  DATDESC (PP TyVarSeq1left
 				     (rightmost info_on_condesc ConDesc
 				                info_on_datdesc AndDatDesc_opt),
 				   TyVarSeq1, mk_TyCon TypeIdent,
 				   ConDesc, AndDatDesc_opt) 
-) end
 )
- in (LrTable.NT 13,(result,TyVarSeq11left,AndDatDesc_opt1right),
-rest671) end
-| (68,(_,(MlyValue.DatDesc DatDesc1,_,DatDesc1right))::(_,(_,AND1left,
-_))::rest671) => let val result=MlyValue.AndDatDesc_opt(fn _ => let 
-val DatDesc as DatDesc1=DatDesc1 ()
- in ( SOME DatDesc ) end
-)
- in (LrTable.NT 37,(result,AND1left,DatDesc1right),rest671) end
-| (69,rest671) => let val result=MlyValue.AndDatDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 37,(result,defaultPos,defaultPos),rest671) end
-| (70,(_,(MlyValue.AndTypDesc_opt AndTypDesc_opt1,_,
-AndTypDesc_opt1right))::(_,(MlyValue.TypeIdent TypeIdent1,_,
-TypeIdentright))::(_,(MlyValue.TyVarSeq TyVarSeq1,TyVarSeqleft as 
-TyVarSeq1left,_))::rest671) => let val result=MlyValue.TypDesc(fn _
- => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val AndTypDesc_opt as AndTypDesc_opt1=AndTypDesc_opt1 ()
+end)
+ in ( LrTable.NT 13, ( result, TyVarSeq11left, AndDatDesc_opt1right), 
+rest671)
+end
+|  ( 68, ( ( _, ( MlyValue.DatDesc DatDesc1, _, DatDesc1right)) :: ( _
+, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndDatDesc_opt (fn _ => let val  (DatDesc as DatDesc1) = 
+DatDesc1 ()
+ in ( SOME DatDesc )
+end)
+ in ( LrTable.NT 37, ( result, AND1left, DatDesc1right), rest671)
+end
+|  ( 69, ( rest671)) => let val  result = MlyValue.AndDatDesc_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 37, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 70, ( ( _, ( MlyValue.AndTypDesc_opt AndTypDesc_opt1, _, 
+AndTypDesc_opt1right)) :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, 
+TypeIdentright)) :: ( _, ( MlyValue.TyVarSeq TyVarSeq1, (TyVarSeqleft
+ as TyVarSeq1left), _)) :: rest671)) => let val  result = 
+MlyValue.TypDesc (fn _ => let val  (TyVarSeq as TyVarSeq1) = TyVarSeq1
+ ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (AndTypDesc_opt as AndTypDesc_opt1) = AndTypDesc_opt1 ()
  in (
  TYPDESC (PP TyVarSeqleft
 				     (rightmost' TypeIdentright info_on_typdesc AndTypDesc_opt),
 				   TyVarSeq, mk_TyCon TypeIdent, AndTypDesc_opt) 
-) end
 )
- in (LrTable.NT 14,(result,TyVarSeq1left,AndTypDesc_opt1right),rest671
-) end
-| (71,(_,(MlyValue.TypDesc TypDesc1,_,TypDesc1right))::(_,(_,AND1left,
-_))::rest671) => let val result=MlyValue.AndTypDesc_opt(fn _ => let 
-val TypDesc as TypDesc1=TypDesc1 ()
- in ( SOME TypDesc ) end
-)
- in (LrTable.NT 38,(result,AND1left,TypDesc1right),rest671) end
-| (72,rest671) => let val result=MlyValue.AndTypDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 38,(result,defaultPos,defaultPos),rest671) end
-| (73,(_,(MlyValue.TypAbbreviationAND_seq1 TypAbbreviationAND_seq11,_,
-TypAbbreviationAND_seq11right))::_::(_,(MlyValue.TypAbbreviation 
-TypAbbreviation1,TypAbbreviation1left,_))::rest671) => let val result=
-MlyValue.TypAbbreviationAND_seq1(fn _ => let val TypAbbreviation as 
-TypAbbreviation1=TypAbbreviation1 ()
-val TypAbbreviationAND_seq1 as TypAbbreviationAND_seq11=
+end)
+ in ( LrTable.NT 14, ( result, TyVarSeq1left, AndTypDesc_opt1right), 
+rest671)
+end
+|  ( 71, ( ( _, ( MlyValue.TypDesc TypDesc1, _, TypDesc1right)) :: ( _
+, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndTypDesc_opt (fn _ => let val  (TypDesc as TypDesc1) = 
+TypDesc1 ()
+ in ( SOME TypDesc )
+end)
+ in ( LrTable.NT 38, ( result, AND1left, TypDesc1right), rest671)
+end
+|  ( 72, ( rest671)) => let val  result = MlyValue.AndTypDesc_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 38, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 73, ( ( _, ( MlyValue.TypAbbreviationAND_seq1 
+TypAbbreviationAND_seq11, _, TypAbbreviationAND_seq11right)) :: _ :: (
+ _, ( MlyValue.TypAbbreviation TypAbbreviation1, TypAbbreviation1left,
+ _)) :: rest671)) => let val  result = 
+MlyValue.TypAbbreviationAND_seq1 (fn _ => let val  (TypAbbreviation
+ as TypAbbreviation1) = TypAbbreviation1 ()
+ val  (TypAbbreviationAND_seq1 as TypAbbreviationAND_seq11) = 
 TypAbbreviationAND_seq11 ()
- in ( TypAbbreviation :: TypAbbreviationAND_seq1 ) end
-)
- in (LrTable.NT 40,(result,TypAbbreviation1left,
-TypAbbreviationAND_seq11right),rest671) end
-| (74,(_,(MlyValue.TypAbbreviation TypAbbreviation1,
-TypAbbreviation1left,TypAbbreviation1right))::rest671) => let val 
-result=MlyValue.TypAbbreviationAND_seq1(fn _ => let val 
-TypAbbreviation as TypAbbreviation1=TypAbbreviation1 ()
- in ( [TypAbbreviation] ) end
-)
- in (LrTable.NT 40,(result,TypAbbreviation1left,TypAbbreviation1right)
-,rest671) end
-| (75,(_,(MlyValue.Ty Ty1,_,Tyright as Ty1right))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,TypeIdentright))::(_,(
-MlyValue.TyVarSeq TyVarSeq1,TyVarSeqleft as TyVarSeq1left,_))::rest671
-) => let val result=MlyValue.TypAbbreviation(fn _ => let val TyVarSeq
- as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val Ty as Ty1=Ty1 ()
+ in ( TypAbbreviation :: TypAbbreviationAND_seq1 )
+end)
+ in ( LrTable.NT 40, ( result, TypAbbreviation1left, 
+TypAbbreviationAND_seq11right), rest671)
+end
+|  ( 74, ( ( _, ( MlyValue.TypAbbreviation TypAbbreviation1, 
+TypAbbreviation1left, TypAbbreviation1right)) :: rest671)) => let val 
+ result = MlyValue.TypAbbreviationAND_seq1 (fn _ => let val  (
+TypAbbreviation as TypAbbreviation1) = TypAbbreviation1 ()
+ in ( [TypAbbreviation] )
+end)
+ in ( LrTable.NT 40, ( result, TypAbbreviation1left, 
+TypAbbreviation1right), rest671)
+end
+|  ( 75, ( ( _, ( MlyValue.Ty Ty1, _, (Tyright as Ty1right))) :: _ :: 
+( _, ( MlyValue.TypeIdent TypeIdent1, _, TypeIdentright)) :: ( _, ( 
+MlyValue.TyVarSeq TyVarSeq1, (TyVarSeqleft as TyVarSeq1left), _)) :: 
+rest671)) => let val  result = MlyValue.TypAbbreviation (fn _ => let
+ val  (TyVarSeq as TyVarSeq1) = TyVarSeq1 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (Ty as Ty1) = Ty1 ()
  in (
  (TyVarSeq, mk_TyCon TypeIdent, Ty,
 			   PP TyVarSeqleft Tyright, PP TyVarSeqleft TypeIdentright) 
-) end
 )
- in (LrTable.NT 16,(result,TyVarSeq1left,Ty1right),rest671) end
-| (76,(_,(MlyValue.AndValDesc_opt AndValDesc_opt1,_,
-AndValDesc_opt1right))::(_,(MlyValue.Ty Ty1,_,Tyright))::_::(_,(
-MlyValue.EqIdent EqIdent1,EqIdentleft as EqIdent1left,_))::rest671)
- => let val result=MlyValue.ValDesc(fn _ => let val EqIdent as 
-EqIdent1=EqIdent1 ()
-val Ty as Ty1=Ty1 ()
-val AndValDesc_opt as AndValDesc_opt1=AndValDesc_opt1 ()
+end)
+ in ( LrTable.NT 16, ( result, TyVarSeq1left, Ty1right), rest671)
+end
+|  ( 76, ( ( _, ( MlyValue.AndValDesc_opt AndValDesc_opt1, _, 
+AndValDesc_opt1right)) :: ( _, ( MlyValue.Ty Ty1, _, Tyright)) :: _ ::
+ ( _, ( MlyValue.EqIdent EqIdent1, (EqIdentleft as EqIdent1left), _))
+ :: rest671)) => let val  result = MlyValue.ValDesc (fn _ => let val 
+ (EqIdent as EqIdent1) = EqIdent1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ val  (AndValDesc_opt as AndValDesc_opt1) = AndValDesc_opt1 ()
  in (
  VALDESC (PP EqIdentleft
 				     (rightmost' Tyright info_on_valdesc AndValDesc_opt),
 				   mk_Id EqIdent, Ty, AndValDesc_opt) 
-) end
 )
- in (LrTable.NT 17,(result,EqIdent1left,AndValDesc_opt1right),rest671)
- end
-| (77,(_,(MlyValue.ValDesc ValDesc1,_,ValDesc1right))::(_,(_,AND1left,
-_))::rest671) => let val result=MlyValue.AndValDesc_opt(fn _ => let 
-val ValDesc as ValDesc1=ValDesc1 ()
- in ( SOME ValDesc ) end
-)
- in (LrTable.NT 41,(result,AND1left,ValDesc1right),rest671) end
-| (78,rest671) => let val result=MlyValue.AndValDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 41,(result,defaultPos,defaultPos),rest671) end
-| (79,(_,(MlyValue.ValDesc ValDesc1,_,ValDesc1right))::(_,(_,VALleft
- as VAL1left,_))::rest671) => let val result=MlyValue.OneSpec(fn _ => 
-let val ValDesc as ValDesc1=ValDesc1 ()
+end)
+ in ( LrTable.NT 17, ( result, EqIdent1left, AndValDesc_opt1right), 
+rest671)
+end
+|  ( 77, ( ( _, ( MlyValue.ValDesc ValDesc1, _, ValDesc1right)) :: ( _
+, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndValDesc_opt (fn _ => let val  (ValDesc as ValDesc1) = 
+ValDesc1 ()
+ in ( SOME ValDesc )
+end)
+ in ( LrTable.NT 41, ( result, AND1left, ValDesc1right), rest671)
+end
+|  ( 78, ( rest671)) => let val  result = MlyValue.AndValDesc_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 41, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 79, ( ( _, ( MlyValue.ValDesc ValDesc1, _, ValDesc1right)) :: ( _
+, ( _, (VALleft as VAL1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneSpec (fn _ => let val  (ValDesc as ValDesc1) = ValDesc1 ()
  in (
  VALspec (PP VALleft (right (info_on_valdesc ValDesc)),
 				   ValDesc) 
-) end
 )
- in (LrTable.NT 20,(result,VAL1left,ValDesc1right),rest671) end
-| (80,(_,(MlyValue.TypDesc TypDesc1,_,TypDesc1right))::(_,(_,TYPEleft
- as TYPE1left,_))::rest671) => let val result=MlyValue.OneSpec(fn _
- => let val TypDesc as TypDesc1=TypDesc1 ()
+end)
+ in ( LrTable.NT 20, ( result, VAL1left, ValDesc1right), rest671)
+end
+|  ( 80, ( ( _, ( MlyValue.TypDesc TypDesc1, _, TypDesc1right)) :: ( _
+, ( _, (TYPEleft as TYPE1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneSpec (fn _ => let val  (TypDesc as TypDesc1) = TypDesc1 ()
  in (
  TYPEspec (PP TYPEleft (right (info_on_typdesc TypDesc)),
 				    TypDesc) 
-) end
 )
- in (LrTable.NT 20,(result,TYPE1left,TypDesc1right),rest671) end
-| (81,(_,(MlyValue.TypDesc TypDesc1,_,TypDesc1right))::(_,(_,
-EQTYPEleft as EQTYPE1left,_))::rest671) => let val result=
-MlyValue.OneSpec(fn _ => let val TypDesc as TypDesc1=TypDesc1 ()
+end)
+ in ( LrTable.NT 20, ( result, TYPE1left, TypDesc1right), rest671)
+end
+|  ( 81, ( ( _, ( MlyValue.TypDesc TypDesc1, _, TypDesc1right)) :: ( _
+, ( _, (EQTYPEleft as EQTYPE1left), _)) :: rest671)) => let val  
+result = MlyValue.OneSpec (fn _ => let val  (TypDesc as TypDesc1) = 
+TypDesc1 ()
  in (
  EQTYPEspec (PP EQTYPEleft (right (info_on_typdesc TypDesc)),
 				      TypDesc) 
-) end
 )
- in (LrTable.NT 20,(result,EQTYPE1left,TypDesc1right),rest671) end
-| (82,(_,(MlyValue.DatDesc_zero_arity DatDesc_zero_arity1,_,
-DatDesc_zero_arity1right))::(_,(_,DATATYPEleft as DATATYPE1left,_))::
-rest671) => let val result=MlyValue.OneSpec(fn _ => let val 
-DatDesc_zero_arity as DatDesc_zero_arity1=DatDesc_zero_arity1 ()
+end)
+ in ( LrTable.NT 20, ( result, EQTYPE1left, TypDesc1right), rest671)
+
+end
+|  ( 82, ( ( _, ( MlyValue.DatDesc_zero_arity DatDesc_zero_arity1, _, 
+DatDesc_zero_arity1right)) :: ( _, ( _, (DATATYPEleft as DATATYPE1left
+), _)) :: rest671)) => let val  result = MlyValue.OneSpec (fn _ => let
+ val  (DatDesc_zero_arity as DatDesc_zero_arity1) = 
+DatDesc_zero_arity1 ()
  in (
  DATATYPEspec (PP DATATYPEleft
 					  (right (info_on_datdesc DatDesc_zero_arity)),
 				        DatDesc_zero_arity) 
-) end
 )
- in (LrTable.NT 20,(result,DATATYPE1left,DatDesc_zero_arity1right),
-rest671) end
-| (83,(_,(MlyValue.DatDesc_nonzero_arity DatDesc_nonzero_arity1,_,
-DatDesc_nonzero_arity1right))::(_,(_,DATATYPEleft as DATATYPE1left,_))
-::rest671) => let val result=MlyValue.OneSpec(fn _ => let val 
-DatDesc_nonzero_arity as DatDesc_nonzero_arity1=DatDesc_nonzero_arity1
- ()
+end)
+ in ( LrTable.NT 20, ( result, DATATYPE1left, DatDesc_zero_arity1right
+), rest671)
+end
+|  ( 83, ( ( _, ( MlyValue.DatDesc_nonzero_arity 
+DatDesc_nonzero_arity1, _, DatDesc_nonzero_arity1right)) :: ( _, ( _,
+ (DATATYPEleft as DATATYPE1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneSpec (fn _ => let val  (DatDesc_nonzero_arity as 
+DatDesc_nonzero_arity1) = DatDesc_nonzero_arity1 ()
  in (
  DATATYPEspec (PP DATATYPEleft
 					  (right (info_on_datdesc DatDesc_nonzero_arity)),
 					DatDesc_nonzero_arity) 
-) end
 )
- in (LrTable.NT 20,(result,DATATYPE1left,DatDesc_nonzero_arity1right),
-rest671) end
-| (84,(_,(MlyValue.LongTypeIdent LongTypeIdent1,_,LongTypeIdentright
- as LongTypeIdent1right))::_::_::(_,(MlyValue.TypeIdent TypeIdent1,_,_
-))::(_,(_,DATATYPE1left,_))::rest671) => let val result=
-MlyValue.OneSpec(fn _ => let val TypeIdent as TypeIdent1=TypeIdent1 ()
-val LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
+end)
+ in ( LrTable.NT 20, ( result, DATATYPE1left, 
+DatDesc_nonzero_arity1right), rest671)
+end
+|  ( 84, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, _, (
+LongTypeIdentright as LongTypeIdent1right))) :: _ :: _ :: ( _, ( 
+MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( _, DATATYPE1left, _))
+ :: rest671)) => let val  result = MlyValue.OneSpec (fn _ => let val 
+ (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (LongTypeIdent as LongTypeIdent1) = LongTypeIdent1 ()
  in (
  DATATYPE_REPLICATIONspec
 			    (PP DATATYPE1left LongTypeIdentright,
 			     mk_TyCon TypeIdent, mk_LongTyCon LongTypeIdent) 
-) end
 )
- in (LrTable.NT 20,(result,DATATYPE1left,LongTypeIdent1right),rest671)
- end
-| (85,(_,(_,_,RCOMSPEC1right))::(_,(MlyValue.SortSpec SortSpec1,_,_))
-::(_,(_,LCOMSPEC1left,_))::rest671) => let val result=MlyValue.OneSpec
-(fn _ => let val SortSpec as SortSpec1=SortSpec1 ()
- in ( SortSpec ) end
+end)
+ in ( LrTable.NT 20, ( result, DATATYPE1left, LongTypeIdent1right), 
+rest671)
+end
+|  ( 85, ( ( _, ( _, _, RCOMSPEC1right)) :: ( _, ( MlyValue.SortSpec 
+SortSpec1, _, _)) :: ( _, ( _, LCOMSPEC1left, _)) :: rest671)) => let
+ val  result = MlyValue.OneSpec (fn _ => let val  (SortSpec as 
+SortSpec1) = SortSpec1 ()
+ in ( SortSpec )
+end)
+ in ( LrTable.NT 20, ( result, LCOMSPEC1left, RCOMSPEC1right), rest671
 )
- in (LrTable.NT 20,(result,LCOMSPEC1left,RCOMSPEC1right),rest671) end
-| (86,(_,(_,_,RCOMSPEC1right))::(_,(MlyValue.ValSSDesc ValSSDesc1,
-ValSSDescleft,_))::(_,(_,LCOMSPEC1left,_))::rest671) => let val result
-=MlyValue.OneSpec(fn _ => let val ValSSDesc as ValSSDesc1=ValSSDesc1 
-()
+end
+|  ( 86, ( ( _, ( _, _, RCOMSPEC1right)) :: ( _, ( MlyValue.ValSSDesc 
+ValSSDesc1, ValSSDescleft, _)) :: ( _, ( _, LCOMSPEC1left, _)) :: 
+rest671)) => let val  result = MlyValue.OneSpec (fn _ => let val  (
+ValSSDesc as ValSSDesc1) = ValSSDesc1 ()
  in (
  VALsspec (PP ValSSDescleft (right (info_on_valdesc ValSSDesc)),
 			 	     ValSSDesc) 
-) end
 )
- in (LrTable.NT 20,(result,LCOMSPEC1left,RCOMSPEC1right),rest671) end
-| (87,(_,(MlyValue.ExDesc ExDesc1,_,ExDesc1right))::(_,(_,
-EXCEPTIONleft as EXCEPTION1left,_))::rest671) => let val result=
-MlyValue.OneSpec(fn _ => let val ExDesc as ExDesc1=ExDesc1 ()
+end)
+ in ( LrTable.NT 20, ( result, LCOMSPEC1left, RCOMSPEC1right), rest671
+)
+end
+|  ( 87, ( ( _, ( MlyValue.ExDesc ExDesc1, _, ExDesc1right)) :: ( _, (
+ _, (EXCEPTIONleft as EXCEPTION1left), _)) :: rest671)) => let val  
+result = MlyValue.OneSpec (fn _ => let val  (ExDesc as ExDesc1) = 
+ExDesc1 ()
  in (
  EXCEPTIONspec (PP EXCEPTIONleft (right (info_on_exdesc ExDesc)),
 					 ExDesc) 
-) end
 )
- in (LrTable.NT 20,(result,EXCEPTION1left,ExDesc1right),rest671) end
-| (88,(_,(MlyValue.StrDesc StrDesc1,_,StrDesc1right))::(_,(_,
-STRUCTUREleft as STRUCTURE1left,_))::rest671) => let val result=
-MlyValue.OneSpec(fn _ => let val StrDesc as StrDesc1=StrDesc1 ()
+end)
+ in ( LrTable.NT 20, ( result, EXCEPTION1left, ExDesc1right), rest671)
+
+end
+|  ( 88, ( ( _, ( MlyValue.StrDesc StrDesc1, _, StrDesc1right)) :: ( _
+, ( _, (STRUCTUREleft as STRUCTURE1left), _)) :: rest671)) => let val 
+ result = MlyValue.OneSpec (fn _ => let val  (StrDesc as StrDesc1) = 
+StrDesc1 ()
  in (
  STRUCTUREspec (PP STRUCTUREleft (right (info_on_strdesc StrDesc)),
 					 StrDesc) 
-) end
 )
- in (LrTable.NT 20,(result,STRUCTURE1left,StrDesc1right),rest671) end
-| (89,(_,(MlyValue.SigExp SigExp1,_,SigExpright as SigExp1right))::(_,
-(_,INCLUDEleft as INCLUDE1left,_))::rest671) => let val result=
-MlyValue.OneSpec(fn _ => let val SigExp as SigExp1=SigExp1 ()
- in ( INCLUDEspec (PP INCLUDEleft SigExpright, SigExp) ) end
+end)
+ in ( LrTable.NT 20, ( result, STRUCTURE1left, StrDesc1right), rest671
 )
- in (LrTable.NT 20,(result,INCLUDE1left,SigExp1right),rest671) end
-| (90,(_,(MlyValue.TypAbbreviationAND_seq1 TypAbbreviationAND_seq11,_,
-TypAbbreviationAND_seq11right))::(_,(_,TYPE1left,_))::rest671) => let 
-val result=MlyValue.OneSpec(fn _ => let val TypAbbreviationAND_seq1
- as TypAbbreviationAND_seq11=TypAbbreviationAND_seq11 ()
+end
+|  ( 89, ( ( _, ( MlyValue.SigExp SigExp1, _, (SigExpright as 
+SigExp1right))) :: ( _, ( _, (INCLUDEleft as INCLUDE1left), _)) :: 
+rest671)) => let val  result = MlyValue.OneSpec (fn _ => let val  (
+SigExp as SigExp1) = SigExp1 ()
+ in ( INCLUDEspec (PP INCLUDEleft SigExpright, SigExp) )
+end)
+ in ( LrTable.NT 20, ( result, INCLUDE1left, SigExp1right), rest671)
+
+end
+|  ( 90, ( ( _, ( MlyValue.TypAbbreviationAND_seq1 
+TypAbbreviationAND_seq11, _, TypAbbreviationAND_seq11right)) :: ( _, (
+ _, TYPE1left, _)) :: rest671)) => let val  result = MlyValue.OneSpec
+ (fn _ => let val  (TypAbbreviationAND_seq1 as 
+TypAbbreviationAND_seq11) = TypAbbreviationAND_seq11 ()
  in (
  fold_specs_to_spec
 			    (map rewrite_type_abbreviation_spec TypAbbreviationAND_seq1) 
-) end
 )
- in (LrTable.NT 20,(result,TYPE1left,TypAbbreviationAND_seq11right),
-rest671) end
-| (91,(_,(MlyValue.Ident_seq2 Ident_seq21,_,Ident_seq21right))::(_,(_,
-INCLUDE1left,_))::rest671) => let val result=MlyValue.OneSpec(fn _ => 
-let val Ident_seq2 as Ident_seq21=Ident_seq21 ()
+end)
+ in ( LrTable.NT 20, ( result, TYPE1left, 
+TypAbbreviationAND_seq11right), rest671)
+end
+|  ( 91, ( ( _, ( MlyValue.Ident_seq2 Ident_seq21, _, Ident_seq21right
+)) :: ( _, ( _, INCLUDE1left, _)) :: rest671)) => let val  result = 
+MlyValue.OneSpec (fn _ => let val  (Ident_seq2 as Ident_seq21) = 
+Ident_seq21 ()
  in (
  fold_specs_to_spec
 			    (map (fn WITH_INFO (i, Ident) =>
 				      (i, INCLUDEspec (i, SIGIDsigexp (i, mk_SigId Ident))))
 			       Ident_seq2) 
-) end
 )
- in (LrTable.NT 20,(result,INCLUDE1left,Ident_seq21right),rest671) end
-| (92,(_,(MlyValue.OneSpec OneSpec1,_,OneSpec1right))::(_,(
-MlyValue.Spec Spec1,Specleft as Spec1left,_))::rest671) => let val 
-result=MlyValue.Spec(fn _ => let val Spec as Spec1=Spec1 ()
-val OneSpec as OneSpec1=OneSpec1 ()
+end)
+ in ( LrTable.NT 20, ( result, INCLUDE1left, Ident_seq21right), 
+rest671)
+end
+|  ( 92, ( ( _, ( MlyValue.OneSpec OneSpec1, _, OneSpec1right)) :: ( _
+, ( MlyValue.Spec Spec1, (Specleft as Spec1left), _)) :: rest671)) =>
+ let val  result = MlyValue.Spec (fn _ => let val  (Spec as Spec1) = 
+Spec1 ()
+ val  (OneSpec as OneSpec1) = OneSpec1 ()
  in (
  composeSpec (PP Specleft (right (info_on_spec OneSpec)),
 				       Spec, OneSpec) 
-) end
 )
- in (LrTable.NT 18,(result,Spec1left,OneSpec1right),rest671) end
-| (93,(_,(MlyValue.SpecWithSharing SpecWithSharing1,
-SpecWithSharing1left,SpecWithSharing1right))::rest671) => let val 
-result=MlyValue.Spec(fn _ => let val SpecWithSharing as 
-SpecWithSharing1=SpecWithSharing1 ()
- in ( SpecWithSharing ) end
-)
- in (LrTable.NT 18,(result,SpecWithSharing1left,SpecWithSharing1right)
-,rest671) end
-| (94,(_,(MlyValue.LongIdentEq_seq2 LongIdentEq_seq21,_,
-LongIdentEq_seq2right as LongIdentEq_seq21right))::_::(_,(
-MlyValue.Spec Spec1,Specleft as Spec1left,_))::rest671) => let val 
-result=MlyValue.Spec(fn _ => let val Spec as Spec1=Spec1 ()
-val LongIdentEq_seq2 as LongIdentEq_seq21=LongIdentEq_seq21 ()
+end)
+ in ( LrTable.NT 18, ( result, Spec1left, OneSpec1right), rest671)
+end
+|  ( 93, ( ( _, ( MlyValue.SpecWithSharing SpecWithSharing1, 
+SpecWithSharing1left, SpecWithSharing1right)) :: rest671)) => let val 
+ result = MlyValue.Spec (fn _ => let val  (SpecWithSharing as 
+SpecWithSharing1) = SpecWithSharing1 ()
+ in ( SpecWithSharing )
+end)
+ in ( LrTable.NT 18, ( result, SpecWithSharing1left, 
+SpecWithSharing1right), rest671)
+end
+|  ( 94, ( ( _, ( MlyValue.LongIdentEq_seq2 LongIdentEq_seq21, _, (
+LongIdentEq_seq2right as LongIdentEq_seq21right))) :: _ :: ( _, ( 
+MlyValue.Spec Spec1, (Specleft as Spec1left), _)) :: rest671)) => let
+ val  result = MlyValue.Spec (fn _ => let val  (Spec as Spec1) = Spec1
+ ()
+ val  (LongIdentEq_seq2 as LongIdentEq_seq21) = LongIdentEq_seq21 ()
  in (
  SHARINGspec (PP Specleft LongIdentEq_seq2right,
 				       Spec, wi_Convert mk_LongStrId LongIdentEq_seq2) 
-) end
 )
- in (LrTable.NT 18,(result,Spec1left,LongIdentEq_seq21right),rest671)
- end
-| (95,(_,(_,_,RCOMSPECright as RCOMSPEC1right))::(_,(
-MlyValue.LongIdent_conjseq1 LongIdent_conjseq12,_,_))::_::(_,(
-MlyValue.LongIdent_conjseq1 LongIdent_conjseq11,_,_))::_::_::(_,(
-MlyValue.Spec Spec1,Specleft as Spec1left,_))::rest671) => let val 
-result=MlyValue.Spec(fn _ => let val Spec as Spec1=Spec1 ()
-val LongIdent_conjseq11=LongIdent_conjseq11 ()
-val LongIdent_conjseq12=LongIdent_conjseq12 ()
+end)
+ in ( LrTable.NT 18, ( result, Spec1left, LongIdentEq_seq21right), 
+rest671)
+end
+|  ( 95, ( ( _, ( _, _, (RCOMSPECright as RCOMSPEC1right))) :: ( _, ( 
+MlyValue.LongIdent_conjseq1 LongIdent_conjseq12, _, _)) :: _ :: ( _, (
+ MlyValue.LongIdent_conjseq1 LongIdent_conjseq11, _, _)) :: _ :: _ :: 
+( _, ( MlyValue.Spec Spec1, (Specleft as Spec1left), _)) :: rest671))
+ => let val  result = MlyValue.Spec (fn _ => let val  (Spec as Spec1)
+ = Spec1 ()
+ val  LongIdent_conjseq11 = LongIdent_conjseq11 ()
+ val  LongIdent_conjseq12 = LongIdent_conjseq12 ()
  in (
  SUBSORTspec (PP Specleft RCOMSPECright,
                            Spec,
 			   wi_Convert mk_LongTyCon LongIdent_conjseq11,
 			   wi_Convert mk_LongTyCon LongIdent_conjseq12) 
-) end
 )
- in (LrTable.NT 18,(result,Spec1left,RCOMSPEC1right),rest671) end
-| (96,(_,(_,_,SEMICOLON1right))::(_,(MlyValue.Spec Spec1,Spec1left,_))
-::rest671) => let val result=MlyValue.Spec(fn _ => let val Spec as 
-Spec1=Spec1 ()
- in ( Spec ) end
-)
- in (LrTable.NT 18,(result,Spec1left,SEMICOLON1right),rest671) end
-| (97,rest671) => let val result=MlyValue.Spec(fn _ => (
+end)
+ in ( LrTable.NT 18, ( result, Spec1left, RCOMSPEC1right), rest671)
+
+end
+|  ( 96, ( ( _, ( _, _, SEMICOLON1right)) :: ( _, ( MlyValue.Spec 
+Spec1, Spec1left, _)) :: rest671)) => let val  result = MlyValue.Spec
+ (fn _ => let val  (Spec as Spec1) = Spec1 ()
+ in ( Spec )
+end)
+ in ( LrTable.NT 18, ( result, Spec1left, SEMICOLON1right), rest671)
+
+end
+|  ( 97, ( rest671)) => let val  result = MlyValue.Spec (fn _ => (
  EMPTYspec (PP defaultPos defaultPos) ))
- in (LrTable.NT 18,(result,defaultPos,defaultPos),rest671) end
-| (98,(_,(MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,_,
-LongTypeIdentEq_seq2right as LongTypeIdentEq_seq21right))::_::_::(_,(
-MlyValue.Spec Spec1,Specleft as Spec1left,_))::rest671) => let val 
-result=MlyValue.SpecWithSharing(fn _ => let val Spec as Spec1=Spec1 ()
-val LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21=
+ in ( LrTable.NT 18, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 98, ( ( _, ( MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,
+ _, (LongTypeIdentEq_seq2right as LongTypeIdentEq_seq21right))) :: _
+ :: _ :: ( _, ( MlyValue.Spec Spec1, (Specleft as Spec1left), _)) :: 
+rest671)) => let val  result = MlyValue.SpecWithSharing (fn _ => let
+ val  (Spec as Spec1) = Spec1 ()
+ val  (LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21) = 
 LongTypeIdentEq_seq21 ()
  in (
  SHARING_TYPEspec (PP Specleft LongTypeIdentEq_seq2right,
 					    Spec, 
 					    wi_Convert mk_LongTyCon LongTypeIdentEq_seq2) 
-) end
 )
- in (LrTable.NT 19,(result,Spec1left,LongTypeIdentEq_seq21right),
-rest671) end
-| (99,(_,(MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,_,
-LongTypeIdentEq_seq2right as LongTypeIdentEq_seq21right))::_::_::(_,(
-MlyValue.SpecWithSharing SpecWithSharing1,SpecWithSharingleft as 
-SpecWithSharing1left,_))::rest671) => let val result=
-MlyValue.SpecWithSharing(fn _ => let val SpecWithSharing as 
-SpecWithSharing1=SpecWithSharing1 ()
-val LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21=
+end)
+ in ( LrTable.NT 19, ( result, Spec1left, LongTypeIdentEq_seq21right),
+ rest671)
+end
+|  ( 99, ( ( _, ( MlyValue.LongTypeIdentEq_seq2 LongTypeIdentEq_seq21,
+ _, (LongTypeIdentEq_seq2right as LongTypeIdentEq_seq21right))) :: _
+ :: _ :: ( _, ( MlyValue.SpecWithSharing SpecWithSharing1, (
+SpecWithSharingleft as SpecWithSharing1left), _)) :: rest671)) => let
+ val  result = MlyValue.SpecWithSharing (fn _ => let val  (
+SpecWithSharing as SpecWithSharing1) = SpecWithSharing1 ()
+ val  (LongTypeIdentEq_seq2 as LongTypeIdentEq_seq21) = 
 LongTypeIdentEq_seq21 ()
  in (
  SHARING_TYPEspec (PP SpecWithSharingleft LongTypeIdentEq_seq2right,
 					    SpecWithSharing,
 					    wi_Convert mk_LongTyCon LongTypeIdentEq_seq2) 
-) end
 )
- in (LrTable.NT 19,(result,SpecWithSharing1left,
-LongTypeIdentEq_seq21right),rest671) end
-| (100,(_,(MlyValue.DatDesc_zero_arity DatDesc_zero_arity1,_,
-DatDesc_zero_arity1right))::(_,(_,DATASORTleft as DATASORT1left,_))::
-rest671) => let val result=MlyValue.OneSortSpec(fn _ => let val 
-DatDesc_zero_arity as DatDesc_zero_arity1=DatDesc_zero_arity1 ()
+end)
+ in ( LrTable.NT 19, ( result, SpecWithSharing1left, 
+LongTypeIdentEq_seq21right), rest671)
+end
+|  ( 100, ( ( _, ( MlyValue.DatDesc_zero_arity DatDesc_zero_arity1, _,
+ DatDesc_zero_arity1right)) :: ( _, ( _, (DATASORTleft as 
+DATASORT1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneSortSpec (fn _ => let val  (DatDesc_zero_arity as 
+DatDesc_zero_arity1) = DatDesc_zero_arity1 ()
  in (
  DATASORTspec (PP DATASORTleft
 					  (right (info_on_datdesc DatDesc_zero_arity)),
 				        DatDesc_zero_arity) 
-) end
 )
- in (LrTable.NT 22,(result,DATASORT1left,DatDesc_zero_arity1right),
-rest671) end
-| (101,(_,(MlyValue.DatDesc_nonzero_arity DatDesc_nonzero_arity1,_,
-DatDesc_nonzero_arity1right))::(_,(_,DATASORTleft as DATASORT1left,_))
-::rest671) => let val result=MlyValue.OneSortSpec(fn _ => let val 
-DatDesc_nonzero_arity as DatDesc_nonzero_arity1=DatDesc_nonzero_arity1
- ()
+end)
+ in ( LrTable.NT 22, ( result, DATASORT1left, DatDesc_zero_arity1right
+), rest671)
+end
+|  ( 101, ( ( _, ( MlyValue.DatDesc_nonzero_arity 
+DatDesc_nonzero_arity1, _, DatDesc_nonzero_arity1right)) :: ( _, ( _,
+ (DATASORTleft as DATASORT1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneSortSpec (fn _ => let val  (DatDesc_nonzero_arity as 
+DatDesc_nonzero_arity1) = DatDesc_nonzero_arity1 ()
  in (
  DATASORTspec (PP DATASORTleft
 					  (right (info_on_datdesc DatDesc_nonzero_arity)),
 					DatDesc_nonzero_arity) 
-) end
 )
- in (LrTable.NT 22,(result,DATASORT1left,DatDesc_nonzero_arity1right),
-rest671) end
-| (102,(_,(MlyValue.ValSSDesc ValSSDesc1,_,ValSSDesc1right))::(_,(_,
-VALleft as VAL1left,_))::rest671) => let val result=
-MlyValue.OneSortSpec(fn _ => let val ValSSDesc as ValSSDesc1=
-ValSSDesc1 ()
+end)
+ in ( LrTable.NT 22, ( result, DATASORT1left, 
+DatDesc_nonzero_arity1right), rest671)
+end
+|  ( 102, ( ( _, ( MlyValue.ValSSDesc ValSSDesc1, _, ValSSDesc1right))
+ :: ( _, ( _, (VALleft as VAL1left), _)) :: rest671)) => let val  
+result = MlyValue.OneSortSpec (fn _ => let val  (ValSSDesc as 
+ValSSDesc1) = ValSSDesc1 ()
  in (
  VALsspec (PP VALleft (right (info_on_valdesc ValSSDesc)),
 			 	     ValSSDesc) 
-) end
 )
- in (LrTable.NT 22,(result,VAL1left,ValSSDesc1right),rest671) end
-| (103,(_,(MlyValue.SortDesc SortDesc1,_,SortDesc1right))::(_,(_,
-SORTleft as SORT1left,_))::rest671) => let val result=
-MlyValue.OneSortSpec(fn _ => let val SortDesc as SortDesc1=SortDesc1 
-()
+end)
+ in ( LrTable.NT 22, ( result, VAL1left, ValSSDesc1right), rest671)
+
+end
+|  ( 103, ( ( _, ( MlyValue.SortDesc SortDesc1, _, SortDesc1right)) ::
+ ( _, ( _, (SORTleft as SORT1left), _)) :: rest671)) => let val  
+result = MlyValue.OneSortSpec (fn _ => let val  (SortDesc as SortDesc1
+) = SortDesc1 ()
  in (
  SORTspec (PP SORTleft (right (info_on_sortdesc SortDesc)),
 				    SortDesc) 
-) end
 )
- in (LrTable.NT 22,(result,SORT1left,SortDesc1right),rest671) end
-| (104,(_,(MlyValue.ExDesc ExDesc1,_,ExDesc1right))::(_,(_,
-EXCEPTIONleft as EXCEPTION1left,_))::rest671) => let val result=
-MlyValue.OneSortSpec(fn _ => let val ExDesc as ExDesc1=ExDesc1 ()
+end)
+ in ( LrTable.NT 22, ( result, SORT1left, SortDesc1right), rest671)
+
+end
+|  ( 104, ( ( _, ( MlyValue.ExDesc ExDesc1, _, ExDesc1right)) :: ( _, 
+( _, (EXCEPTIONleft as EXCEPTION1left), _)) :: rest671)) => let val  
+result = MlyValue.OneSortSpec (fn _ => let val  (ExDesc as ExDesc1) = 
+ExDesc1 ()
  in (
  EXCEPTIONspec (PP EXCEPTIONleft (right (info_on_exdesc ExDesc)),
 					 ExDesc) 
-) end
 )
- in (LrTable.NT 22,(result,EXCEPTION1left,ExDesc1right),rest671) end
-| (105,(_,(MlyValue.OneSortSpec OneSortSpec1,_,OneSortSpec1right))::(_
-,(MlyValue.SortSpec SortSpec1,SortSpecleft as SortSpec1left,_))::
-rest671) => let val result=MlyValue.ManySortSpec(fn _ => let val 
-SortSpec as SortSpec1=SortSpec1 ()
-val OneSortSpec as OneSortSpec1=OneSortSpec1 ()
+end)
+ in ( LrTable.NT 22, ( result, EXCEPTION1left, ExDesc1right), rest671)
+
+end
+|  ( 105, ( ( _, ( MlyValue.OneSortSpec OneSortSpec1, _, 
+OneSortSpec1right)) :: ( _, ( MlyValue.SortSpec SortSpec1, (
+SortSpecleft as SortSpec1left), _)) :: rest671)) => let val  result = 
+MlyValue.ManySortSpec (fn _ => let val  (SortSpec as SortSpec1) = 
+SortSpec1 ()
+ val  (OneSortSpec as OneSortSpec1) = OneSortSpec1 ()
  in (
  composeSpec (PP SortSpecleft (right (info_on_spec OneSortSpec)),
 				       SortSpec, OneSortSpec) 
-) end
 )
- in (LrTable.NT 23,(result,SortSpec1left,OneSortSpec1right),rest671)
- end
-| (106,(_,(MlyValue.ManySortSpec ManySortSpec1,ManySortSpec1left,
-ManySortSpec1right))::rest671) => let val result=MlyValue.SortSpec(fn 
-_ => let val ManySortSpec as ManySortSpec1=ManySortSpec1 ()
- in (ManySortSpec) end
-)
- in (LrTable.NT 21,(result,ManySortSpec1left,ManySortSpec1right),
-rest671) end
-| (107,(_,(MlyValue.LongIdent_conjseq1 LongIdent_conjseq12,_,
-LongIdent_conjseq12right))::_::(_,(MlyValue.LongIdent_conjseq1 
-LongIdent_conjseq11,_,_))::_::(_,(MlyValue.ManySortSpec ManySortSpec1,
-ManySortSpecleft as ManySortSpec1left,_))::rest671) => let val result=
-MlyValue.SortSpec(fn _ => let val ManySortSpec as ManySortSpec1=
-ManySortSpec1 ()
-val LongIdent_conjseq11=LongIdent_conjseq11 ()
-val LongIdent_conjseq12=LongIdent_conjseq12 ()
+end)
+ in ( LrTable.NT 23, ( result, SortSpec1left, OneSortSpec1right), 
+rest671)
+end
+|  ( 106, ( ( _, ( MlyValue.ManySortSpec ManySortSpec1, 
+ManySortSpec1left, ManySortSpec1right)) :: rest671)) => let val  
+result = MlyValue.SortSpec (fn _ => let val  (ManySortSpec as 
+ManySortSpec1) = ManySortSpec1 ()
+ in (ManySortSpec)
+end)
+ in ( LrTable.NT 21, ( result, ManySortSpec1left, ManySortSpec1right),
+ rest671)
+end
+|  ( 107, ( ( _, ( MlyValue.LongIdent_conjseq1 LongIdent_conjseq12, _,
+ LongIdent_conjseq12right)) :: _ :: ( _, ( MlyValue.LongIdent_conjseq1
+ LongIdent_conjseq11, _, _)) :: _ :: ( _, ( MlyValue.ManySortSpec 
+ManySortSpec1, (ManySortSpecleft as ManySortSpec1left), _)) :: rest671
+)) => let val  result = MlyValue.SortSpec (fn _ => let val  (
+ManySortSpec as ManySortSpec1) = ManySortSpec1 ()
+ val  LongIdent_conjseq11 = LongIdent_conjseq11 ()
+ val  LongIdent_conjseq12 = LongIdent_conjseq12 ()
  in (
  SUBSORTspec (PP ManySortSpecleft LongIdent_conjseq12right,
                            ManySortSpec,
 			   wi_Convert mk_LongTyCon LongIdent_conjseq11,
 			   wi_Convert mk_LongTyCon LongIdent_conjseq12) 
-) end
 )
- in (LrTable.NT 21,(result,ManySortSpec1left,LongIdent_conjseq12right)
-,rest671) end
-| (108,(_,(_,_,SEMICOLON1right))::(_,(MlyValue.SortSpec SortSpec1,
-SortSpec1left,_))::rest671) => let val result=MlyValue.SortSpec(fn _
- => let val SortSpec as SortSpec1=SortSpec1 ()
- in ( SortSpec ) end
-)
- in (LrTable.NT 21,(result,SortSpec1left,SEMICOLON1right),rest671) end
-| (109,rest671) => let val result=MlyValue.SortSpec(fn _ => (
- EMPTYspec (PP defaultPos defaultPos) ))
- in (LrTable.NT 21,(result,defaultPos,defaultPos),rest671) end
-| (110,(_,(MlyValue.AndSortDesc_opt AndSortDesc_opt1,_,
-AndSortDesc_opt1right))::(_,(MlyValue.LongIdent LongIdent1,_,
-LongIdentright))::(_,(MlyValue.RefinesOrSub RefinesOrSub1,_,_))::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq TyVarSeq1,
-TyVarSeqleft as TyVarSeq1left,_))::rest671) => let val result=
-MlyValue.SortDesc(fn _ => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val RefinesOrSub as RefinesOrSub1=RefinesOrSub1 ()
-val LongIdent as LongIdent1=LongIdent1 ()
-val AndSortDesc_opt as AndSortDesc_opt1=AndSortDesc_opt1 ()
+end)
+ in ( LrTable.NT 21, ( result, ManySortSpec1left, 
+LongIdent_conjseq12right), rest671)
+end
+|  ( 108, ( ( _, ( _, _, SEMICOLON1right)) :: ( _, ( MlyValue.SortSpec
+ SortSpec1, SortSpec1left, _)) :: rest671)) => let val  result = 
+MlyValue.SortSpec (fn _ => let val  (SortSpec as SortSpec1) = 
+SortSpec1 ()
+ in ( SortSpec )
+end)
+ in ( LrTable.NT 21, ( result, SortSpec1left, SEMICOLON1right), 
+rest671)
+end
+|  ( 109, ( rest671)) => let val  result = MlyValue.SortSpec (fn _ =>
+ ( EMPTYspec (PP defaultPos defaultPos) ))
+ in ( LrTable.NT 21, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 110, ( ( _, ( MlyValue.AndSortDesc_opt AndSortDesc_opt1, _, 
+AndSortDesc_opt1right)) :: ( _, ( MlyValue.LongIdent LongIdent1, _, 
+LongIdentright)) :: ( _, ( MlyValue.RefinesOrSub RefinesOrSub1, _, _))
+ :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq TyVarSeq1, (TyVarSeqleft as TyVarSeq1left), _)) :: 
+rest671)) => let val  result = MlyValue.SortDesc (fn _ => let val  (
+TyVarSeq as TyVarSeq1) = TyVarSeq1 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (RefinesOrSub as RefinesOrSub1) = RefinesOrSub1 ()
+ val  (LongIdent as LongIdent1) = LongIdent1 ()
+ val  (AndSortDesc_opt as AndSortDesc_opt1) = AndSortDesc_opt1 ()
  in (
  SORTDESC (PP TyVarSeqleft
 			  (rightmost' LongIdentright info_on_sortdesc AndSortDesc_opt),
 		       TyVarSeq, mk_TyCon TypeIdent, RefinesOrSub,
                        mk_LongTyCon LongIdent, AndSortDesc_opt) 
-) end
 )
- in (LrTable.NT 15,(result,TyVarSeq1left,AndSortDesc_opt1right),
-rest671) end
-| (111,(_,(MlyValue.SortDesc SortDesc1,_,SortDesc1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndSortDesc_opt(fn _
- => let val SortDesc as SortDesc1=SortDesc1 ()
- in ( SOME SortDesc ) end
-)
- in (LrTable.NT 39,(result,AND1left,SortDesc1right),rest671) end
-| (112,rest671) => let val result=MlyValue.AndSortDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 39,(result,defaultPos,defaultPos),rest671) end
-| (113,(_,(_,REFINES1left,REFINES1right))::rest671) => let val result=
-MlyValue.RefinesOrSub(fn _ => (false))
- in (LrTable.NT 131,(result,REFINES1left,REFINES1right),rest671) end
-| (114,(_,(_,LESS1left,LESS1right))::rest671) => let val result=
-MlyValue.RefinesOrSub(fn _ => (true))
- in (LrTable.NT 131,(result,LESS1left,LESS1right),rest671) end
-| (115,(_,(_,_,ENDright as END1right))::(_,(MlyValue.StrDec StrDec1,_,
-_))::(_,(_,STRUCTleft as STRUCT1left,_))::rest671) => let val result=
-MlyValue.StrExp(fn _ => let val StrDec as StrDec1=StrDec1 ()
- in ( STRUCTstrexp (PP STRUCTleft ENDright, StrDec) ) end
-)
- in (LrTable.NT 28,(result,STRUCT1left,END1right),rest671) end
-| (116,(_,(_,_,ENDright as END1right))::(_,(MlyValue.StrDec StrDec1,_,
-_))::_::(_,(MlyValue.SigExp SigExp1,_,_))::(_,(_,ASSUMEleft,_))::_::(_
-,(_,STRUCT1left,_))::rest671) => let val result=MlyValue.StrExp(fn _
- => let val SigExp as SigExp1=SigExp1 ()
-val StrDec1=StrDec1 ()
- in ( ASSUMEstrexp (PP ASSUMEleft ENDright, SigExp) ) end
-)
- in (LrTable.NT 28,(result,STRUCT1left,END1right),rest671) end
-| (117,(_,(MlyValue.LongIdent LongIdent1,LongIdentleft as 
-LongIdent1left,LongIdentright as LongIdent1right))::rest671) => let 
-val result=MlyValue.StrExp(fn _ => let val LongIdent as LongIdent1=
-LongIdent1 ()
+end)
+ in ( LrTable.NT 15, ( result, TyVarSeq1left, AndSortDesc_opt1right), 
+rest671)
+end
+|  ( 111, ( ( _, ( MlyValue.SortDesc SortDesc1, _, SortDesc1right)) ::
+ ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndSortDesc_opt (fn _ => let val  (SortDesc as SortDesc1) = 
+SortDesc1 ()
+ in ( SOME SortDesc )
+end)
+ in ( LrTable.NT 39, ( result, AND1left, SortDesc1right), rest671)
+end
+|  ( 112, ( rest671)) => let val  result = MlyValue.AndSortDesc_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 39, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 113, ( ( _, ( _, REFINES1left, REFINES1right)) :: rest671)) =>
+ let val  result = MlyValue.RefinesOrSub (fn _ => (false))
+ in ( LrTable.NT 131, ( result, REFINES1left, REFINES1right), rest671)
+
+end
+|  ( 114, ( ( _, ( _, LESS1left, LESS1right)) :: rest671)) => let val 
+ result = MlyValue.RefinesOrSub (fn _ => (true))
+ in ( LrTable.NT 131, ( result, LESS1left, LESS1right), rest671)
+end
+|  ( 115, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.StrDec StrDec1, _, _)) :: ( _, ( _, (STRUCTleft as 
+STRUCT1left), _)) :: rest671)) => let val  result = MlyValue.StrExp
+ (fn _ => let val  (StrDec as StrDec1) = StrDec1 ()
+ in ( STRUCTstrexp (PP STRUCTleft ENDright, StrDec) )
+end)
+ in ( LrTable.NT 28, ( result, STRUCT1left, END1right), rest671)
+end
+|  ( 116, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.StrDec StrDec1, _, _)) :: _ :: ( _, ( MlyValue.SigExp SigExp1
+, _, _)) :: ( _, ( _, ASSUMEleft, _)) :: _ :: ( _, ( _, STRUCT1left, _
+)) :: rest671)) => let val  result = MlyValue.StrExp (fn _ => let val 
+ (SigExp as SigExp1) = SigExp1 ()
+ val  StrDec1 = StrDec1 ()
+ in ( ASSUMEstrexp (PP ASSUMEleft ENDright, SigExp) )
+end)
+ in ( LrTable.NT 28, ( result, STRUCT1left, END1right), rest671)
+end
+|  ( 117, ( ( _, ( MlyValue.LongIdent LongIdent1, (LongIdentleft as 
+LongIdent1left), (LongIdentright as LongIdent1right))) :: rest671)) =>
+ let val  result = MlyValue.StrExp (fn _ => let val  (LongIdent as 
+LongIdent1) = LongIdent1 ()
  in (
  LONGSTRIDstrexp (PP LongIdentleft LongIdentright,
 					   mk_LongStrId LongIdent) 
-) end
 )
- in (LrTable.NT 28,(result,LongIdent1left,LongIdent1right),rest671)
- end
-| (118,(_,(MlyValue.SigExp_constraint SigExp_constraint1,_,
-SigExp_constraint1right))::(_,(MlyValue.StrExp StrExp1,StrExpleft as 
-StrExp1left,_))::rest671) => let val result=MlyValue.StrExp(fn _ => 
-let val StrExp as StrExp1=StrExp1 ()
-val SigExp_constraint as SigExp_constraint1=SigExp_constraint1 ()
- in ( SigExp_constraint StrExpleft StrExp ) end
-)
- in (LrTable.NT 28,(result,StrExp1left,SigExp_constraint1right),
-rest671) end
-| (119,(_,(_,_,RPARENright as RPAREN1right))::(_,(MlyValue.StrExp 
-StrExp1,_,_))::_::(_,(MlyValue.Ident Ident1,Identleft as Ident1left,_)
-)::rest671) => let val result=MlyValue.StrExp(fn _ => let val Ident
- as Ident1=Ident1 ()
-val StrExp as StrExp1=StrExp1 ()
+end)
+ in ( LrTable.NT 28, ( result, LongIdent1left, LongIdent1right), 
+rest671)
+end
+|  ( 118, ( ( _, ( MlyValue.SigExp_constraint SigExp_constraint1, _, 
+SigExp_constraint1right)) :: ( _, ( MlyValue.StrExp StrExp1, (
+StrExpleft as StrExp1left), _)) :: rest671)) => let val  result = 
+MlyValue.StrExp (fn _ => let val  (StrExp as StrExp1) = StrExp1 ()
+ val  (SigExp_constraint as SigExp_constraint1) = SigExp_constraint1
+ ()
+ in ( SigExp_constraint StrExpleft StrExp )
+end)
+ in ( LrTable.NT 28, ( result, StrExp1left, SigExp_constraint1right), 
+rest671)
+end
+|  ( 119, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.StrExp StrExp1, _, _)) :: _ :: ( _, ( MlyValue.Ident Ident1,
+ (Identleft as Ident1left), _)) :: rest671)) => let val  result = 
+MlyValue.StrExp (fn _ => let val  (Ident as Ident1) = Ident1 ()
+ val  (StrExp as StrExp1) = StrExp1 ()
  in (
  APPstrexp (PP Identleft RPARENright,
 				     mk_FunId Ident, StrExp) 
-) end
 )
- in (LrTable.NT 28,(result,Ident1left,RPAREN1right),rest671) end
-| (120,(_,(_,_,ENDright as END1right))::(_,(MlyValue.StrExp StrExp1,_,
-_))::_::(_,(MlyValue.StrDec StrDec1,_,_))::(_,(_,LETleft as LET1left,_
-))::rest671) => let val result=MlyValue.StrExp(fn _ => let val StrDec
- as StrDec1=StrDec1 ()
-val StrExp as StrExp1=StrExp1 ()
- in ( LETstrexp (PP LETleft ENDright, StrDec, StrExp) ) end
-)
- in (LrTable.NT 28,(result,LET1left,END1right),rest671) end
-| (121,(_,(_,_,RPARENright as RPAREN1right))::(_,(MlyValue.StrDec 
-StrDec1,StrDecleft,_))::_::(_,(MlyValue.Ident Ident1,Identleft as 
-Ident1left,_))::rest671) => let val result=MlyValue.StrExp(fn _ => 
-let val Ident as Ident1=Ident1 ()
-val StrDec as StrDec1=StrDec1 ()
+end)
+ in ( LrTable.NT 28, ( result, Ident1left, RPAREN1right), rest671)
+end
+|  ( 120, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.StrExp StrExp1, _, _)) :: _ :: ( _, ( MlyValue.StrDec StrDec1
+, _, _)) :: ( _, ( _, (LETleft as LET1left), _)) :: rest671)) => let
+ val  result = MlyValue.StrExp (fn _ => let val  (StrDec as StrDec1) =
+ StrDec1 ()
+ val  (StrExp as StrExp1) = StrExp1 ()
+ in ( LETstrexp (PP LETleft ENDright, StrDec, StrExp) )
+end)
+ in ( LrTable.NT 28, ( result, LET1left, END1right), rest671)
+end
+|  ( 121, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.StrDec StrDec1, StrDecleft, _)) :: _ :: ( _, ( MlyValue.Ident
+ Ident1, (Identleft as Ident1left), _)) :: rest671)) => let val  
+result = MlyValue.StrExp (fn _ => let val  (Ident as Ident1) = Ident1
+ ()
+ val  (StrDec as StrDec1) = StrDec1 ()
  in (
  APPstrexp (PP Identleft RPARENright, mk_FunId Ident,
 				     STRUCTstrexp
 				       (PP StrDecleft (right (info_on_strdec StrDec)),
 					StrDec)) 
-) end
 )
- in (LrTable.NT 28,(result,Ident1left,RPAREN1right),rest671) end
-| (122,(_,(MlyValue.OneStrDec_or_SEMICOLON OneStrDec_or_SEMICOLON1,_,
-OneStrDec_or_SEMICOLON1right))::(_,(MlyValue.NonEmptyStrDec 
-NonEmptyStrDec1,NonEmptyStrDecleft as NonEmptyStrDec1left,_))::rest671
-) => let val result=MlyValue.NonEmptyStrDec(fn _ => let val 
-NonEmptyStrDec as NonEmptyStrDec1=NonEmptyStrDec1 ()
-val OneStrDec_or_SEMICOLON as OneStrDec_or_SEMICOLON1=
+end)
+ in ( LrTable.NT 28, ( result, Ident1left, RPAREN1right), rest671)
+end
+|  ( 122, ( ( _, ( MlyValue.OneStrDec_or_SEMICOLON 
+OneStrDec_or_SEMICOLON1, _, OneStrDec_or_SEMICOLON1right)) :: ( _, ( 
+MlyValue.NonEmptyStrDec NonEmptyStrDec1, (NonEmptyStrDecleft as 
+NonEmptyStrDec1left), _)) :: rest671)) => let val  result = 
+MlyValue.NonEmptyStrDec (fn _ => let val  (NonEmptyStrDec as 
+NonEmptyStrDec1) = NonEmptyStrDec1 ()
+ val  (OneStrDec_or_SEMICOLON as OneStrDec_or_SEMICOLON1) = 
 OneStrDec_or_SEMICOLON1 ()
  in (
  (case OneStrDec_or_SEMICOLON of
@@ -3104,133 +3318,157 @@ OneStrDec_or_SEMICOLON1 ()
 					      NonEmptyStrDec, strdec)
 			   | NONE =>
 			       NonEmptyStrDec) 
-) end
 )
- in (LrTable.NT 48,(result,NonEmptyStrDec1left,
-OneStrDec_or_SEMICOLON1right),rest671) end
-| (123,(_,(MlyValue.OneStrDec_or_SEMICOLON OneStrDec_or_SEMICOLON1,
-OneStrDec_or_SEMICOLON1left,OneStrDec_or_SEMICOLON1right))::rest671)
- => let val result=MlyValue.NonEmptyStrDec(fn _ => let val 
-OneStrDec_or_SEMICOLON as OneStrDec_or_SEMICOLON1=
-OneStrDec_or_SEMICOLON1 ()
+end)
+ in ( LrTable.NT 48, ( result, NonEmptyStrDec1left, 
+OneStrDec_or_SEMICOLON1right), rest671)
+end
+|  ( 123, ( ( _, ( MlyValue.OneStrDec_or_SEMICOLON 
+OneStrDec_or_SEMICOLON1, OneStrDec_or_SEMICOLON1left, 
+OneStrDec_or_SEMICOLON1right)) :: rest671)) => let val  result = 
+MlyValue.NonEmptyStrDec (fn _ => let val  (OneStrDec_or_SEMICOLON as 
+OneStrDec_or_SEMICOLON1) = OneStrDec_or_SEMICOLON1 ()
  in (
  (case OneStrDec_or_SEMICOLON of
 			     SOME strdec => strdec
 			   | NONE => EMPTYstrdec (PP defaultPos defaultPos)) 
-) end
 )
- in (LrTable.NT 48,(result,OneStrDec_or_SEMICOLON1left,
-OneStrDec_or_SEMICOLON1right),rest671) end
-| (124,(_,(MlyValue.NonEmptyStrDec NonEmptyStrDec1,NonEmptyStrDec1left
-,NonEmptyStrDec1right))::rest671) => let val result=MlyValue.StrDec(
-fn _ => let val NonEmptyStrDec as NonEmptyStrDec1=NonEmptyStrDec1 ()
- in ( NonEmptyStrDec ) end
-)
- in (LrTable.NT 27,(result,NonEmptyStrDec1left,NonEmptyStrDec1right),
-rest671) end
-| (125,rest671) => let val result=MlyValue.StrDec(fn _ => (
+end)
+ in ( LrTable.NT 48, ( result, OneStrDec_or_SEMICOLON1left, 
+OneStrDec_or_SEMICOLON1right), rest671)
+end
+|  ( 124, ( ( _, ( MlyValue.NonEmptyStrDec NonEmptyStrDec1, 
+NonEmptyStrDec1left, NonEmptyStrDec1right)) :: rest671)) => let val  
+result = MlyValue.StrDec (fn _ => let val  (NonEmptyStrDec as 
+NonEmptyStrDec1) = NonEmptyStrDec1 ()
+ in ( NonEmptyStrDec )
+end)
+ in ( LrTable.NT 27, ( result, NonEmptyStrDec1left, 
+NonEmptyStrDec1right), rest671)
+end
+|  ( 125, ( rest671)) => let val  result = MlyValue.StrDec (fn _ => (
  EMPTYstrdec (PP defaultPos defaultPos) ))
- in (LrTable.NT 27,(result,defaultPos,defaultPos),rest671) end
-| (126,(_,(MlyValue.OneStrDec OneStrDec1,OneStrDec1left,
-OneStrDec1right))::rest671) => let val result=
-MlyValue.OneStrDec_or_SEMICOLON(fn _ => let val OneStrDec as 
-OneStrDec1=OneStrDec1 ()
- in ( SOME OneStrDec ) end
-)
- in (LrTable.NT 47,(result,OneStrDec1left,OneStrDec1right),rest671)
- end
-| (127,(_,(_,SEMICOLON1left,SEMICOLON1right))::rest671) => let val 
-result=MlyValue.OneStrDec_or_SEMICOLON(fn _ => ( NONE ))
- in (LrTable.NT 47,(result,SEMICOLON1left,SEMICOLON1right),rest671)
- end
-| (128,(_,(MlyValue.OneDec_sans_LOCAL OneDec_sans_LOCAL1,
-OneDec_sans_LOCALleft as OneDec_sans_LOCAL1left,
-OneDec_sans_LOCAL1right))::rest671) => let val result=
-MlyValue.OneStrDec(fn _ => let val OneDec_sans_LOCAL as 
-OneDec_sans_LOCAL1=OneDec_sans_LOCAL1 ()
+ in ( LrTable.NT 27, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 126, ( ( _, ( MlyValue.OneStrDec OneStrDec1, OneStrDec1left, 
+OneStrDec1right)) :: rest671)) => let val  result = 
+MlyValue.OneStrDec_or_SEMICOLON (fn _ => let val  (OneStrDec as 
+OneStrDec1) = OneStrDec1 ()
+ in ( SOME OneStrDec )
+end)
+ in ( LrTable.NT 47, ( result, OneStrDec1left, OneStrDec1right), 
+rest671)
+end
+|  ( 127, ( ( _, ( _, SEMICOLON1left, SEMICOLON1right)) :: rest671))
+ => let val  result = MlyValue.OneStrDec_or_SEMICOLON (fn _ => ( NONE 
+))
+ in ( LrTable.NT 47, ( result, SEMICOLON1left, SEMICOLON1right), 
+rest671)
+end
+|  ( 128, ( ( _, ( MlyValue.OneDec_sans_LOCAL OneDec_sans_LOCAL1, (
+OneDec_sans_LOCALleft as OneDec_sans_LOCAL1left), 
+OneDec_sans_LOCAL1right)) :: rest671)) => let val  result = 
+MlyValue.OneStrDec (fn _ => let val  (OneDec_sans_LOCAL as 
+OneDec_sans_LOCAL1) = OneDec_sans_LOCAL1 ()
  in (
  DECstrdec (PP OneDec_sans_LOCALleft
                                         (right (get_info_dec OneDec_sans_LOCAL)),
                                      OneDec_sans_LOCAL) 
-) end
 )
- in (LrTable.NT 6,(result,OneDec_sans_LOCAL1left,
-OneDec_sans_LOCAL1right),rest671) end
-| (129,(_,(MlyValue.StrBind StrBind1,_,StrBind1right))::(_,(_,
-STRUCTUREleft as STRUCTURE1left,_))::rest671) => let val result=
-MlyValue.OneStrDec(fn _ => let val StrBind as StrBind1=StrBind1 ()
+end)
+ in ( LrTable.NT 6, ( result, OneDec_sans_LOCAL1left, 
+OneDec_sans_LOCAL1right), rest671)
+end
+|  ( 129, ( ( _, ( MlyValue.StrBind StrBind1, _, StrBind1right)) :: (
+ _, ( _, (STRUCTUREleft as STRUCTURE1left), _)) :: rest671)) => let
+ val  result = MlyValue.OneStrDec (fn _ => let val  (StrBind as 
+StrBind1) = StrBind1 ()
  in (
  STRUCTUREstrdec (PP STRUCTUREleft
 					     (right (info_on_strbind StrBind)),
 					   StrBind) 
-) end
 )
- in (LrTable.NT 6,(result,STRUCTURE1left,StrBind1right),rest671) end
-| (130,(_,(_,_,ENDright as END1right))::(_,(MlyValue.StrDec StrDec2,_,
-_))::_::(_,(MlyValue.StrDec StrDec1,_,_))::(_,(_,LOCALleft as 
-LOCAL1left,_))::rest671) => let val result=MlyValue.OneStrDec(fn _ => 
-let val StrDec1=StrDec1 ()
-val StrDec2=StrDec2 ()
- in ( LOCALstrdec (PP LOCALleft ENDright, StrDec1, StrDec2) ) end
-)
- in (LrTable.NT 6,(result,LOCAL1left,END1right),rest671) end
-| (131,(_,(MlyValue.AndStrBind_opt AndStrBind_opt1,_,
-AndStrBind_opt1right))::(_,(MlyValue.StrExp StrExp1,_,_))::_::(_,(
-MlyValue.SigExp_constraint_maybe SigExp_constraint_maybe1,
-SigExp_constraint_maybeleft,_))::(_,(MlyValue.Ident Ident1,Identleft
- as Ident1left,_))::rest671) => let val result=MlyValue.StrBind(fn _
- => let val Ident as Ident1=Ident1 ()
-val SigExp_constraint_maybe as SigExp_constraint_maybe1=
+end)
+ in ( LrTable.NT 6, ( result, STRUCTURE1left, StrBind1right), rest671)
+
+end
+|  ( 130, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.StrDec StrDec2, _, _)) :: _ :: ( _, ( MlyValue.StrDec StrDec1
+, _, _)) :: ( _, ( _, (LOCALleft as LOCAL1left), _)) :: rest671)) =>
+ let val  result = MlyValue.OneStrDec (fn _ => let val  StrDec1 = 
+StrDec1 ()
+ val  StrDec2 = StrDec2 ()
+ in ( LOCALstrdec (PP LOCALleft ENDright, StrDec1, StrDec2) )
+end)
+ in ( LrTable.NT 6, ( result, LOCAL1left, END1right), rest671)
+end
+|  ( 131, ( ( _, ( MlyValue.AndStrBind_opt AndStrBind_opt1, _, 
+AndStrBind_opt1right)) :: ( _, ( MlyValue.StrExp StrExp1, _, _)) :: _
+ :: ( _, ( MlyValue.SigExp_constraint_maybe SigExp_constraint_maybe1, 
+SigExp_constraint_maybeleft, _)) :: ( _, ( MlyValue.Ident Ident1, (
+Identleft as Ident1left), _)) :: rest671)) => let val  result = 
+MlyValue.StrBind (fn _ => let val  (Ident as Ident1) = Ident1 ()
+ val  (SigExp_constraint_maybe as SigExp_constraint_maybe1) = 
 SigExp_constraint_maybe1 ()
-val StrExp as StrExp1=StrExp1 ()
-val AndStrBind_opt as AndStrBind_opt1=AndStrBind_opt1 ()
+ val  (StrExp as StrExp1) = StrExp1 ()
+ val  (AndStrBind_opt as AndStrBind_opt1) = AndStrBind_opt1 ()
  in (
  STRBIND (PP Identleft
 				     (rightmost info_on_strexp StrExp
 				                info_on_strbind AndStrBind_opt), 
 				   mk_StrId Ident, SigExp_constraint_maybe SigExp_constraint_maybeleft StrExp, 
 				   AndStrBind_opt) 
-) end
 )
- in (LrTable.NT 26,(result,Ident1left,AndStrBind_opt1right),rest671)
- end
-| (132,(_,(MlyValue.StrBind StrBind1,_,StrBind1right))::(_,(_,AND1left
-,_))::rest671) => let val result=MlyValue.AndStrBind_opt(fn _ => let 
-val StrBind as StrBind1=StrBind1 ()
- in ( SOME StrBind ) end
-)
- in (LrTable.NT 32,(result,AND1left,StrBind1right),rest671) end
-| (133,rest671) => let val result=MlyValue.AndStrBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 32,(result,defaultPos,defaultPos),rest671) end
-| (134,(_,(_,_,ENDright as END1right))::(_,(MlyValue.Spec Spec1,_,_))
-::(_,(_,SIGleft as SIG1left,_))::rest671) => let val result=
-MlyValue.SigExp(fn _ => let val Spec as Spec1=Spec1 ()
- in ( SIGsigexp (PP SIGleft ENDright, Spec) ) end
-)
- in (LrTable.NT 25,(result,SIG1left,END1right),rest671) end
-| (135,(_,(MlyValue.Ident Ident1,Identleft as Ident1left,Identright
- as Ident1right))::rest671) => let val result=MlyValue.SigExp(fn _ => 
-let val Ident as Ident1=Ident1 ()
- in ( SIGIDsigexp (PP Identleft Identright, mk_SigId Ident) ) end
-)
- in (LrTable.NT 25,(result,Ident1left,Ident1right),rest671) end
-| (136,(_,(MlyValue.WhereDesc WhereDesc1,_,WhereDesc1right))::_::(_,(
-MlyValue.SigExp SigExp1,SigExpleft as SigExp1left,_))::rest671) => 
-let val result=MlyValue.SigExp(fn _ => let val SigExp as SigExp1=
-SigExp1 ()
-val WhereDesc as WhereDesc1=WhereDesc1 ()
- in ( WhereDesc(SigExpleft,SigExp) ) end
-)
- in (LrTable.NT 25,(result,SigExp1left,WhereDesc1right),rest671) end
-| (137,(_,(MlyValue.AndWhereDesc_opt AndWhereDesc_opt1,_,
-AndWhereDesc_opt1right))::(_,(MlyValue.Ty Ty1,_,Tyright))::_::(_,(
-MlyValue.LongTypeIdent LongTypeIdent1,_,_))::(_,(MlyValue.TyVarSeq 
-TyVarSeq1,_,_))::(_,(_,TYPE1left,_))::rest671) => let val result=
-MlyValue.WhereDesc(fn _ => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
-val Ty as Ty1=Ty1 ()
-val AndWhereDesc_opt as AndWhereDesc_opt1=AndWhereDesc_opt1 ()
+end)
+ in ( LrTable.NT 26, ( result, Ident1left, AndStrBind_opt1right), 
+rest671)
+end
+|  ( 132, ( ( _, ( MlyValue.StrBind StrBind1, _, StrBind1right)) :: (
+ _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndStrBind_opt (fn _ => let val  (StrBind as StrBind1) = 
+StrBind1 ()
+ in ( SOME StrBind )
+end)
+ in ( LrTable.NT 32, ( result, AND1left, StrBind1right), rest671)
+end
+|  ( 133, ( rest671)) => let val  result = MlyValue.AndStrBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 32, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 134, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.Spec Spec1, _, _)) :: ( _, ( _, (SIGleft as SIG1left), _)) ::
+ rest671)) => let val  result = MlyValue.SigExp (fn _ => let val  (
+Spec as Spec1) = Spec1 ()
+ in ( SIGsigexp (PP SIGleft ENDright, Spec) )
+end)
+ in ( LrTable.NT 25, ( result, SIG1left, END1right), rest671)
+end
+|  ( 135, ( ( _, ( MlyValue.Ident Ident1, (Identleft as Ident1left), (
+Identright as Ident1right))) :: rest671)) => let val  result = 
+MlyValue.SigExp (fn _ => let val  (Ident as Ident1) = Ident1 ()
+ in ( SIGIDsigexp (PP Identleft Identright, mk_SigId Ident) )
+end)
+ in ( LrTable.NT 25, ( result, Ident1left, Ident1right), rest671)
+end
+|  ( 136, ( ( _, ( MlyValue.WhereDesc WhereDesc1, _, WhereDesc1right))
+ :: _ :: ( _, ( MlyValue.SigExp SigExp1, (SigExpleft as SigExp1left),
+ _)) :: rest671)) => let val  result = MlyValue.SigExp (fn _ => let
+ val  (SigExp as SigExp1) = SigExp1 ()
+ val  (WhereDesc as WhereDesc1) = WhereDesc1 ()
+ in ( WhereDesc(SigExpleft,SigExp) )
+end)
+ in ( LrTable.NT 25, ( result, SigExp1left, WhereDesc1right), rest671)
+
+end
+|  ( 137, ( ( _, ( MlyValue.AndWhereDesc_opt AndWhereDesc_opt1, _, 
+AndWhereDesc_opt1right)) :: ( _, ( MlyValue.Ty Ty1, _, Tyright)) :: _
+ :: ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq TyVarSeq1, _, _)) :: ( _, ( _, TYPE1left, _)) :: 
+rest671)) => let val  result = MlyValue.WhereDesc (fn _ => let val  (
+TyVarSeq as TyVarSeq1) = TyVarSeq1 ()
+ val  (LongTypeIdent as LongTypeIdent1) = LongTypeIdent1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ val  (AndWhereDesc_opt as AndWhereDesc_opt1) = AndWhereDesc_opt1 ()
  in (
  fn (sigexpleft,sigexp) =>
                              case AndWhereDesc_opt
@@ -3240,535 +3478,643 @@ val AndWhereDesc_opt as AndWhereDesc_opt1=AndWhereDesc_opt1 ()
                                 | NONE => WHERE_TYPEsigexp (PP sigexpleft Tyright,
 					                    sigexp, TyVarSeq,
 					                    mk_LongTyCon LongTypeIdent, Ty) 
-) end
 )
- in (LrTable.NT 49,(result,TYPE1left,AndWhereDesc_opt1right),rest671)
- end
-| (138,(_,(MlyValue.WhereDesc WhereDesc1,_,WhereDesc1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndWhereDesc_opt(fn 
-_ => let val WhereDesc as WhereDesc1=WhereDesc1 ()
- in ( SOME WhereDesc ) end
-)
- in (LrTable.NT 50,(result,AND1left,WhereDesc1right),rest671) end
-| (139,rest671) => let val result=MlyValue.AndWhereDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 50,(result,defaultPos,defaultPos),rest671) end
-| (140,(_,(MlyValue.SigBind SigBind1,_,SigBind1right))::(_,(_,
-SIGNATUREleft as SIGNATURE1left,_))::rest671) => let val result=
-MlyValue.SigDec(fn _ => let val SigBind as SigBind1=SigBind1 ()
+end)
+ in ( LrTable.NT 49, ( result, TYPE1left, AndWhereDesc_opt1right), 
+rest671)
+end
+|  ( 138, ( ( _, ( MlyValue.WhereDesc WhereDesc1, _, WhereDesc1right))
+ :: ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndWhereDesc_opt (fn _ => let val  (WhereDesc as WhereDesc1)
+ = WhereDesc1 ()
+ in ( SOME WhereDesc )
+end)
+ in ( LrTable.NT 50, ( result, AND1left, WhereDesc1right), rest671)
+
+end
+|  ( 139, ( rest671)) => let val  result = MlyValue.AndWhereDesc_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 50, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 140, ( ( _, ( MlyValue.SigBind SigBind1, _, SigBind1right)) :: (
+ _, ( _, (SIGNATUREleft as SIGNATURE1left), _)) :: rest671)) => let
+ val  result = MlyValue.SigDec (fn _ => let val  (SigBind as SigBind1)
+ = SigBind1 ()
  in (
  SIGNATUREsigdec
 			    (PP SIGNATUREleft (right (info_on_sigbind SigBind)),
 			     SigBind) 
-) end
 )
- in (LrTable.NT 3,(result,SIGNATURE1left,SigBind1right),rest671) end
-| (141,(_,(MlyValue.AndSigBind_opt AndSigBind_opt1,_,
-AndSigBind_opt1right))::(_,(MlyValue.SigExp SigExp1,_,_))::_::(_,(
-MlyValue.Ident Ident1,Identleft as Ident1left,_))::rest671) => let 
-val result=MlyValue.SigBind(fn _ => let val Ident as Ident1=Ident1 ()
-val SigExp as SigExp1=SigExp1 ()
-val AndSigBind_opt as AndSigBind_opt1=AndSigBind_opt1 ()
+end)
+ in ( LrTable.NT 3, ( result, SIGNATURE1left, SigBind1right), rest671)
+
+end
+|  ( 141, ( ( _, ( MlyValue.AndSigBind_opt AndSigBind_opt1, _, 
+AndSigBind_opt1right)) :: ( _, ( MlyValue.SigExp SigExp1, _, _)) :: _
+ :: ( _, ( MlyValue.Ident Ident1, (Identleft as Ident1left), _)) :: 
+rest671)) => let val  result = MlyValue.SigBind (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ val  (SigExp as SigExp1) = SigExp1 ()
+ val  (AndSigBind_opt as AndSigBind_opt1) = AndSigBind_opt1 ()
  in (
  SIGBIND (PP Identleft
 				     (rightmost info_on_sigexp SigExp
 				                info_on_sigbind AndSigBind_opt),
                                    mk_SigId Ident, SigExp, AndSigBind_opt) 
-) end
 )
- in (LrTable.NT 24,(result,Ident1left,AndSigBind_opt1right),rest671)
- end
-| (142,(_,(MlyValue.SigBind SigBind1,_,SigBind1right))::(_,(_,AND1left
-,_))::rest671) => let val result=MlyValue.AndSigBind_opt(fn _ => let 
-val SigBind as SigBind1=SigBind1 ()
- in ( SOME SigBind ) end
-)
- in (LrTable.NT 33,(result,AND1left,SigBind1right),rest671) end
-| (143,rest671) => let val result=MlyValue.AndSigBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 33,(result,defaultPos,defaultPos),rest671) end
-| (144,(_,(MlyValue.SCon SCon1,SConleft as SCon1left,SConright as 
-SCon1right))::rest671) => let val result=MlyValue.AtExp(fn _ => let 
-val SCon as SCon1=SCon1 ()
- in ( SCONatexp (PP SConleft SConright, SCon) ) end
-)
- in (LrTable.NT 79,(result,SCon1left,SCon1right),rest671) end
-| (145,(_,(MlyValue.LongOpEqIdent LongOpEqIdent1,LongOpEqIdentleft as 
-LongOpEqIdent1left,LongOpEqIdentright as LongOpEqIdent1right))::
-rest671) => let val result=MlyValue.AtExp(fn _ => let val 
-LongOpEqIdent as LongOpEqIdent1=LongOpEqIdent1 ()
+end)
+ in ( LrTable.NT 24, ( result, Ident1left, AndSigBind_opt1right), 
+rest671)
+end
+|  ( 142, ( ( _, ( MlyValue.SigBind SigBind1, _, SigBind1right)) :: (
+ _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndSigBind_opt (fn _ => let val  (SigBind as SigBind1) = 
+SigBind1 ()
+ in ( SOME SigBind )
+end)
+ in ( LrTable.NT 33, ( result, AND1left, SigBind1right), rest671)
+end
+|  ( 143, ( rest671)) => let val  result = MlyValue.AndSigBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 33, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 144, ( ( _, ( MlyValue.SCon SCon1, (SConleft as SCon1left), (
+SConright as SCon1right))) :: rest671)) => let val  result = 
+MlyValue.AtExp (fn _ => let val  (SCon as SCon1) = SCon1 ()
+ in ( SCONatexp (PP SConleft SConright, SCon) )
+end)
+ in ( LrTable.NT 79, ( result, SCon1left, SCon1right), rest671)
+end
+|  ( 145, ( ( _, ( MlyValue.LongOpEqIdent LongOpEqIdent1, (
+LongOpEqIdentleft as LongOpEqIdent1left), (LongOpEqIdentright as 
+LongOpEqIdent1right))) :: rest671)) => let val  result = 
+MlyValue.AtExp (fn _ => let val  (LongOpEqIdent as LongOpEqIdent1) = 
+LongOpEqIdent1 ()
  in (
  let val OP_OPT (id, withOp) = LongOpEqIdent
                           in
 			    IDENTatexp (PP LongOpEqIdentleft LongOpEqIdentright,
 					OP_OPT (mk_LongId id, withOp))
                           end 
-) end
 )
- in (LrTable.NT 79,(result,LongOpEqIdent1left,LongOpEqIdent1right),
-rest671) end
-| (146,(_,(_,_,RBRACEright as RBRACE1right))::(_,(MlyValue.ExpRow_opt 
-ExpRow_opt1,_,_))::(_,(_,LBRACEleft as LBRACE1left,_))::rest671) => 
-let val result=MlyValue.AtExp(fn _ => let val ExpRow_opt as 
-ExpRow_opt1=ExpRow_opt1 ()
- in ( RECORDatexp (PP LBRACEleft RBRACEright, ExpRow_opt) ) end
-)
- in (LrTable.NT 79,(result,LBRACE1left,RBRACE1right),rest671) end
-| (147,(_,(_,_,ENDright as END1right))::(_,(MlyValue.Exp_ Exp_1,_,_))
-::_::(_,(MlyValue.Dec Dec1,_,_))::(_,(_,LETleft as LET1left,_))::
-rest671) => let val result=MlyValue.AtExp(fn _ => let val Dec as Dec1=
-Dec1 ()
-val Exp_ as Exp_1=Exp_1 ()
- in ( LETatexp (PP LETleft ENDright, Dec, Exp_) ) end
-)
- in (LrTable.NT 79,(result,LET1left,END1right),rest671) end
-| (148,(_,(_,_,RPARENright as RPAREN1right))::(_,(MlyValue.Exp_ Exp_1,
-_,_))::(_,(_,LPARENleft as LPAREN1left,_))::rest671) => let val result
-=MlyValue.AtExp(fn _ => let val Exp_ as Exp_1=Exp_1 ()
- in ( PARatexp (PP LPARENleft RPARENright, Exp_) ) end
-)
- in (LrTable.NT 79,(result,LPAREN1left,RPAREN1right),rest671) end
-| (149,(_,(_,_,RPARENright as RPAREN1right))::(_,(_,_,RCOMSPECright))
-::(_,(MlyValue.TyComma_seq1 TyComma_seq11,_,_))::(_,(MlyValue.OfSort 
-OfSort1,_,_))::_::(_,(MlyValue.Exp_ Exp_1,Exp_left,_))::(_,(_,
-LPARENleft as LPAREN1left,_))::rest671) => let val result=
-MlyValue.AtExp(fn _ => let val Exp_ as Exp_1=Exp_1 ()
-val OfSort1=OfSort1 ()
-val TyComma_seq1 as TyComma_seq11=TyComma_seq11 ()
+end)
+ in ( LrTable.NT 79, ( result, LongOpEqIdent1left, LongOpEqIdent1right
+), rest671)
+end
+|  ( 146, ( ( _, ( _, _, (RBRACEright as RBRACE1right))) :: ( _, ( 
+MlyValue.ExpRow_opt ExpRow_opt1, _, _)) :: ( _, ( _, (LBRACEleft as 
+LBRACE1left), _)) :: rest671)) => let val  result = MlyValue.AtExp (fn
+ _ => let val  (ExpRow_opt as ExpRow_opt1) = ExpRow_opt1 ()
+ in ( RECORDatexp (PP LBRACEleft RBRACEright, ExpRow_opt) )
+end)
+ in ( LrTable.NT 79, ( result, LBRACE1left, RBRACE1right), rest671)
+
+end
+|  ( 147, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.Exp_ Exp_1, _, _)) :: _ :: ( _, ( MlyValue.Dec Dec1, _, _))
+ :: ( _, ( _, (LETleft as LET1left), _)) :: rest671)) => let val  
+result = MlyValue.AtExp (fn _ => let val  (Dec as Dec1) = Dec1 ()
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ in ( LETatexp (PP LETleft ENDright, Dec, Exp_) )
+end)
+ in ( LrTable.NT 79, ( result, LET1left, END1right), rest671)
+end
+|  ( 148, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.Exp_ Exp_1, _, _)) :: ( _, ( _, (LPARENleft as LPAREN1left),
+ _)) :: rest671)) => let val  result = MlyValue.AtExp (fn _ => let
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ in ( PARatexp (PP LPARENleft RPARENright, Exp_) )
+end)
+ in ( LrTable.NT 79, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 149, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( _,
+ _, RCOMSPECright)) :: ( _, ( MlyValue.TyComma_seq1 TyComma_seq11, _,
+ _)) :: ( _, ( MlyValue.OfSort OfSort1, _, _)) :: _ :: ( _, ( 
+MlyValue.Exp_ Exp_1, Exp_left, _)) :: ( _, ( _, (LPARENleft as 
+LPAREN1left), _)) :: rest671)) => let val  result = MlyValue.AtExp (fn
+ _ => let val  (Exp_ as Exp_1) = Exp_1 ()
+ val  OfSort1 = OfSort1 ()
+ val  (TyComma_seq1 as TyComma_seq11) = TyComma_seq11 ()
  in (
  PARatexp (PP LPARENleft RPARENright, 
                                     SORTEDexp (PP Exp_left RCOMSPECright, Exp_, TyComma_seq1)) 
-) end
 )
- in (LrTable.NT 79,(result,LPAREN1left,RPAREN1right),rest671) end
-| (150,(_,(_,_,RPARENright as RPAREN1right))::(_,(_,LPARENleft as 
-LPAREN1left,_))::rest671) => let val result=MlyValue.AtExp(fn _ => (
+end)
+ in ( LrTable.NT 79, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 150, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( _,
+ (LPARENleft as LPAREN1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtExp (fn _ => (
  RECORDatexp (PP LPARENleft RPARENright, NONE) ))
- in (LrTable.NT 79,(result,LPAREN1left,RPAREN1right),rest671) end
-| (151,(_,(_,_,RPARENright as RPAREN1right))::(_,(
-MlyValue.ExpComma_seq2 ExpComma_seq21,_,_))::(_,(_,LPARENleft as 
-LPAREN1left,_))::rest671) => let val result=MlyValue.AtExp(fn _ => 
-let val ExpComma_seq2 as ExpComma_seq21=ExpComma_seq21 ()
- in ( tuple_atexp_with_info (PP LPARENleft RPARENright) ExpComma_seq2 
-) end
-)
- in (LrTable.NT 79,(result,LPAREN1left,RPAREN1right),rest671) end
-| (152,(_,(MlyValue.Label Label1,_,Labelright as Label1right))::(_,(_,
-HASHleft as HASH1left,_))::rest671) => let val result=MlyValue.AtExp(
-fn _ => let val Label as Label1=Label1 ()
- in ( hash (PP HASHleft Labelright) Label ) end
-)
- in (LrTable.NT 79,(result,HASH1left,Label1right),rest671) end
-| (153,(_,(_,_,RPARENright as RPAREN1right))::(_,(
-MlyValue.ExpSemicolon_seq2 ExpSemicolon_seq21,_,_))::(_,(_,LPARENleft
- as LPAREN1left,_))::rest671) => let val result=MlyValue.AtExp(fn _
- => let val ExpSemicolon_seq2 as ExpSemicolon_seq21=ExpSemicolon_seq21
+ in ( LrTable.NT 79, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 151, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.ExpComma_seq2 ExpComma_seq21, _, _)) :: ( _, ( _, (LPARENleft
+ as LPAREN1left), _)) :: rest671)) => let val  result = MlyValue.AtExp
+ (fn _ => let val  (ExpComma_seq2 as ExpComma_seq21) = ExpComma_seq21
  ()
+ in ( tuple_atexp_with_info (PP LPARENleft RPARENright) ExpComma_seq2 
+)
+end)
+ in ( LrTable.NT 79, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 152, ( ( _, ( MlyValue.Label Label1, _, (Labelright as 
+Label1right))) :: ( _, ( _, (HASHleft as HASH1left), _)) :: rest671))
+ => let val  result = MlyValue.AtExp (fn _ => let val  (Label as 
+Label1) = Label1 ()
+ in ( hash (PP HASHleft Labelright) Label )
+end)
+ in ( LrTable.NT 79, ( result, HASH1left, Label1right), rest671)
+end
+|  ( 153, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.ExpSemicolon_seq2 ExpSemicolon_seq21, _, _)) :: ( _, ( _, (
+LPARENleft as LPAREN1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtExp (fn _ => let val  (ExpSemicolon_seq2 as 
+ExpSemicolon_seq21) = ExpSemicolon_seq21 ()
  in (
  PARatexp (PP LPARENleft RPARENright,
                                    sequenceExp ExpSemicolon_seq2) 
-) end
 )
- in (LrTable.NT 79,(result,LPAREN1left,RPAREN1right),rest671) end
-| (154,(_,(_,_,ENDright as END1right))::(_,(MlyValue.ExpSemicolon_seq2
- ExpSemicolon_seq21,_,_))::_::(_,(MlyValue.Dec Dec1,_,_))::(_,(_,
-LETleft as LET1left,_))::rest671) => let val result=MlyValue.AtExp(fn 
-_ => let val Dec as Dec1=Dec1 ()
-val ExpSemicolon_seq2 as ExpSemicolon_seq21=ExpSemicolon_seq21 ()
+end)
+ in ( LrTable.NT 79, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 154, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.ExpSemicolon_seq2 ExpSemicolon_seq21, _, _)) :: _ :: ( _, ( 
+MlyValue.Dec Dec1, _, _)) :: ( _, ( _, (LETleft as LET1left), _)) :: 
+rest671)) => let val  result = MlyValue.AtExp (fn _ => let val  (Dec
+ as Dec1) = Dec1 ()
+ val  (ExpSemicolon_seq2 as ExpSemicolon_seq21) = ExpSemicolon_seq21
+ ()
  in (
  LETatexp (PP LETleft ENDright,
 				    Dec, sequenceExp ExpSemicolon_seq2) 
-) end
 )
- in (LrTable.NT 79,(result,LET1left,END1right),rest671) end
-| (155,(_,(_,_,RBRACKETright as RBRACKET1right))::(_,(
-MlyValue.ExpComma_seq0 ExpComma_seq01,_,_))::(_,(_,LBRACKETleft as 
-LBRACKET1left,_))::rest671) => let val result=MlyValue.AtExp(fn _ => 
-let val ExpComma_seq0 as ExpComma_seq01=ExpComma_seq01 ()
- in ( list_atexp (PP LBRACKETleft RBRACKETright) ExpComma_seq0 ) end
+end)
+ in ( LrTable.NT 79, ( result, LET1left, END1right), rest671)
+end
+|  ( 155, ( ( _, ( _, _, (RBRACKETright as RBRACKET1right))) :: ( _, (
+ MlyValue.ExpComma_seq0 ExpComma_seq01, _, _)) :: ( _, ( _, (
+LBRACKETleft as LBRACKET1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtExp (fn _ => let val  (ExpComma_seq0 as ExpComma_seq01) = 
+ExpComma_seq01 ()
+ in ( list_atexp (PP LBRACKETleft RBRACKETright) ExpComma_seq0 )
+end)
+ in ( LrTable.NT 79, ( result, LBRACKET1left, RBRACKET1right), rest671
 )
- in (LrTable.NT 79,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (156,(_,(MlyValue.AtExp_seq1 AtExp_seq11,_,AtExp_seq11right))::(_,(
-MlyValue.AtExp AtExp1,AtExp1left,_))::rest671) => let val result=
-MlyValue.AtExp_seq1(fn _ => let val AtExp as AtExp1=AtExp1 ()
-val AtExp_seq1 as AtExp_seq11=AtExp_seq11 ()
- in ( AtExp :: AtExp_seq1 ) end
+end
+|  ( 156, ( ( _, ( MlyValue.AtExp_seq1 AtExp_seq11, _, 
+AtExp_seq11right)) :: ( _, ( MlyValue.AtExp AtExp1, AtExp1left, _)) ::
+ rest671)) => let val  result = MlyValue.AtExp_seq1 (fn _ => let val 
+ (AtExp as AtExp1) = AtExp1 ()
+ val  (AtExp_seq1 as AtExp_seq11) = AtExp_seq11 ()
+ in ( AtExp :: AtExp_seq1 )
+end)
+ in ( LrTable.NT 108, ( result, AtExp1left, AtExp_seq11right), rest671
 )
- in (LrTable.NT 108,(result,AtExp1left,AtExp_seq11right),rest671) end
-| (157,(_,(MlyValue.AtExp AtExp1,AtExp1left,AtExp1right))::rest671)
- => let val result=MlyValue.AtExp_seq1(fn _ => let val AtExp as AtExp1
-=AtExp1 ()
- in ( [AtExp] ) end
-)
- in (LrTable.NT 108,(result,AtExp1left,AtExp1right),rest671) end
-| (158,(_,(MlyValue.CommaExpRow_opt CommaExpRow_opt1,_,
-CommaExpRow_opt1right))::(_,(MlyValue.Exp_ Exp_1,_,_))::_::(_,(
-MlyValue.Label Label1,Labelleft as Label1left,_))::rest671) => let 
-val result=MlyValue.ExpRow(fn _ => let val Label as Label1=Label1 ()
-val Exp_ as Exp_1=Exp_1 ()
-val CommaExpRow_opt as CommaExpRow_opt1=CommaExpRow_opt1 ()
+end
+|  ( 157, ( ( _, ( MlyValue.AtExp AtExp1, AtExp1left, AtExp1right)) ::
+ rest671)) => let val  result = MlyValue.AtExp_seq1 (fn _ => let val 
+ (AtExp as AtExp1) = AtExp1 ()
+ in ( [AtExp] )
+end)
+ in ( LrTable.NT 108, ( result, AtExp1left, AtExp1right), rest671)
+end
+|  ( 158, ( ( _, ( MlyValue.CommaExpRow_opt CommaExpRow_opt1, _, 
+CommaExpRow_opt1right)) :: ( _, ( MlyValue.Exp_ Exp_1, _, _)) :: _ :: 
+( _, ( MlyValue.Label Label1, (Labelleft as Label1left), _)) :: 
+rest671)) => let val  result = MlyValue.ExpRow (fn _ => let val  (
+Label as Label1) = Label1 ()
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (CommaExpRow_opt as CommaExpRow_opt1) = CommaExpRow_opt1 ()
  in (
  EXPROW (PP Labelleft
 				    (rightmost get_info_exp Exp_
 				               get_info_exprow CommaExpRow_opt),
 				  Label, Exp_, CommaExpRow_opt) 
-) end
 )
- in (LrTable.NT 78,(result,Label1left,CommaExpRow_opt1right),rest671)
- end
-| (159,(_,(MlyValue.ExpRow ExpRow1,ExpRow1left,ExpRow1right))::rest671
-) => let val result=MlyValue.ExpRow_opt(fn _ => let val ExpRow as 
-ExpRow1=ExpRow1 ()
- in ( SOME ExpRow ) end
-)
- in (LrTable.NT 93,(result,ExpRow1left,ExpRow1right),rest671) end
-| (160,rest671) => let val result=MlyValue.ExpRow_opt(fn _ => ( NONE )
-)
- in (LrTable.NT 93,(result,defaultPos,defaultPos),rest671) end
-| (161,(_,(MlyValue.ExpRow ExpRow1,_,ExpRow1right))::(_,(_,COMMA1left,
-_))::rest671) => let val result=MlyValue.CommaExpRow_opt(fn _ => let 
-val ExpRow as ExpRow1=ExpRow1 ()
- in ( SOME ExpRow ) end
-)
- in (LrTable.NT 81,(result,COMMA1left,ExpRow1right),rest671) end
-| (162,rest671) => let val result=MlyValue.CommaExpRow_opt(fn _ => (
- NONE ))
- in (LrTable.NT 81,(result,defaultPos,defaultPos),rest671) end
-| (163,(_,(MlyValue.ExpComma_seq1 ExpComma_seq11,ExpComma_seq11left,
-ExpComma_seq11right))::rest671) => let val result=
-MlyValue.ExpComma_seq0(fn _ => let val ExpComma_seq1 as ExpComma_seq11
-=ExpComma_seq11 ()
- in ( ExpComma_seq1 ) end
-)
- in (LrTable.NT 102,(result,ExpComma_seq11left,ExpComma_seq11right),
-rest671) end
-| (164,rest671) => let val result=MlyValue.ExpComma_seq0(fn _ => (
- nil ))
- in (LrTable.NT 102,(result,defaultPos,defaultPos),rest671) end
-| (165,(_,(MlyValue.ExpComma_seq1 ExpComma_seq11,_,ExpComma_seq11right
-))::_::(_,(MlyValue.Exp_ Exp_1,Exp_1left,_))::rest671) => let val 
-result=MlyValue.ExpComma_seq1(fn _ => let val Exp_ as Exp_1=Exp_1 ()
-val ExpComma_seq1 as ExpComma_seq11=ExpComma_seq11 ()
- in ( Exp_ :: ExpComma_seq1 ) end
-)
- in (LrTable.NT 103,(result,Exp_1left,ExpComma_seq11right),rest671)
- end
-| (166,(_,(MlyValue.Exp_ Exp_1,Exp_1left,Exp_1right))::rest671) => 
-let val result=MlyValue.ExpComma_seq1(fn _ => let val Exp_ as Exp_1=
-Exp_1 ()
- in ( [Exp_] ) end
-)
- in (LrTable.NT 103,(result,Exp_1left,Exp_1right),rest671) end
-| (167,(_,(MlyValue.ExpComma_seq1 ExpComma_seq11,_,ExpComma_seq11right
-))::_::(_,(MlyValue.Exp_ Exp_1,Exp_1left,_))::rest671) => let val 
-result=MlyValue.ExpComma_seq2(fn _ => let val Exp_ as Exp_1=Exp_1 ()
-val ExpComma_seq1 as ExpComma_seq11=ExpComma_seq11 ()
- in ( Exp_ :: ExpComma_seq1 ) end
-)
- in (LrTable.NT 104,(result,Exp_1left,ExpComma_seq11right),rest671)
- end
-| (168,(_,(MlyValue.ExpSemicolon_seq2 ExpSemicolon_seq21,_,
-ExpSemicolon_seq21right))::_::(_,(MlyValue.Exp_ Exp_1,Exp_1left,_))::
-rest671) => let val result=MlyValue.ExpSemicolon_seq2(fn _ => let val 
-Exp_ as Exp_1=Exp_1 ()
-val ExpSemicolon_seq2 as ExpSemicolon_seq21=ExpSemicolon_seq21 ()
- in ( Exp_ :: ExpSemicolon_seq2) end
-)
- in (LrTable.NT 111,(result,Exp_1left,ExpSemicolon_seq21right),rest671
-) end
-| (169,(_,(MlyValue.Exp_ Exp_2,_,Exp_2right))::_::(_,(MlyValue.Exp_ 
-Exp_1,Exp_1left,_))::rest671) => let val result=
-MlyValue.ExpSemicolon_seq2(fn _ => let val Exp_1=Exp_1 ()
-val Exp_2=Exp_2 ()
- in ( [Exp_1, Exp_2] ) end
-)
- in (LrTable.NT 111,(result,Exp_1left,Exp_2right),rest671) end
-| (170,(_,(MlyValue.AtExp_seq1 AtExp_seq11,AtExp_seq1left as 
-AtExp_seq11left,AtExp_seq1right as AtExp_seq11right))::rest671) => 
-let val result=MlyValue.Exp_(fn _ => let val AtExp_seq1 as AtExp_seq11
-=AtExp_seq11 ()
+end)
+ in ( LrTable.NT 78, ( result, Label1left, CommaExpRow_opt1right), 
+rest671)
+end
+|  ( 159, ( ( _, ( MlyValue.ExpRow ExpRow1, ExpRow1left, ExpRow1right)
+) :: rest671)) => let val  result = MlyValue.ExpRow_opt (fn _ => let
+ val  (ExpRow as ExpRow1) = ExpRow1 ()
+ in ( SOME ExpRow )
+end)
+ in ( LrTable.NT 93, ( result, ExpRow1left, ExpRow1right), rest671)
+
+end
+|  ( 160, ( rest671)) => let val  result = MlyValue.ExpRow_opt (fn _
+ => ( NONE ))
+ in ( LrTable.NT 93, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 161, ( ( _, ( MlyValue.ExpRow ExpRow1, _, ExpRow1right)) :: ( _, 
+( _, COMMA1left, _)) :: rest671)) => let val  result = 
+MlyValue.CommaExpRow_opt (fn _ => let val  (ExpRow as ExpRow1) = 
+ExpRow1 ()
+ in ( SOME ExpRow )
+end)
+ in ( LrTable.NT 81, ( result, COMMA1left, ExpRow1right), rest671)
+end
+|  ( 162, ( rest671)) => let val  result = MlyValue.CommaExpRow_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 81, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 163, ( ( _, ( MlyValue.ExpComma_seq1 ExpComma_seq11, 
+ExpComma_seq11left, ExpComma_seq11right)) :: rest671)) => let val  
+result = MlyValue.ExpComma_seq0 (fn _ => let val  (ExpComma_seq1 as 
+ExpComma_seq11) = ExpComma_seq11 ()
+ in ( ExpComma_seq1 )
+end)
+ in ( LrTable.NT 102, ( result, ExpComma_seq11left, 
+ExpComma_seq11right), rest671)
+end
+|  ( 164, ( rest671)) => let val  result = MlyValue.ExpComma_seq0 (fn
+ _ => ( nil ))
+ in ( LrTable.NT 102, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 165, ( ( _, ( MlyValue.ExpComma_seq1 ExpComma_seq11, _, 
+ExpComma_seq11right)) :: _ :: ( _, ( MlyValue.Exp_ Exp_1, Exp_1left, _
+)) :: rest671)) => let val  result = MlyValue.ExpComma_seq1 (fn _ =>
+ let val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (ExpComma_seq1 as ExpComma_seq11) = ExpComma_seq11 ()
+ in ( Exp_ :: ExpComma_seq1 )
+end)
+ in ( LrTable.NT 103, ( result, Exp_1left, ExpComma_seq11right), 
+rest671)
+end
+|  ( 166, ( ( _, ( MlyValue.Exp_ Exp_1, Exp_1left, Exp_1right)) :: 
+rest671)) => let val  result = MlyValue.ExpComma_seq1 (fn _ => let
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ in ( [Exp_] )
+end)
+ in ( LrTable.NT 103, ( result, Exp_1left, Exp_1right), rest671)
+end
+|  ( 167, ( ( _, ( MlyValue.ExpComma_seq1 ExpComma_seq11, _, 
+ExpComma_seq11right)) :: _ :: ( _, ( MlyValue.Exp_ Exp_1, Exp_1left, _
+)) :: rest671)) => let val  result = MlyValue.ExpComma_seq2 (fn _ =>
+ let val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (ExpComma_seq1 as ExpComma_seq11) = ExpComma_seq11 ()
+ in ( Exp_ :: ExpComma_seq1 )
+end)
+ in ( LrTable.NT 104, ( result, Exp_1left, ExpComma_seq11right), 
+rest671)
+end
+|  ( 168, ( ( _, ( MlyValue.ExpSemicolon_seq2 ExpSemicolon_seq21, _, 
+ExpSemicolon_seq21right)) :: _ :: ( _, ( MlyValue.Exp_ Exp_1, 
+Exp_1left, _)) :: rest671)) => let val  result = 
+MlyValue.ExpSemicolon_seq2 (fn _ => let val  (Exp_ as Exp_1) = Exp_1
+ ()
+ val  (ExpSemicolon_seq2 as ExpSemicolon_seq21) = ExpSemicolon_seq21
+ ()
+ in ( Exp_ :: ExpSemicolon_seq2)
+end)
+ in ( LrTable.NT 111, ( result, Exp_1left, ExpSemicolon_seq21right), 
+rest671)
+end
+|  ( 169, ( ( _, ( MlyValue.Exp_ Exp_2, _, Exp_2right)) :: _ :: ( _, (
+ MlyValue.Exp_ Exp_1, Exp_1left, _)) :: rest671)) => let val  result =
+ MlyValue.ExpSemicolon_seq2 (fn _ => let val  Exp_1 = Exp_1 ()
+ val  Exp_2 = Exp_2 ()
+ in ( [Exp_1, Exp_2] )
+end)
+ in ( LrTable.NT 111, ( result, Exp_1left, Exp_2right), rest671)
+end
+|  ( 170, ( ( _, ( MlyValue.AtExp_seq1 AtExp_seq11, (AtExp_seq1left
+ as AtExp_seq11left), (AtExp_seq1right as AtExp_seq11right))) :: 
+rest671)) => let val  result = MlyValue.Exp_ (fn _ => let val  (
+AtExp_seq1 as AtExp_seq11) = AtExp_seq11 ()
  in ( UNRES_INFIXexp (PP AtExp_seq1left AtExp_seq1right, AtExp_seq1) )
- end
-)
- in (LrTable.NT 76,(result,AtExp_seq11left,AtExp_seq11right),rest671)
- end
-| (171,(_,(MlyValue.Ty Ty1,_,Tyright as Ty1right))::_::(_,(
-MlyValue.Exp_ Exp_1,Exp_left as Exp_1left,_))::rest671) => let val 
-result=MlyValue.Exp_(fn _ => let val Exp_ as Exp_1=Exp_1 ()
-val Ty as Ty1=Ty1 ()
- in ( TYPEDexp (PP Exp_left Tyright, Exp_, Ty) ) end
-)
- in (LrTable.NT 76,(result,Exp_1left,Ty1right),rest671) end
-| (172,(_,(MlyValue.Match_ Match_1,_,Match_1right))::_::(_,(
-MlyValue.Exp_ Exp_1,Exp_left as Exp_1left,_))::rest671) => let val 
-result=MlyValue.Exp_(fn _ => let val Exp_ as Exp_1=Exp_1 ()
-val Match_ as Match_1=Match_1 ()
+
+end)
+ in ( LrTable.NT 76, ( result, AtExp_seq11left, AtExp_seq11right), 
+rest671)
+end
+|  ( 171, ( ( _, ( MlyValue.Ty Ty1, _, (Tyright as Ty1right))) :: _ ::
+ ( _, ( MlyValue.Exp_ Exp_1, (Exp_left as Exp_1left), _)) :: rest671))
+ => let val  result = MlyValue.Exp_ (fn _ => let val  (Exp_ as Exp_1)
+ = Exp_1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ in ( TYPEDexp (PP Exp_left Tyright, Exp_, Ty) )
+end)
+ in ( LrTable.NT 76, ( result, Exp_1left, Ty1right), rest671)
+end
+|  ( 172, ( ( _, ( MlyValue.Match_ Match_1, _, Match_1right)) :: _ :: 
+( _, ( MlyValue.Exp_ Exp_1, (Exp_left as Exp_1left), _)) :: rest671))
+ => let val  result = MlyValue.Exp_ (fn _ => let val  (Exp_ as Exp_1)
+ = Exp_1 ()
+ val  (Match_ as Match_1) = Match_1 ()
  in (
  HANDLEexp (PP Exp_left (right (get_info_match Match_)),
 				     Exp_, Match_) 
-) end
 )
- in (LrTable.NT 76,(result,Exp_1left,Match_1right),rest671) end
-| (173,(_,(MlyValue.Exp_ Exp_1,_,Exp_1right))::(_,(_,RAISEleft as 
-RAISE1left,_))::rest671) => let val result=MlyValue.Exp_(fn _ => let 
-val Exp_ as Exp_1=Exp_1 ()
- in ( RAISEexp (PP RAISEleft (right (get_info_exp Exp_)), Exp_) ) end
-)
- in (LrTable.NT 76,(result,RAISE1left,Exp_1right),rest671) end
-| (174,(_,(MlyValue.Match_ Match_1,_,Match_1right))::(_,(_,FNleft as 
-FN1left,_))::rest671) => let val result=MlyValue.Exp_(fn _ => let val 
-Match_ as Match_1=Match_1 ()
- in ( FNexp (PP FNleft (right (get_info_match Match_)), Match_) ) end
-)
- in (LrTable.NT 76,(result,FN1left,Match_1right),rest671) end
-| (175,(_,(MlyValue.Match_ Match_1,_,Match_1right))::_::(_,(
-MlyValue.Exp_ Exp_1,_,_))::(_,(_,CASEleft as CASE1left,_))::rest671)
- => let val result=MlyValue.Exp_(fn _ => let val Exp_ as Exp_1=Exp_1 
-()
-val Match_ as Match_1=Match_1 ()
+end)
+ in ( LrTable.NT 76, ( result, Exp_1left, Match_1right), rest671)
+end
+|  ( 173, ( ( _, ( MlyValue.Exp_ Exp_1, _, Exp_1right)) :: ( _, ( _, (
+RAISEleft as RAISE1left), _)) :: rest671)) => let val  result = 
+MlyValue.Exp_ (fn _ => let val  (Exp_ as Exp_1) = Exp_1 ()
+ in ( RAISEexp (PP RAISEleft (right (get_info_exp Exp_)), Exp_) )
+end)
+ in ( LrTable.NT 76, ( result, RAISE1left, Exp_1right), rest671)
+end
+|  ( 174, ( ( _, ( MlyValue.Match_ Match_1, _, Match_1right)) :: ( _, 
+( _, (FNleft as FN1left), _)) :: rest671)) => let val  result = 
+MlyValue.Exp_ (fn _ => let val  (Match_ as Match_1) = Match_1 ()
+ in ( FNexp (PP FNleft (right (get_info_match Match_)), Match_) )
+end)
+ in ( LrTable.NT 76, ( result, FN1left, Match_1right), rest671)
+end
+|  ( 175, ( ( _, ( MlyValue.Match_ Match_1, _, Match_1right)) :: _ :: 
+( _, ( MlyValue.Exp_ Exp_1, _, _)) :: ( _, ( _, (CASEleft as CASE1left
+), _)) :: rest671)) => let val  result = MlyValue.Exp_ (fn _ => let
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (Match_ as Match_1) = Match_1 ()
  in (
  case_exp (PP CASEleft (right (get_info_match Match_)))
 			    (Exp_, Match_) 
-) end
 )
- in (LrTable.NT 76,(result,CASE1left,Match_1right),rest671) end
-| (176,(_,(MlyValue.Exp_ Exp_3,_,Exp_3right))::_::(_,(MlyValue.Exp_ 
-Exp_2,_,_))::_::(_,(MlyValue.Exp_ Exp_1,_,_))::(_,(_,IFleft as IF1left
-,_))::rest671) => let val result=MlyValue.Exp_(fn _ => let val Exp_1=
-Exp_1 ()
-val Exp_2=Exp_2 ()
-val Exp_3=Exp_3 ()
+end)
+ in ( LrTable.NT 76, ( result, CASE1left, Match_1right), rest671)
+end
+|  ( 176, ( ( _, ( MlyValue.Exp_ Exp_3, _, Exp_3right)) :: _ :: ( _, (
+ MlyValue.Exp_ Exp_2, _, _)) :: _ :: ( _, ( MlyValue.Exp_ Exp_1, _, _)
+) :: ( _, ( _, (IFleft as IF1left), _)) :: rest671)) => let val  
+result = MlyValue.Exp_ (fn _ => let val  Exp_1 = Exp_1 ()
+ val  Exp_2 = Exp_2 ()
+ val  Exp_3 = Exp_3 ()
  in (
  if_then_else_exp (PP IFleft (right (get_info_exp Exp_3)))
 			    (Exp_1, Exp_2, Exp_3) 
-) end
 )
- in (LrTable.NT 76,(result,IF1left,Exp_3right),rest671) end
-| (177,(_,(MlyValue.Exp_ Exp_2,_,Exp_2right))::_::(_,(MlyValue.Exp_ 
-Exp_1,Exp_1left,_))::rest671) => let val result=MlyValue.Exp_(fn _ => 
-let val Exp_1=Exp_1 ()
-val Exp_2=Exp_2 ()
+end)
+ in ( LrTable.NT 76, ( result, IF1left, Exp_3right), rest671)
+end
+|  ( 177, ( ( _, ( MlyValue.Exp_ Exp_2, _, Exp_2right)) :: _ :: ( _, (
+ MlyValue.Exp_ Exp_1, Exp_1left, _)) :: rest671)) => let val  result =
+ MlyValue.Exp_ (fn _ => let val  Exp_1 = Exp_1 ()
+ val  Exp_2 = Exp_2 ()
  in (
  let val info = PP Exp_1left (right (get_info_exp Exp_2))
 			  in
 			    if_then_else_exp info (Exp_1, exp_true info, Exp_2)
 			  end 
-) end
 )
- in (LrTable.NT 76,(result,Exp_1left,Exp_2right),rest671) end
-| (178,(_,(MlyValue.Exp_ Exp_2,_,Exp_2right))::_::(_,(MlyValue.Exp_ 
-Exp_1,Exp_1left,_))::rest671) => let val result=MlyValue.Exp_(fn _ => 
-let val Exp_1=Exp_1 ()
-val Exp_2=Exp_2 ()
+end)
+ in ( LrTable.NT 76, ( result, Exp_1left, Exp_2right), rest671)
+end
+|  ( 178, ( ( _, ( MlyValue.Exp_ Exp_2, _, Exp_2right)) :: _ :: ( _, (
+ MlyValue.Exp_ Exp_1, Exp_1left, _)) :: rest671)) => let val  result =
+ MlyValue.Exp_ (fn _ => let val  Exp_1 = Exp_1 ()
+ val  Exp_2 = Exp_2 ()
  in (
  let val info = PP Exp_1left (right (get_info_exp Exp_2))
 			  in
 			    if_then_else_exp info (Exp_1, Exp_2, exp_false info)
 			  end 
-) end
 )
- in (LrTable.NT 76,(result,Exp_1left,Exp_2right),rest671) end
-| (179,(_,(MlyValue.Exp_ Exp_2,_,Exp_2right))::_::(_,(MlyValue.Exp_ 
-Exp_1,_,_))::(_,(_,WHILEleft as WHILE1left,_))::rest671) => let val 
-result=MlyValue.Exp_(fn _ => let val Exp_1=Exp_1 ()
-val Exp_2=Exp_2 ()
+end)
+ in ( LrTable.NT 76, ( result, Exp_1left, Exp_2right), rest671)
+end
+|  ( 179, ( ( _, ( MlyValue.Exp_ Exp_2, _, Exp_2right)) :: _ :: ( _, (
+ MlyValue.Exp_ Exp_1, _, _)) :: ( _, ( _, (WHILEleft as WHILE1left), _
+)) :: rest671)) => let val  result = MlyValue.Exp_ (fn _ => let val  
+Exp_1 = Exp_1 ()
+ val  Exp_2 = Exp_2 ()
  in (
  while_exp (PP WHILEleft (right (get_info_exp Exp_2)))
 			    (Exp_1, Exp_2) 
-) end
 )
- in (LrTable.NT 76,(result,WHILE1left,Exp_2right),rest671) end
-| (180,(_,(MlyValue.BarMatch_opt BarMatch_opt1,_,BarMatch_opt1right))
-::(_,(MlyValue.MRule MRule1,MRuleleft as MRule1left,_))::rest671) => 
-let val result=MlyValue.Match_(fn _ => let val MRule as MRule1=MRule1 
-()
-val BarMatch_opt as BarMatch_opt1=BarMatch_opt1 ()
+end)
+ in ( LrTable.NT 76, ( result, WHILE1left, Exp_2right), rest671)
+end
+|  ( 180, ( ( _, ( MlyValue.BarMatch_opt BarMatch_opt1, _, 
+BarMatch_opt1right)) :: ( _, ( MlyValue.MRule MRule1, (MRuleleft as 
+MRule1left), _)) :: rest671)) => let val  result = MlyValue.Match_ (fn
+ _ => let val  (MRule as MRule1) = MRule1 ()
+ val  (BarMatch_opt as BarMatch_opt1) = BarMatch_opt1 ()
  in (
  MATCH (PP MRuleleft
 				   (rightmost get_info_mrule MRule
 				              get_info_match BarMatch_opt), 
 				 MRule, BarMatch_opt) 
-) end
 )
- in (LrTable.NT 77,(result,MRule1left,BarMatch_opt1right),rest671) end
-| (181,(_,(MlyValue.Match_ Match_1,_,Match_1right))::(_,(_,BAR1left,_)
-)::rest671) => let val result=MlyValue.BarMatch_opt(fn _ => let val 
-Match_ as Match_1=Match_1 ()
- in ( SOME Match_ ) end
-)
- in (LrTable.NT 91,(result,BAR1left,Match_1right),rest671) end
-| (182,rest671) => let val result=MlyValue.BarMatch_opt(fn _ => (
- NONE ))
- in (LrTable.NT 91,(result,defaultPos,defaultPos),rest671) end
-| (183,(_,(MlyValue.Exp_ Exp_1,_,Exp_1right))::_::(_,(MlyValue.Pat 
-Pat1,Patleft as Pat1left,_))::rest671) => let val result=
-MlyValue.MRule(fn _ => let val Pat as Pat1=Pat1 ()
-val Exp_ as Exp_1=Exp_1 ()
- in ( MRULE (PP Patleft (right (get_info_exp Exp_)), Pat, Exp_) ) end
-)
- in (LrTable.NT 75,(result,Pat1left,Exp_1right),rest671) end
-| (184,(_,(MlyValue.ValBind ValBind1,_,ValBind1right))::(_,(_,VALleft
- as VAL1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val ValBind as ValBind1=
+end)
+ in ( LrTable.NT 77, ( result, MRule1left, BarMatch_opt1right), 
+rest671)
+end
+|  ( 181, ( ( _, ( MlyValue.Match_ Match_1, _, Match_1right)) :: ( _, 
+( _, BAR1left, _)) :: rest671)) => let val  result = 
+MlyValue.BarMatch_opt (fn _ => let val  (Match_ as Match_1) = Match_1
+ ()
+ in ( SOME Match_ )
+end)
+ in ( LrTable.NT 91, ( result, BAR1left, Match_1right), rest671)
+end
+|  ( 182, ( rest671)) => let val  result = MlyValue.BarMatch_opt (fn _
+ => ( NONE ))
+ in ( LrTable.NT 91, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 183, ( ( _, ( MlyValue.Exp_ Exp_1, _, Exp_1right)) :: _ :: ( _, (
+ MlyValue.Pat Pat1, (Patleft as Pat1left), _)) :: rest671)) => let
+ val  result = MlyValue.MRule (fn _ => let val  (Pat as Pat1) = Pat1
+ ()
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ in ( MRULE (PP Patleft (right (get_info_exp Exp_)), Pat, Exp_) )
+end)
+ in ( LrTable.NT 75, ( result, Pat1left, Exp_1right), rest671)
+end
+|  ( 184, ( ( _, ( MlyValue.ValBind ValBind1, _, ValBind1right)) :: (
+ _, ( _, (VALleft as VAL1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (ValBind as ValBind1) = 
 ValBind1 ()
  in (
  VALdec (PP VALleft (right (get_info_valbind ValBind)),
 				  [], ValBind) 
-) end
 )
- in (LrTable.NT 128,(result,VAL1left,ValBind1right),rest671) end
-| (185,(_,(MlyValue.ValBind ValBind1,_,ValBind1right))::(_,(
-MlyValue.TyVarSeq1 TyVarSeq11,_,_))::(_,(_,VALleft as VAL1left,_))::
-rest671) => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let val 
-TyVarSeq1 as TyVarSeq11=TyVarSeq11 ()
-val ValBind as ValBind1=ValBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, VAL1left, ValBind1right), rest671)
+end
+|  ( 185, ( ( _, ( MlyValue.ValBind ValBind1, _, ValBind1right)) :: (
+ _, ( MlyValue.TyVarSeq1 TyVarSeq11, _, _)) :: ( _, ( _, (VALleft as 
+VAL1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (TyVarSeq1 as TyVarSeq11)
+ = TyVarSeq11 ()
+ val  (ValBind as ValBind1) = ValBind1 ()
  in (
  VALdec (PP VALleft (right (get_info_valbind ValBind)),
 				  TyVarSeq1, ValBind) 
-) end
 )
- in (LrTable.NT 128,(result,VAL1left,ValBind1right),rest671) end
-| (186,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::(_,(_,TYPEleft
- as TYPE1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val TypBind as TypBind1=
-TypBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, VAL1left, ValBind1right), rest671)
+end
+|  ( 186, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: (
+ _, ( _, (TYPEleft as TYPE1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (TypBind as TypBind1)
+ = TypBind1 ()
  in (
  TYPEdec (PP TYPEleft (right (get_info_typbind TypBind)),
 				   TypBind) 
-) end
 )
- in (LrTable.NT 128,(result,TYPE1left,TypBind1right),rest671) end
-| (187,(_,(MlyValue.DatBind_zero_arity DatBind_zero_arity1,_,
-DatBind_zero_arity1right))::(_,(_,DATATYPEleft as DATATYPE1left,_))::
-rest671) => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let val 
-DatBind_zero_arity as DatBind_zero_arity1=DatBind_zero_arity1 ()
+end)
+ in ( LrTable.NT 128, ( result, TYPE1left, TypBind1right), rest671)
+
+end
+|  ( 187, ( ( _, ( MlyValue.DatBind_zero_arity DatBind_zero_arity1, _,
+ DatBind_zero_arity1right)) :: ( _, ( _, (DATATYPEleft as 
+DATATYPE1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (DatBind_zero_arity as 
+DatBind_zero_arity1) = DatBind_zero_arity1 ()
  in (
  DATATYPEdec (PP DATATYPEleft
 				         (right (get_info_datbind DatBind_zero_arity)),
 				       DatBind_zero_arity) 
-) end
 )
- in (LrTable.NT 128,(result,DATATYPE1left,DatBind_zero_arity1right),
-rest671) end
-| (188,(_,(MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1,_,
-DatBind_nonzero_arity1right))::(_,(_,DATATYPEleft as DATATYPE1left,_))
-::rest671) => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let 
-val DatBind_nonzero_arity as DatBind_nonzero_arity1=
-DatBind_nonzero_arity1 ()
+end)
+ in ( LrTable.NT 128, ( result, DATATYPE1left, 
+DatBind_zero_arity1right), rest671)
+end
+|  ( 188, ( ( _, ( MlyValue.DatBind_nonzero_arity 
+DatBind_nonzero_arity1, _, DatBind_nonzero_arity1right)) :: ( _, ( _,
+ (DATATYPEleft as DATATYPE1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (DatBind_nonzero_arity
+ as DatBind_nonzero_arity1) = DatBind_nonzero_arity1 ()
  in (
  DATATYPEdec(PP DATATYPEleft
 				        (right (get_info_datbind DatBind_nonzero_arity)),
 				      DatBind_nonzero_arity) 
-) end
 )
- in (LrTable.NT 128,(result,DATATYPE1left,DatBind_nonzero_arity1right)
-,rest671) end
-| (189,(_,(MlyValue.LongTypeIdent LongTypeIdent1,_,LongTypeIdentright
- as LongTypeIdent1right))::_::_::(_,(MlyValue.TypeIdent TypeIdent1,_,_
-))::(_,(_,DATATYPE1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val TypeIdent as TypeIdent1=
-TypeIdent1 ()
-val LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
+end)
+ in ( LrTable.NT 128, ( result, DATATYPE1left, 
+DatBind_nonzero_arity1right), rest671)
+end
+|  ( 189, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, _, (
+LongTypeIdentright as LongTypeIdent1right))) :: _ :: _ :: ( _, ( 
+MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( _, DATATYPE1left, _))
+ :: rest671)) => let val  result = MlyValue.OneDec_sans_LOCAL (fn _ =>
+ let val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (LongTypeIdent as LongTypeIdent1) = LongTypeIdent1 ()
  in (
  DATATYPE_REPLICATIONdec
 			    (PP DATATYPE1left LongTypeIdentright,
 			     mk_TyCon TypeIdent, mk_LongTyCon LongTypeIdent) 
-) end
 )
- in (LrTable.NT 128,(result,DATATYPE1left,LongTypeIdent1right),rest671
-) end
-| (190,(_,(_,_,ENDright as END1right))::(_,(MlyValue.Dec Dec1,_,_))::_
-::(_,(MlyValue.DatBind DatBind1,_,_))::(_,(_,ABSTYPEleft as 
-ABSTYPE1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val DatBind as DatBind1=
-DatBind1 ()
-val Dec as Dec1=Dec1 ()
- in ( ABSTYPEdec (PP ABSTYPEleft ENDright, DatBind, Dec) ) end
-)
- in (LrTable.NT 128,(result,ABSTYPE1left,END1right),rest671) end
-| (191,(_,(MlyValue.ExBind ExBind1,_,ExBind1right))::(_,(_,
-EXCEPTIONleft as EXCEPTION1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val ExBind as ExBind1=ExBind1 
-()
+end)
+ in ( LrTable.NT 128, ( result, DATATYPE1left, LongTypeIdent1right), 
+rest671)
+end
+|  ( 190, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.Dec Dec1, _, _)) :: _ :: ( _, ( MlyValue.DatBind DatBind1, _,
+ _)) :: ( _, ( _, (ABSTYPEleft as ABSTYPE1left), _)) :: rest671)) =>
+ let val  result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (
+DatBind as DatBind1) = DatBind1 ()
+ val  (Dec as Dec1) = Dec1 ()
+ in ( ABSTYPEdec (PP ABSTYPEleft ENDright, DatBind, Dec) )
+end)
+ in ( LrTable.NT 128, ( result, ABSTYPE1left, END1right), rest671)
+end
+|  ( 191, ( ( _, ( MlyValue.ExBind ExBind1, _, ExBind1right)) :: ( _, 
+( _, (EXCEPTIONleft as EXCEPTION1left), _)) :: rest671)) => let val  
+result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (ExBind as 
+ExBind1) = ExBind1 ()
  in (
  EXCEPTIONdec (PP EXCEPTIONleft
 					  (right (get_info_exbind ExBind)),
 					ExBind) 
-) end
 )
- in (LrTable.NT 128,(result,EXCEPTION1left,ExBind1right),rest671) end
-| (192,(_,(MlyValue.LongIdent_seq1 LongIdent_seq11,_,
-LongIdent_seq1right as LongIdent_seq11right))::(_,(_,OPENleft as 
-OPEN1left,_))::rest671) => let val result=MlyValue.OneDec_sans_LOCAL(
-fn _ => let val LongIdent_seq1 as LongIdent_seq11=LongIdent_seq11 ()
+end)
+ in ( LrTable.NT 128, ( result, EXCEPTION1left, ExBind1right), rest671
+)
+end
+|  ( 192, ( ( _, ( MlyValue.LongIdent_seq1 LongIdent_seq11, _, (
+LongIdent_seq1right as LongIdent_seq11right))) :: ( _, ( _, (OPENleft
+ as OPEN1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (LongIdent_seq1 as 
+LongIdent_seq11) = LongIdent_seq11 ()
  in (
  OPENdec (PP OPENleft LongIdent_seq1right,
 				   wi_Convert mk_LongStrId LongIdent_seq1) 
-) end
 )
- in (LrTable.NT 128,(result,OPEN1left,LongIdent_seq11right),rest671)
- end
-| (193,(_,(MlyValue.EqIdent_seq1 EqIdent_seq11,_,EqIdent_seq1right as 
-EqIdent_seq11right))::(_,(MlyValue.DIGIT_opt DIGIT_opt1,_,_))::(_,(_,
-INFIXleft as INFIX1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val DIGIT_opt as DIGIT_opt1=
-DIGIT_opt1 ()
-val EqIdent_seq1 as EqIdent_seq11=EqIdent_seq11 ()
+end)
+ in ( LrTable.NT 128, ( result, OPEN1left, LongIdent_seq11right), 
+rest671)
+end
+|  ( 193, ( ( _, ( MlyValue.EqIdent_seq1 EqIdent_seq11, _, (
+EqIdent_seq1right as EqIdent_seq11right))) :: ( _, ( 
+MlyValue.DIGIT_opt DIGIT_opt1, _, _)) :: ( _, ( _, (INFIXleft as 
+INFIX1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (DIGIT_opt as DIGIT_opt1)
+ = DIGIT_opt1 ()
+ val  (EqIdent_seq1 as EqIdent_seq11) = EqIdent_seq11 ()
  in (
  INFIXdec (PP INFIXleft EqIdent_seq1right,
 				    DIGIT_opt, map mk_Id EqIdent_seq1) 
-) end
 )
- in (LrTable.NT 128,(result,INFIX1left,EqIdent_seq11right),rest671)
- end
-| (194,(_,(MlyValue.EqIdent_seq1 EqIdent_seq11,_,EqIdent_seq1right as 
-EqIdent_seq11right))::(_,(MlyValue.DIGIT_opt DIGIT_opt1,_,_))::(_,(_,
-INFIXRleft as INFIXR1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val DIGIT_opt as DIGIT_opt1=
-DIGIT_opt1 ()
-val EqIdent_seq1 as EqIdent_seq11=EqIdent_seq11 ()
+end)
+ in ( LrTable.NT 128, ( result, INFIX1left, EqIdent_seq11right), 
+rest671)
+end
+|  ( 194, ( ( _, ( MlyValue.EqIdent_seq1 EqIdent_seq11, _, (
+EqIdent_seq1right as EqIdent_seq11right))) :: ( _, ( 
+MlyValue.DIGIT_opt DIGIT_opt1, _, _)) :: ( _, ( _, (INFIXRleft as 
+INFIXR1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (DIGIT_opt as DIGIT_opt1)
+ = DIGIT_opt1 ()
+ val  (EqIdent_seq1 as EqIdent_seq11) = EqIdent_seq11 ()
  in (
  INFIXRdec (PP INFIXRleft EqIdent_seq1right,
 				     DIGIT_opt, map mk_Id EqIdent_seq1) 
-) end
 )
- in (LrTable.NT 128,(result,INFIXR1left,EqIdent_seq11right),rest671)
- end
-| (195,(_,(MlyValue.EqIdent_seq1 EqIdent_seq11,_,EqIdent_seq1right as 
-EqIdent_seq11right))::(_,(_,NONFIXleft as NONFIX1left,_))::rest671)
- => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let val 
-EqIdent_seq1 as EqIdent_seq11=EqIdent_seq11 ()
+end)
+ in ( LrTable.NT 128, ( result, INFIXR1left, EqIdent_seq11right), 
+rest671)
+end
+|  ( 195, ( ( _, ( MlyValue.EqIdent_seq1 EqIdent_seq11, _, (
+EqIdent_seq1right as EqIdent_seq11right))) :: ( _, ( _, (NONFIXleft
+ as NONFIX1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (EqIdent_seq1 as 
+EqIdent_seq11) = EqIdent_seq11 ()
  in (
  NONFIXdec (PP NONFIXleft EqIdent_seq1right,
 				     map mk_Id EqIdent_seq1) 
-) end
 )
- in (LrTable.NT 128,(result,NONFIX1left,EqIdent_seq11right),rest671)
- end
-| (196,(_,(_,_,RCOMSPEC1right))::(_,(MlyValue.SortDec SortDec1,_,_))::
-(_,(_,LCOMSPEC1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val SortDec as SortDec1=
-SortDec1 ()
- in ( SortDec ) end
-)
- in (LrTable.NT 128,(result,LCOMSPEC1left,RCOMSPEC1right),rest671) end
-| (197,(_,(_,_,RCOMSPEC1right))::(_,(MlyValue.ValSDesc ValSDesc1,
-ValSDescleft,_))::(_,(_,LCOMSPEC1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val ValSDesc as ValSDesc1=
-ValSDesc1 ()
+end)
+ in ( LrTable.NT 128, ( result, NONFIX1left, EqIdent_seq11right), 
+rest671)
+end
+|  ( 196, ( ( _, ( _, _, RCOMSPEC1right)) :: ( _, ( MlyValue.SortDec 
+SortDec1, _, _)) :: ( _, ( _, LCOMSPEC1left, _)) :: rest671)) => let
+ val  result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (SortDec
+ as SortDec1) = SortDec1 ()
+ in ( SortDec )
+end)
+ in ( LrTable.NT 128, ( result, LCOMSPEC1left, RCOMSPEC1right), 
+rest671)
+end
+|  ( 197, ( ( _, ( _, _, RCOMSPEC1right)) :: ( _, ( MlyValue.ValSDesc 
+ValSDesc1, ValSDescleft, _)) :: ( _, ( _, LCOMSPEC1left, _)) :: 
+rest671)) => let val  result = MlyValue.OneDec_sans_LOCAL (fn _ => let
+ val  (ValSDesc as ValSDesc1) = ValSDesc1 ()
  in (
  VALsdec (PP ValSDescleft
 				      (right (get_info_valsdesc ValSDesc)),
 		    	           ValSDesc) 
-) end
 )
- in (LrTable.NT 128,(result,LCOMSPEC1left,RCOMSPEC1right),rest671) end
-| (198,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::_::(_,(
-MlyValue.DatBind_zero_arity DatBind_zero_arity1,_,_))::(_,(_,
-DATATYPEleft as DATATYPE1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val DatBind_zero_arity as 
-DatBind_zero_arity1=DatBind_zero_arity1 ()
-val TypBind as TypBind1=TypBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, LCOMSPEC1left, RCOMSPEC1right), 
+rest671)
+end
+|  ( 198, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: _
+ :: ( _, ( MlyValue.DatBind_zero_arity DatBind_zero_arity1, _, _)) :: 
+( _, ( _, (DATATYPEleft as DATATYPE1left), _)) :: rest671)) => let
+ val  result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (
+DatBind_zero_arity as DatBind_zero_arity1) = DatBind_zero_arity1 ()
+ val  (TypBind as TypBind1) = TypBind1 ()
  in (
  let val db = rewriteDatBind (DatBind_zero_arity, TypBind)
                           in
@@ -3777,15 +4123,18 @@ val TypBind as TypBind1=TypBind1 ()
 				      (get_info_datbind DatBind_zero_arity, db),
 				    TYPEdec (get_info_typbind TypBind, TypBind))
                           end 
-) end
 )
- in (LrTable.NT 128,(result,DATATYPE1left,TypBind1right),rest671) end
-| (199,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::_::(_,(
-MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1,_,_))::(_,(_,
-DATATYPEleft as DATATYPE1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val DatBind_nonzero_arity as 
-DatBind_nonzero_arity1=DatBind_nonzero_arity1 ()
-val TypBind as TypBind1=TypBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, DATATYPE1left, TypBind1right), rest671
+)
+end
+|  ( 199, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: _
+ :: ( _, ( MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1, _, _
+)) :: ( _, ( _, (DATATYPEleft as DATATYPE1left), _)) :: rest671)) =>
+ let val  result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (
+DatBind_nonzero_arity as DatBind_nonzero_arity1) = 
+DatBind_nonzero_arity1 ()
+ val  (TypBind as TypBind1) = TypBind1 ()
  in (
  let val db = rewriteDatBind (DatBind_nonzero_arity, TypBind)
                           in
@@ -3794,16 +4143,19 @@ val TypBind as TypBind1=TypBind1 ()
 				      (get_info_datbind DatBind_nonzero_arity, db),
 				    TYPEdec (get_info_typbind TypBind, TypBind))
                           end 
-) end
 )
- in (LrTable.NT 128,(result,DATATYPE1left,TypBind1right),rest671) end
-| (200,(_,(_,_,ENDright as END1right))::(_,(MlyValue.Dec Dec1,_,_))::_
-::(_,(MlyValue.TypBind TypBind1,TypBindleft,_))::_::(_,(
-MlyValue.DatBind DatBind1,_,_))::(_,(_,ABSTYPEleft as ABSTYPE1left,_))
-::rest671) => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let 
-val DatBind as DatBind1=DatBind1 ()
-val TypBind as TypBind1=TypBind1 ()
-val Dec as Dec1=Dec1 ()
+end)
+ in ( LrTable.NT 128, ( result, DATATYPE1left, TypBind1right), rest671
+)
+end
+|  ( 200, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.Dec Dec1, _, _)) :: _ :: ( _, ( MlyValue.TypBind TypBind1, 
+TypBindleft, _)) :: _ :: ( _, ( MlyValue.DatBind DatBind1, _, _)) :: (
+ _, ( _, (ABSTYPEleft as ABSTYPE1left), _)) :: rest671)) => let val  
+result = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (DatBind as 
+DatBind1) = DatBind1 ()
+ val  (TypBind as TypBind1) = TypBind1 ()
+ val  (Dec as Dec1) = Dec1 ()
  in (
  let val db = rewriteDatBind (DatBind, TypBind)
                           in
@@ -3813,13 +4165,14 @@ val Dec as Dec1=Dec1 ()
 				       TYPEdec (get_info_typbind TypBind, TypBind),
 				       Dec))
                           end 
-) end
 )
- in (LrTable.NT 128,(result,ABSTYPE1left,END1right),rest671) end
-| (201,(_,(MlyValue.FValBind FValBind1,_,FValBind1right))::(_,(_,
-FUNleft as FUN1left,_))::rest671) => let val result=
-MlyValue.OneDec_sans_LOCAL(fn _ => let val FValBind as FValBind1=
-FValBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, ABSTYPE1left, END1right), rest671)
+end
+|  ( 201, ( ( _, ( MlyValue.FValBind FValBind1, _, FValBind1right)) ::
+ ( _, ( _, (FUNleft as FUN1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneDec_sans_LOCAL (fn _ => let val  (FValBind as FValBind1
+) = FValBind1 ()
  in (
  let  
                            val (fv2, sortdecs) = FValBind  
@@ -3830,14 +4183,17 @@ FValBind1 ()
                                         fvb
                                         sortdecs
                           end 
-) end
 )
- in (LrTable.NT 128,(result,FUN1left,FValBind1right),rest671) end
-| (202,(_,(MlyValue.FValBind FValBind1,_,FValBind1right))::(_,(
-MlyValue.TyVarSeq1 TyVarSeq11,_,_))::(_,(_,FUNleft as FUN1left,_))::
-rest671) => let val result=MlyValue.OneDec_sans_LOCAL(fn _ => let val 
-TyVarSeq1 as TyVarSeq11=TyVarSeq11 ()
-val FValBind as FValBind1=FValBind1 ()
+end)
+ in ( LrTable.NT 128, ( result, FUN1left, FValBind1right), rest671)
+
+end
+|  ( 202, ( ( _, ( MlyValue.FValBind FValBind1, _, FValBind1right)) ::
+ ( _, ( MlyValue.TyVarSeq1 TyVarSeq11, _, _)) :: ( _, ( _, (FUNleft
+ as FUN1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneDec_sans_LOCAL (fn _ => let val  (TyVarSeq1 as TyVarSeq11)
+ = TyVarSeq11 ()
+ val  (FValBind as FValBind1) = FValBind1 ()
  in (
  let  
                            val (fv2, sortdecs) = FValBind  
@@ -3848,42 +4204,49 @@ val FValBind as FValBind1=FValBind1 ()
                                         fvb
                                         sortdecs
                           end 
-) end
 )
- in (LrTable.NT 128,(result,FUN1left,FValBind1right),rest671) end
-| (203,(_,(_,_,ENDright as END1right))::(_,(MlyValue.Dec Dec2,_,_))::_
-::(_,(MlyValue.Dec Dec1,_,_))::(_,(_,LOCALleft as LOCAL1left,_))::
-rest671) => let val result=MlyValue.OneDec(fn _ => let val Dec1=Dec1 
-()
-val Dec2=Dec2 ()
- in ( LOCALdec (PP LOCALleft ENDright, Dec1, Dec2) ) end
-)
- in (LrTable.NT 127,(result,LOCAL1left,END1right),rest671) end
-| (204,(_,(MlyValue.OneDec_sans_LOCAL OneDec_sans_LOCAL1,
-OneDec_sans_LOCAL1left,OneDec_sans_LOCAL1right))::rest671) => let val 
-result=MlyValue.OneDec(fn _ => let val OneDec_sans_LOCAL as 
-OneDec_sans_LOCAL1=OneDec_sans_LOCAL1 ()
- in ( OneDec_sans_LOCAL ) end
-)
- in (LrTable.NT 127,(result,OneDec_sans_LOCAL1left,
-OneDec_sans_LOCAL1right),rest671) end
-| (205,(_,(MlyValue.OneDec OneDec1,OneDec1left,OneDec1right))::rest671
-) => let val result=MlyValue.OneDec_or_SEMICOLON(fn _ => let val 
-OneDec as OneDec1=OneDec1 ()
- in ( SOME OneDec ) end
-)
- in (LrTable.NT 116,(result,OneDec1left,OneDec1right),rest671) end
-| (206,(_,(_,SEMICOLON1left,SEMICOLON1right))::rest671) => let val 
-result=MlyValue.OneDec_or_SEMICOLON(fn _ => ( NONE ))
- in (LrTable.NT 116,(result,SEMICOLON1left,SEMICOLON1right),rest671)
- end
-| (207,(_,(MlyValue.OneDec_or_SEMICOLON OneDec_or_SEMICOLON1,_,
-OneDec_or_SEMICOLON1right))::(_,(MlyValue.NonEmptyDec NonEmptyDec1,
-NonEmptyDecleft as NonEmptyDec1left,_))::rest671) => let val result=
-MlyValue.NonEmptyDec(fn _ => let val NonEmptyDec as NonEmptyDec1=
-NonEmptyDec1 ()
-val OneDec_or_SEMICOLON as OneDec_or_SEMICOLON1=OneDec_or_SEMICOLON1 
-()
+end)
+ in ( LrTable.NT 128, ( result, FUN1left, FValBind1right), rest671)
+
+end
+|  ( 203, ( ( _, ( _, _, (ENDright as END1right))) :: ( _, ( 
+MlyValue.Dec Dec2, _, _)) :: _ :: ( _, ( MlyValue.Dec Dec1, _, _)) :: 
+( _, ( _, (LOCALleft as LOCAL1left), _)) :: rest671)) => let val  
+result = MlyValue.OneDec (fn _ => let val  Dec1 = Dec1 ()
+ val  Dec2 = Dec2 ()
+ in ( LOCALdec (PP LOCALleft ENDright, Dec1, Dec2) )
+end)
+ in ( LrTable.NT 127, ( result, LOCAL1left, END1right), rest671)
+end
+|  ( 204, ( ( _, ( MlyValue.OneDec_sans_LOCAL OneDec_sans_LOCAL1, 
+OneDec_sans_LOCAL1left, OneDec_sans_LOCAL1right)) :: rest671)) => let
+ val  result = MlyValue.OneDec (fn _ => let val  (OneDec_sans_LOCAL
+ as OneDec_sans_LOCAL1) = OneDec_sans_LOCAL1 ()
+ in ( OneDec_sans_LOCAL )
+end)
+ in ( LrTable.NT 127, ( result, OneDec_sans_LOCAL1left, 
+OneDec_sans_LOCAL1right), rest671)
+end
+|  ( 205, ( ( _, ( MlyValue.OneDec OneDec1, OneDec1left, OneDec1right)
+) :: rest671)) => let val  result = MlyValue.OneDec_or_SEMICOLON (fn _
+ => let val  (OneDec as OneDec1) = OneDec1 ()
+ in ( SOME OneDec )
+end)
+ in ( LrTable.NT 116, ( result, OneDec1left, OneDec1right), rest671)
+
+end
+|  ( 206, ( ( _, ( _, SEMICOLON1left, SEMICOLON1right)) :: rest671))
+ => let val  result = MlyValue.OneDec_or_SEMICOLON (fn _ => ( NONE ))
+ in ( LrTable.NT 116, ( result, SEMICOLON1left, SEMICOLON1right), 
+rest671)
+end
+|  ( 207, ( ( _, ( MlyValue.OneDec_or_SEMICOLON OneDec_or_SEMICOLON1,
+ _, OneDec_or_SEMICOLON1right)) :: ( _, ( MlyValue.NonEmptyDec 
+NonEmptyDec1, (NonEmptyDecleft as NonEmptyDec1left), _)) :: rest671))
+ => let val  result = MlyValue.NonEmptyDec (fn _ => let val  (
+NonEmptyDec as NonEmptyDec1) = NonEmptyDec1 ()
+ val  (OneDec_or_SEMICOLON as OneDec_or_SEMICOLON1) = 
+OneDec_or_SEMICOLON1 ()
  in (
  (case OneDec_or_SEMICOLON of
 			     SOME dec =>
@@ -3891,132 +4254,155 @@ val OneDec_or_SEMICOLON as OneDec_or_SEMICOLON1=OneDec_or_SEMICOLON1
 					     (right (get_info_dec dec)),
 					   NonEmptyDec, dec)
 			   | NONE => NonEmptyDec) 
-) end
 )
- in (LrTable.NT 117,(result,NonEmptyDec1left,OneDec_or_SEMICOLON1right
-),rest671) end
-| (208,(_,(MlyValue.OneDec_or_SEMICOLON OneDec_or_SEMICOLON1,
-OneDec_or_SEMICOLON1left,OneDec_or_SEMICOLON1right))::rest671) => let 
-val result=MlyValue.NonEmptyDec(fn _ => let val OneDec_or_SEMICOLON
- as OneDec_or_SEMICOLON1=OneDec_or_SEMICOLON1 ()
+end)
+ in ( LrTable.NT 117, ( result, NonEmptyDec1left, 
+OneDec_or_SEMICOLON1right), rest671)
+end
+|  ( 208, ( ( _, ( MlyValue.OneDec_or_SEMICOLON OneDec_or_SEMICOLON1, 
+OneDec_or_SEMICOLON1left, OneDec_or_SEMICOLON1right)) :: rest671)) =>
+ let val  result = MlyValue.NonEmptyDec (fn _ => let val  (
+OneDec_or_SEMICOLON as OneDec_or_SEMICOLON1) = OneDec_or_SEMICOLON1 ()
  in (
  (case OneDec_or_SEMICOLON of
 			     SOME dec => dec
 			   | NONE => EMPTYdec (PP defaultPos defaultPos)) 
-) end
 )
- in (LrTable.NT 117,(result,OneDec_or_SEMICOLON1left,
-OneDec_or_SEMICOLON1right),rest671) end
-| (209,(_,(MlyValue.NonEmptyDec NonEmptyDec1,NonEmptyDec1left,
-NonEmptyDec1right))::rest671) => let val result=MlyValue.Dec(fn _ => 
-let val NonEmptyDec as NonEmptyDec1=NonEmptyDec1 ()
- in ( NonEmptyDec ) end
-)
- in (LrTable.NT 73,(result,NonEmptyDec1left,NonEmptyDec1right),rest671
-) end
-| (210,rest671) => let val result=MlyValue.Dec(fn _ => (
+end)
+ in ( LrTable.NT 117, ( result, OneDec_or_SEMICOLON1left, 
+OneDec_or_SEMICOLON1right), rest671)
+end
+|  ( 209, ( ( _, ( MlyValue.NonEmptyDec NonEmptyDec1, NonEmptyDec1left
+, NonEmptyDec1right)) :: rest671)) => let val  result = MlyValue.Dec
+ (fn _ => let val  (NonEmptyDec as NonEmptyDec1) = NonEmptyDec1 ()
+ in ( NonEmptyDec )
+end)
+ in ( LrTable.NT 73, ( result, NonEmptyDec1left, NonEmptyDec1right), 
+rest671)
+end
+|  ( 210, ( rest671)) => let val  result = MlyValue.Dec (fn _ => (
  EMPTYdec (PP defaultPos defaultPos) ))
- in (LrTable.NT 73,(result,defaultPos,defaultPos),rest671) end
-| (211,(_,(MlyValue.AndValSDesc_opt AndValSDesc_opt1,_,
-AndValSDesc_opt1right))::(_,(MlyValue.TyComma_seq1 TyComma_seq11,_,
-TyComma_seq1right))::(_,(MlyValue.OfSort OfSort1,_,_))::(_,(
-MlyValue.EqIdent EqIdent1,EqIdentleft as EqIdent1left,_))::rest671)
- => let val result=MlyValue.ValSDesc(fn _ => let val EqIdent as 
-EqIdent1=EqIdent1 ()
-val OfSort1=OfSort1 ()
-val TyComma_seq1 as TyComma_seq11=TyComma_seq11 ()
-val AndValSDesc_opt as AndValSDesc_opt1=AndValSDesc_opt1 ()
+ in ( LrTable.NT 73, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 211, ( ( _, ( MlyValue.AndValSDesc_opt AndValSDesc_opt1, _, 
+AndValSDesc_opt1right)) :: ( _, ( MlyValue.TyComma_seq1 TyComma_seq11,
+ _, TyComma_seq1right)) :: ( _, ( MlyValue.OfSort OfSort1, _, _)) :: (
+ _, ( MlyValue.EqIdent EqIdent1, (EqIdentleft as EqIdent1left), _)) ::
+ rest671)) => let val  result = MlyValue.ValSDesc (fn _ => let val  (
+EqIdent as EqIdent1) = EqIdent1 ()
+ val  OfSort1 = OfSort1 ()
+ val  (TyComma_seq1 as TyComma_seq11) = TyComma_seq11 ()
+ val  (AndValSDesc_opt as AndValSDesc_opt1) = AndValSDesc_opt1 ()
  in (
  VALSDESC (PP EqIdentleft
 			            (rightmost' TyComma_seq1right get_info_valsdesc AndValSDesc_opt),
 				   mk_Id EqIdent, TyComma_seq1, AndValSDesc_opt) 
-) end
 )
- in (LrTable.NT 68,(result,EqIdent1left,AndValSDesc_opt1right),rest671
-) end
-| (212,(_,(MlyValue.ValSDesc ValSDesc1,_,ValSDesc1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndValSDesc_opt(fn _
- => let val ValSDesc as ValSDesc1=ValSDesc1 ()
- in ( SOME ValSDesc ) end
-)
- in (LrTable.NT 84,(result,AND1left,ValSDesc1right),rest671) end
-| (213,rest671) => let val result=MlyValue.AndValSDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 84,(result,defaultPos,defaultPos),rest671) end
-| (214,(_,(MlyValue.AndValSSDesc_opt AndValSSDesc_opt1,_,
-AndValSSDesc_opt1right))::(_,(MlyValue.Ty Ty1,_,Tyright))::(_,(
-MlyValue.OfSort OfSort1,_,_))::(_,(MlyValue.EqIdent EqIdent1,
-EqIdentleft as EqIdent1left,_))::rest671) => let val result=
-MlyValue.ValSSDesc(fn _ => let val EqIdent as EqIdent1=EqIdent1 ()
-val OfSort1=OfSort1 ()
-val Ty as Ty1=Ty1 ()
-val AndValSSDesc_opt as AndValSSDesc_opt1=AndValSSDesc_opt1 ()
+end)
+ in ( LrTable.NT 68, ( result, EqIdent1left, AndValSDesc_opt1right), 
+rest671)
+end
+|  ( 212, ( ( _, ( MlyValue.ValSDesc ValSDesc1, _, ValSDesc1right)) ::
+ ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndValSDesc_opt (fn _ => let val  (ValSDesc as ValSDesc1) = 
+ValSDesc1 ()
+ in ( SOME ValSDesc )
+end)
+ in ( LrTable.NT 84, ( result, AND1left, ValSDesc1right), rest671)
+end
+|  ( 213, ( rest671)) => let val  result = MlyValue.AndValSDesc_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 84, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 214, ( ( _, ( MlyValue.AndValSSDesc_opt AndValSSDesc_opt1, _, 
+AndValSSDesc_opt1right)) :: ( _, ( MlyValue.Ty Ty1, _, Tyright)) :: (
+ _, ( MlyValue.OfSort OfSort1, _, _)) :: ( _, ( MlyValue.EqIdent 
+EqIdent1, (EqIdentleft as EqIdent1left), _)) :: rest671)) => let val  
+result = MlyValue.ValSSDesc (fn _ => let val  (EqIdent as EqIdent1) = 
+EqIdent1 ()
+ val  OfSort1 = OfSort1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ val  (AndValSSDesc_opt as AndValSSDesc_opt1) = AndValSSDesc_opt1 ()
  in (
  VALDESC (PP EqIdentleft
 				     (rightmost' Tyright info_on_valdesc AndValSSDesc_opt),
 				   mk_Id EqIdent, Ty, AndValSSDesc_opt) 
-) end
 )
- in (LrTable.NT 69,(result,EqIdent1left,AndValSSDesc_opt1right),
-rest671) end
-| (215,(_,(MlyValue.ValSSDesc ValSSDesc1,_,ValSSDesc1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndValSSDesc_opt(fn 
-_ => let val ValSSDesc as ValSSDesc1=ValSSDesc1 ()
- in ( SOME ValSSDesc ) end
-)
- in (LrTable.NT 85,(result,AND1left,ValSSDesc1right),rest671) end
-| (216,rest671) => let val result=MlyValue.AndValSSDesc_opt(fn _ => (
- NONE ))
- in (LrTable.NT 85,(result,defaultPos,defaultPos),rest671) end
-| (217,(_,(MlyValue.ValSDesc ValSDesc1,_,ValSDesc1right))::(_,(_,
-VALleft as VAL1left,_))::rest671) => let val result=
-MlyValue.OneSortDec(fn _ => let val ValSDesc as ValSDesc1=ValSDesc1 ()
+end)
+ in ( LrTable.NT 69, ( result, EqIdent1left, AndValSSDesc_opt1right), 
+rest671)
+end
+|  ( 215, ( ( _, ( MlyValue.ValSSDesc ValSSDesc1, _, ValSSDesc1right))
+ :: ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndValSSDesc_opt (fn _ => let val  (ValSSDesc as ValSSDesc1)
+ = ValSSDesc1 ()
+ in ( SOME ValSSDesc )
+end)
+ in ( LrTable.NT 85, ( result, AND1left, ValSSDesc1right), rest671)
+
+end
+|  ( 216, ( rest671)) => let val  result = MlyValue.AndValSSDesc_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 85, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 217, ( ( _, ( MlyValue.ValSDesc ValSDesc1, _, ValSDesc1right)) ::
+ ( _, ( _, (VALleft as VAL1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneSortDec (fn _ => let val  (ValSDesc as ValSDesc1) = 
+ValSDesc1 ()
  in (
  VALsdec (PP VALleft (right (get_info_valsdesc ValSDesc)),
 				   ValSDesc) 
-) end
 )
- in (LrTable.NT 129,(result,VAL1left,ValSDesc1right),rest671) end
-| (218,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::(_,(_,SORTleft
- as SORT1left,_))::rest671) => let val result=MlyValue.OneSortDec(fn _
- => let val TypBind as TypBind1=TypBind1 ()
+end)
+ in ( LrTable.NT 129, ( result, VAL1left, ValSDesc1right), rest671)
+
+end
+|  ( 218, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: (
+ _, ( _, (SORTleft as SORT1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneSortDec (fn _ => let val  (TypBind as TypBind1) = 
+TypBind1 ()
  in (
  SORTdec (PP SORTleft (right (get_info_typbind TypBind)),
 				   TypBind) 
-) end
 )
- in (LrTable.NT 129,(result,SORT1left,TypBind1right),rest671) end
-| (219,(_,(MlyValue.DatBind_zero_arity DatBind_zero_arity1,_,
-DatBind_zero_arity1right))::(_,(_,DATASORTleft as DATASORT1left,_))::
-rest671) => let val result=MlyValue.OneSortDec(fn _ => let val 
-DatBind_zero_arity as DatBind_zero_arity1=DatBind_zero_arity1 ()
+end)
+ in ( LrTable.NT 129, ( result, SORT1left, TypBind1right), rest671)
+
+end
+|  ( 219, ( ( _, ( MlyValue.DatBind_zero_arity DatBind_zero_arity1, _,
+ DatBind_zero_arity1right)) :: ( _, ( _, (DATASORTleft as 
+DATASORT1left), _)) :: rest671)) => let val  result = 
+MlyValue.OneSortDec (fn _ => let val  (DatBind_zero_arity as 
+DatBind_zero_arity1) = DatBind_zero_arity1 ()
  in (
  DATASORTdec (PP DATASORTleft
 				         (right (get_info_datbind DatBind_zero_arity)),
 				       DatBind_zero_arity) 
-) end
 )
- in (LrTable.NT 129,(result,DATASORT1left,DatBind_zero_arity1right),
-rest671) end
-| (220,(_,(MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1,_,
-DatBind_nonzero_arity1right))::(_,(_,DATASORTleft as DATASORT1left,_))
-::rest671) => let val result=MlyValue.OneSortDec(fn _ => let val 
-DatBind_nonzero_arity as DatBind_nonzero_arity1=DatBind_nonzero_arity1
- ()
+end)
+ in ( LrTable.NT 129, ( result, DATASORT1left, 
+DatBind_zero_arity1right), rest671)
+end
+|  ( 220, ( ( _, ( MlyValue.DatBind_nonzero_arity 
+DatBind_nonzero_arity1, _, DatBind_nonzero_arity1right)) :: ( _, ( _,
+ (DATASORTleft as DATASORT1left), _)) :: rest671)) => let val  result
+ = MlyValue.OneSortDec (fn _ => let val  (DatBind_nonzero_arity as 
+DatBind_nonzero_arity1) = DatBind_nonzero_arity1 ()
  in (
  DATASORTdec(PP DATASORTleft
 				        (right (get_info_datbind DatBind_nonzero_arity)),
 				      DatBind_nonzero_arity) 
-) end
 )
- in (LrTable.NT 129,(result,DATASORT1left,DatBind_nonzero_arity1right)
-,rest671) end
-| (221,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::_::(_,(
-MlyValue.DatBind_zero_arity DatBind_zero_arity1,_,_))::(_,(_,
-DATASORTleft as DATASORT1left,_))::rest671) => let val result=
-MlyValue.OneSortDec(fn _ => let val DatBind_zero_arity as 
-DatBind_zero_arity1=DatBind_zero_arity1 ()
-val TypBind as TypBind1=TypBind1 ()
+end)
+ in ( LrTable.NT 129, ( result, DATASORT1left, 
+DatBind_nonzero_arity1right), rest671)
+end
+|  ( 221, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: _
+ :: ( _, ( MlyValue.DatBind_zero_arity DatBind_zero_arity1, _, _)) :: 
+( _, ( _, (DATASORTleft as DATASORT1left), _)) :: rest671)) => let
+ val  result = MlyValue.OneSortDec (fn _ => let val  (
+DatBind_zero_arity as DatBind_zero_arity1) = DatBind_zero_arity1 ()
+ val  (TypBind as TypBind1) = TypBind1 ()
  in (
  let val db = rewriteDatBind (DatBind_zero_arity, TypBind)
                           in
@@ -4025,15 +4411,18 @@ val TypBind as TypBind1=TypBind1 ()
 				      (get_info_datbind DatBind_zero_arity, db),
 				    SORTdec (get_info_typbind TypBind, TypBind))
                           end 
-) end
 )
- in (LrTable.NT 129,(result,DATASORT1left,TypBind1right),rest671) end
-| (222,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::_::(_,(
-MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1,_,_))::(_,(_,
-DATASORTleft as DATASORT1left,_))::rest671) => let val result=
-MlyValue.OneSortDec(fn _ => let val DatBind_nonzero_arity as 
-DatBind_nonzero_arity1=DatBind_nonzero_arity1 ()
-val TypBind as TypBind1=TypBind1 ()
+end)
+ in ( LrTable.NT 129, ( result, DATASORT1left, TypBind1right), rest671
+)
+end
+|  ( 222, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: _
+ :: ( _, ( MlyValue.DatBind_nonzero_arity DatBind_nonzero_arity1, _, _
+)) :: ( _, ( _, (DATASORTleft as DATASORT1left), _)) :: rest671)) =>
+ let val  result = MlyValue.OneSortDec (fn _ => let val  (
+DatBind_nonzero_arity as DatBind_nonzero_arity1) = 
+DatBind_nonzero_arity1 ()
+ val  (TypBind as TypBind1) = TypBind1 ()
  in (
  let val db = rewriteDatBind (DatBind_nonzero_arity, TypBind)
                           in
@@ -4042,27 +4431,33 @@ val TypBind as TypBind1=TypBind1 ()
 				      (get_info_datbind DatBind_nonzero_arity, db),
 				    SORTdec (get_info_typbind TypBind, TypBind))
                           end 
-) end
 )
- in (LrTable.NT 129,(result,DATASORT1left,TypBind1right),rest671) end
-| (223,(_,(MlyValue.OneSortDec OneSortDec1,OneSortDec1left,
-OneSortDec1right))::rest671) => let val result=
-MlyValue.OneSortDec_or_SEMICOLON(fn _ => let val OneSortDec as 
-OneSortDec1=OneSortDec1 ()
- in ( SOME OneSortDec ) end
+end)
+ in ( LrTable.NT 129, ( result, DATASORT1left, TypBind1right), rest671
 )
- in (LrTable.NT 118,(result,OneSortDec1left,OneSortDec1right),rest671)
- end
-| (224,(_,(_,SEMICOLON1left,SEMICOLON1right))::rest671) => let val 
-result=MlyValue.OneSortDec_or_SEMICOLON(fn _ => ( NONE ))
- in (LrTable.NT 118,(result,SEMICOLON1left,SEMICOLON1right),rest671)
- end
-| (225,(_,(MlyValue.OneSortDec_or_SEMICOLON OneSortDec_or_SEMICOLON1,_
-,OneSortDec_or_SEMICOLON1right))::(_,(MlyValue.NonEmptySortDec 
-NonEmptySortDec1,NonEmptySortDecleft as NonEmptySortDec1left,_))::
-rest671) => let val result=MlyValue.NonEmptySortDec(fn _ => let val 
-NonEmptySortDec as NonEmptySortDec1=NonEmptySortDec1 ()
-val OneSortDec_or_SEMICOLON as OneSortDec_or_SEMICOLON1=
+end
+|  ( 223, ( ( _, ( MlyValue.OneSortDec OneSortDec1, OneSortDec1left, 
+OneSortDec1right)) :: rest671)) => let val  result = 
+MlyValue.OneSortDec_or_SEMICOLON (fn _ => let val  (OneSortDec as 
+OneSortDec1) = OneSortDec1 ()
+ in ( SOME OneSortDec )
+end)
+ in ( LrTable.NT 118, ( result, OneSortDec1left, OneSortDec1right), 
+rest671)
+end
+|  ( 224, ( ( _, ( _, SEMICOLON1left, SEMICOLON1right)) :: rest671))
+ => let val  result = MlyValue.OneSortDec_or_SEMICOLON (fn _ => (
+ NONE ))
+ in ( LrTable.NT 118, ( result, SEMICOLON1left, SEMICOLON1right), 
+rest671)
+end
+|  ( 225, ( ( _, ( MlyValue.OneSortDec_or_SEMICOLON 
+OneSortDec_or_SEMICOLON1, _, OneSortDec_or_SEMICOLON1right)) :: ( _, (
+ MlyValue.NonEmptySortDec NonEmptySortDec1, (NonEmptySortDecleft as 
+NonEmptySortDec1left), _)) :: rest671)) => let val  result = 
+MlyValue.NonEmptySortDec (fn _ => let val  (NonEmptySortDec as 
+NonEmptySortDec1) = NonEmptySortDec1 ()
+ val  (OneSortDec_or_SEMICOLON as OneSortDec_or_SEMICOLON1) = 
 OneSortDec_or_SEMICOLON1 ()
  in (
  (case OneSortDec_or_SEMICOLON of
@@ -4071,74 +4466,87 @@ OneSortDec_or_SEMICOLON1 ()
 					     (right (get_info_dec sortdec)),
 					   NonEmptySortDec, sortdec)
 			   | NONE => NonEmptySortDec) 
-) end
 )
- in (LrTable.NT 119,(result,NonEmptySortDec1left,
-OneSortDec_or_SEMICOLON1right),rest671) end
-| (226,(_,(MlyValue.OneSortDec_or_SEMICOLON OneSortDec_or_SEMICOLON1,
-OneSortDec_or_SEMICOLON1left,OneSortDec_or_SEMICOLON1right))::rest671)
- => let val result=MlyValue.NonEmptySortDec(fn _ => let val 
-OneSortDec_or_SEMICOLON as OneSortDec_or_SEMICOLON1=
-OneSortDec_or_SEMICOLON1 ()
+end)
+ in ( LrTable.NT 119, ( result, NonEmptySortDec1left, 
+OneSortDec_or_SEMICOLON1right), rest671)
+end
+|  ( 226, ( ( _, ( MlyValue.OneSortDec_or_SEMICOLON 
+OneSortDec_or_SEMICOLON1, OneSortDec_or_SEMICOLON1left, 
+OneSortDec_or_SEMICOLON1right)) :: rest671)) => let val  result = 
+MlyValue.NonEmptySortDec (fn _ => let val  (OneSortDec_or_SEMICOLON
+ as OneSortDec_or_SEMICOLON1) = OneSortDec_or_SEMICOLON1 ()
  in (
  (case OneSortDec_or_SEMICOLON of
 			     SOME sortdec => sortdec
 			   | NONE => EMPTYdec (PP defaultPos defaultPos)) 
-) end
 )
- in (LrTable.NT 119,(result,OneSortDec_or_SEMICOLON1left,
-OneSortDec_or_SEMICOLON1right),rest671) end
-| (227,(_,(MlyValue.NonEmptySortDec NonEmptySortDec1,
-NonEmptySortDec1left,NonEmptySortDec1right))::rest671) => let val 
-result=MlyValue.SortDec(fn _ => let val NonEmptySortDec as 
-NonEmptySortDec1=NonEmptySortDec1 ()
- in ( NonEmptySortDec ) end
-)
- in (LrTable.NT 74,(result,NonEmptySortDec1left,NonEmptySortDec1right)
-,rest671) end
-| (228,rest671) => let val result=MlyValue.SortDec(fn _ => (
+end)
+ in ( LrTable.NT 119, ( result, OneSortDec_or_SEMICOLON1left, 
+OneSortDec_or_SEMICOLON1right), rest671)
+end
+|  ( 227, ( ( _, ( MlyValue.NonEmptySortDec NonEmptySortDec1, 
+NonEmptySortDec1left, NonEmptySortDec1right)) :: rest671)) => let val 
+ result = MlyValue.SortDec (fn _ => let val  (NonEmptySortDec as 
+NonEmptySortDec1) = NonEmptySortDec1 ()
+ in ( NonEmptySortDec )
+end)
+ in ( LrTable.NT 74, ( result, NonEmptySortDec1left, 
+NonEmptySortDec1right), rest671)
+end
+|  ( 228, ( rest671)) => let val  result = MlyValue.SortDec (fn _ => (
  EMPTYdec (PP defaultPos defaultPos) ))
- in (LrTable.NT 74,(result,defaultPos,defaultPos),rest671) end
-| (229,(_,(MlyValue.AndValBind_opt AndValBind_opt1,_,
-AndValBind_opt1right))::(_,(MlyValue.Exp_ Exp_1,_,_))::_::(_,(
-MlyValue.Pat Pat1,Patleft as Pat1left,_))::rest671) => let val result=
-MlyValue.ValBind(fn _ => let val Pat as Pat1=Pat1 ()
-val Exp_ as Exp_1=Exp_1 ()
-val AndValBind_opt as AndValBind_opt1=AndValBind_opt1 ()
+ in ( LrTable.NT 74, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 229, ( ( _, ( MlyValue.AndValBind_opt AndValBind_opt1, _, 
+AndValBind_opt1right)) :: ( _, ( MlyValue.Exp_ Exp_1, _, _)) :: _ :: (
+ _, ( MlyValue.Pat Pat1, (Patleft as Pat1left), _)) :: rest671)) =>
+ let val  result = MlyValue.ValBind (fn _ => let val  (Pat as Pat1) = 
+Pat1 ()
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (AndValBind_opt as AndValBind_opt1) = AndValBind_opt1 ()
  in (
  PLAINvalbind (PP Patleft
 					  (rightmost get_info_exp Exp_
 					             get_info_valbind AndValBind_opt), 
 					Pat, Exp_, AndValBind_opt) 
-) end
 )
- in (LrTable.NT 70,(result,Pat1left,AndValBind_opt1right),rest671) end
-| (230,(_,(MlyValue.FnValBind FnValBind1,_,FnValBind1right))::(_,(_,
-RECleft as REC1left,_))::rest671) => let val result=MlyValue.ValBind(
-fn _ => let val FnValBind as FnValBind1=FnValBind1 ()
+end)
+ in ( LrTable.NT 70, ( result, Pat1left, AndValBind_opt1right), 
+rest671)
+end
+|  ( 230, ( ( _, ( MlyValue.FnValBind FnValBind1, _, FnValBind1right))
+ :: ( _, ( _, (RECleft as REC1left), _)) :: rest671)) => let val  
+result = MlyValue.ValBind (fn _ => let val  (FnValBind as FnValBind1)
+ = FnValBind1 ()
  in (
  RECvalbind (PP RECleft
 				        (right (get_info_valbind FnValBind)),
 				      FnValBind) 
-) end
 )
- in (LrTable.NT 70,(result,REC1left,FnValBind1right),rest671) end
-| (231,(_,(MlyValue.ValBind ValBind1,_,ValBind1right))::(_,(_,AND1left
-,_))::rest671) => let val result=MlyValue.AndValBind_opt(fn _ => let 
-val ValBind as ValBind1=ValBind1 ()
- in ( SOME ValBind ) end
-)
- in (LrTable.NT 82,(result,AND1left,ValBind1right),rest671) end
-| (232,rest671) => let val result=MlyValue.AndValBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 82,(result,defaultPos,defaultPos),rest671) end
-| (233,(_,(MlyValue.AndFnValBind_opt AndFnValBind_opt1,_,
-AndFnValBind_opt1right))::(_,(MlyValue.Match_ Match_1,_,_))::(_,(_,
-FNleft,_))::_::(_,(MlyValue.Pat Pat1,Patleft as Pat1left,_))::rest671)
- => let val result=MlyValue.FnValBind(fn _ => let val Pat as Pat1=Pat1
- ()
-val Match_ as Match_1=Match_1 ()
-val AndFnValBind_opt as AndFnValBind_opt1=AndFnValBind_opt1 ()
+end)
+ in ( LrTable.NT 70, ( result, REC1left, FnValBind1right), rest671)
+
+end
+|  ( 231, ( ( _, ( MlyValue.ValBind ValBind1, _, ValBind1right)) :: (
+ _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndValBind_opt (fn _ => let val  (ValBind as ValBind1) = 
+ValBind1 ()
+ in ( SOME ValBind )
+end)
+ in ( LrTable.NT 82, ( result, AND1left, ValBind1right), rest671)
+end
+|  ( 232, ( rest671)) => let val  result = MlyValue.AndValBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 82, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 233, ( ( _, ( MlyValue.AndFnValBind_opt AndFnValBind_opt1, _, 
+AndFnValBind_opt1right)) :: ( _, ( MlyValue.Match_ Match_1, _, _)) :: 
+( _, ( _, FNleft, _)) :: _ :: ( _, ( MlyValue.Pat Pat1, (Patleft as 
+Pat1left), _)) :: rest671)) => let val  result = MlyValue.FnValBind
+ (fn _ => let val  (Pat as Pat1) = Pat1 ()
+ val  (Match_ as Match_1) = Match_1 ()
+ val  (AndFnValBind_opt as AndFnValBind_opt1) = AndFnValBind_opt1 ()
  in (
  PLAINvalbind
 			    (PP Patleft
@@ -4147,19 +4555,21 @@ val AndFnValBind_opt as AndFnValBind_opt1=AndFnValBind_opt1 ()
 			       Pat,
 			       FNexp (PP FNleft (right (get_info_match Match_)), Match_),
 			       AndFnValBind_opt) 
-) end
 )
- in (LrTable.NT 71,(result,Pat1left,AndFnValBind_opt1right),rest671)
- end
-| (234,(_,(MlyValue.AndFnValBind_opt AndFnValBind_opt1,_,
-AndFnValBind_opt1right))::(_,(MlyValue.ColonTy_seq1 ColonTy_seq11,_,
-ColonTy_seq1right))::(_,(_,_,RPARENright))::(_,(MlyValue.Match_ 
-Match_1,_,_))::(_,(_,FNleft,_))::(_,(_,LPARENleft,_))::_::(_,(
-MlyValue.Pat Pat1,Patleft as Pat1left,_))::rest671) => let val result=
-MlyValue.FnValBind(fn _ => let val Pat as Pat1=Pat1 ()
-val Match_ as Match_1=Match_1 ()
-val ColonTy_seq1 as ColonTy_seq11=ColonTy_seq11 ()
-val AndFnValBind_opt as AndFnValBind_opt1=AndFnValBind_opt1 ()
+end)
+ in ( LrTable.NT 71, ( result, Pat1left, AndFnValBind_opt1right), 
+rest671)
+end
+|  ( 234, ( ( _, ( MlyValue.AndFnValBind_opt AndFnValBind_opt1, _, 
+AndFnValBind_opt1right)) :: ( _, ( MlyValue.ColonTy_seq1 ColonTy_seq11
+, _, ColonTy_seq1right)) :: ( _, ( _, _, RPARENright)) :: ( _, ( 
+MlyValue.Match_ Match_1, _, _)) :: ( _, ( _, FNleft, _)) :: ( _, ( _, 
+LPARENleft, _)) :: _ :: ( _, ( MlyValue.Pat Pat1, (Patleft as Pat1left
+), _)) :: rest671)) => let val  result = MlyValue.FnValBind (fn _ =>
+ let val  (Pat as Pat1) = Pat1 ()
+ val  (Match_ as Match_1) = Match_1 ()
+ val  (ColonTy_seq1 as ColonTy_seq11) = ColonTy_seq11 ()
+ val  (AndFnValBind_opt as AndFnValBind_opt1) = AndFnValBind_opt1 ()
  in (
  let
                             val fnExp =
@@ -4180,138 +4590,164 @@ val AndFnValBind_opt as AndFnValBind_opt1=AndFnValBind_opt1 ()
 					  attachTypes (atexpExp, ColonTy_seq1),
 					  AndFnValBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 71,(result,Pat1left,AndFnValBind_opt1right),rest671)
- end
-| (235,(_,(MlyValue.FnValBind FnValBind1,_,FnValBind1right))::(_,(_,
-RECleft as REC1left,_))::rest671) => let val result=MlyValue.FnValBind
-(fn _ => let val FnValBind as FnValBind1=FnValBind1 ()
+end)
+ in ( LrTable.NT 71, ( result, Pat1left, AndFnValBind_opt1right), 
+rest671)
+end
+|  ( 235, ( ( _, ( MlyValue.FnValBind FnValBind1, _, FnValBind1right))
+ :: ( _, ( _, (RECleft as REC1left), _)) :: rest671)) => let val  
+result = MlyValue.FnValBind (fn _ => let val  (FnValBind as FnValBind1
+) = FnValBind1 ()
  in (
  RECvalbind (PP RECleft
 				        (right (get_info_valbind FnValBind)),
 				      FnValBind) 
-) end
 )
- in (LrTable.NT 71,(result,REC1left,FnValBind1right),rest671) end
-| (236,(_,(MlyValue.ColonTy_seq1 ColonTy_seq11,_,ColonTy_seq11right))
-::(_,(MlyValue.Ty Ty1,_,Tyright))::(_,(_,COLON1left,_))::rest671) => 
-let val result=MlyValue.ColonTy_seq1(fn _ => let val Ty as Ty1=Ty1 ()
-val ColonTy_seq1 as ColonTy_seq11=ColonTy_seq11 ()
- in ( (Ty, Tyright) :: ColonTy_seq1 ) end
-)
- in (LrTable.NT 98,(result,COLON1left,ColonTy_seq11right),rest671) end
-| (237,(_,(MlyValue.Ty Ty1,_,Tyright as Ty1right))::(_,(_,COLON1left,_
-))::rest671) => let val result=MlyValue.ColonTy_seq1(fn _ => let val 
-Ty as Ty1=Ty1 ()
- in ( [(Ty, Tyright)] ) end
-)
- in (LrTable.NT 98,(result,COLON1left,Ty1right),rest671) end
-| (238,(_,(MlyValue.FnValBind FnValBind1,_,FnValBind1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndFnValBind_opt(fn 
-_ => let val FnValBind as FnValBind1=FnValBind1 ()
- in ( SOME FnValBind ) end
-)
- in (LrTable.NT 83,(result,AND1left,FnValBind1right),rest671) end
-| (239,rest671) => let val result=MlyValue.AndFnValBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 83,(result,defaultPos,defaultPos),rest671) end
-| (240,(_,(MlyValue.AndTypBind_opt AndTypBind_opt1,_,
-AndTypBind_opt1right))::(_,(MlyValue.Ty Ty1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq TyVarSeq1,
-TyVarSeqleft as TyVarSeq1left,_))::rest671) => let val result=
-MlyValue.TypBind(fn _ => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val Ty as Ty1=Ty1 ()
-val AndTypBind_opt as AndTypBind_opt1=AndTypBind_opt1 ()
+end)
+ in ( LrTable.NT 71, ( result, REC1left, FnValBind1right), rest671)
+
+end
+|  ( 236, ( ( _, ( MlyValue.ColonTy_seq1 ColonTy_seq11, _, 
+ColonTy_seq11right)) :: ( _, ( MlyValue.Ty Ty1, _, Tyright)) :: ( _, (
+ _, COLON1left, _)) :: rest671)) => let val  result = 
+MlyValue.ColonTy_seq1 (fn _ => let val  (Ty as Ty1) = Ty1 ()
+ val  (ColonTy_seq1 as ColonTy_seq11) = ColonTy_seq11 ()
+ in ( (Ty, Tyright) :: ColonTy_seq1 )
+end)
+ in ( LrTable.NT 98, ( result, COLON1left, ColonTy_seq11right), 
+rest671)
+end
+|  ( 237, ( ( _, ( MlyValue.Ty Ty1, _, (Tyright as Ty1right))) :: ( _,
+ ( _, COLON1left, _)) :: rest671)) => let val  result = 
+MlyValue.ColonTy_seq1 (fn _ => let val  (Ty as Ty1) = Ty1 ()
+ in ( [(Ty, Tyright)] )
+end)
+ in ( LrTable.NT 98, ( result, COLON1left, Ty1right), rest671)
+end
+|  ( 238, ( ( _, ( MlyValue.FnValBind FnValBind1, _, FnValBind1right))
+ :: ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndFnValBind_opt (fn _ => let val  (FnValBind as FnValBind1)
+ = FnValBind1 ()
+ in ( SOME FnValBind )
+end)
+ in ( LrTable.NT 83, ( result, AND1left, FnValBind1right), rest671)
+
+end
+|  ( 239, ( rest671)) => let val  result = MlyValue.AndFnValBind_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 83, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 240, ( ( _, ( MlyValue.AndTypBind_opt AndTypBind_opt1, _, 
+AndTypBind_opt1right)) :: ( _, ( MlyValue.Ty Ty1, _, _)) :: _ :: ( _, 
+( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( MlyValue.TyVarSeq 
+TyVarSeq1, (TyVarSeqleft as TyVarSeq1left), _)) :: rest671)) => let
+ val  result = MlyValue.TypBind (fn _ => let val  (TyVarSeq as 
+TyVarSeq1) = TyVarSeq1 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ val  (AndTypBind_opt as AndTypBind_opt1) = AndTypBind_opt1 ()
  in (
  TYPBIND (PP TyVarSeqleft
 				     (rightmost get_info_ty Ty
 				                get_info_typbind AndTypBind_opt),
 				   TyVarSeq, mk_TyCon TypeIdent, Ty, AndTypBind_opt) 
-) end
 )
- in (LrTable.NT 67,(result,TyVarSeq1left,AndTypBind_opt1right),rest671
-) end
-| (241,(_,(MlyValue.TypBind TypBind1,_,TypBind1right))::(_,(_,AND1left
-,_))::rest671) => let val result=MlyValue.AndTypBind_opt(fn _ => let 
-val TypBind as TypBind1=TypBind1 ()
- in ( SOME TypBind ) end
-)
- in (LrTable.NT 88,(result,AND1left,TypBind1right),rest671) end
-| (242,rest671) => let val result=MlyValue.AndTypBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 88,(result,defaultPos,defaultPos),rest671) end
-| (243,(_,(MlyValue.AndDatBind_opt AndDatBind_opt1,_,
-AndDatBind_opt1right))::(_,(MlyValue.ConBind ConBind1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq TyVarSeq1,
-TyVarSeqleft as TyVarSeq1left,_))::rest671) => let val result=
-MlyValue.DatBind(fn _ => let val TyVarSeq as TyVarSeq1=TyVarSeq1 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConBind as ConBind1=ConBind1 ()
-val AndDatBind_opt as AndDatBind_opt1=AndDatBind_opt1 ()
+end)
+ in ( LrTable.NT 67, ( result, TyVarSeq1left, AndTypBind_opt1right), 
+rest671)
+end
+|  ( 241, ( ( _, ( MlyValue.TypBind TypBind1, _, TypBind1right)) :: (
+ _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndTypBind_opt (fn _ => let val  (TypBind as TypBind1) = 
+TypBind1 ()
+ in ( SOME TypBind )
+end)
+ in ( LrTable.NT 88, ( result, AND1left, TypBind1right), rest671)
+end
+|  ( 242, ( rest671)) => let val  result = MlyValue.AndTypBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 88, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 243, ( ( _, ( MlyValue.AndDatBind_opt AndDatBind_opt1, _, 
+AndDatBind_opt1right)) :: ( _, ( MlyValue.ConBind ConBind1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq TyVarSeq1, (TyVarSeqleft as TyVarSeq1left), _)) :: 
+rest671)) => let val  result = MlyValue.DatBind (fn _ => let val  (
+TyVarSeq as TyVarSeq1) = TyVarSeq1 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (ConBind as ConBind1) = ConBind1 ()
+ val  (AndDatBind_opt as AndDatBind_opt1) = AndDatBind_opt1 ()
  in (
  DATBIND (PP TyVarSeqleft
 				     (rightmost get_info_conbind ConBind
 				                get_info_datbind AndDatBind_opt),
 				   TyVarSeq, mk_TyCon TypeIdent,
 				   ConBind, AndDatBind_opt) 
-) end
 )
- in (LrTable.NT 64,(result,TyVarSeq1left,AndDatBind_opt1right),rest671
-) end
-| (244,(_,(MlyValue.AndDatBind_opt AndDatBind_opt1,_,
-AndDatBind_opt1right))::(_,(MlyValue.ConBind ConBind1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,TypeIdentleft as TypeIdent1left,_))::
-rest671) => let val result=MlyValue.DatBind_zero_arity(fn _ => let 
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConBind as ConBind1=ConBind1 ()
-val AndDatBind_opt as AndDatBind_opt1=AndDatBind_opt1 ()
+end)
+ in ( LrTable.NT 64, ( result, TyVarSeq1left, AndDatBind_opt1right), 
+rest671)
+end
+|  ( 244, ( ( _, ( MlyValue.AndDatBind_opt AndDatBind_opt1, _, 
+AndDatBind_opt1right)) :: ( _, ( MlyValue.ConBind ConBind1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, (TypeIdentleft as 
+TypeIdent1left), _)) :: rest671)) => let val  result = 
+MlyValue.DatBind_zero_arity (fn _ => let val  (TypeIdent as TypeIdent1
+) = TypeIdent1 ()
+ val  (ConBind as ConBind1) = ConBind1 ()
+ val  (AndDatBind_opt as AndDatBind_opt1) = AndDatBind_opt1 ()
  in (
  DATBIND (PP TypeIdentleft
 				     (rightmost get_info_conbind ConBind
 				                get_info_datbind AndDatBind_opt),
 				   [], mk_TyCon TypeIdent,
 				   ConBind, AndDatBind_opt) 
-) end
 )
- in (LrTable.NT 65,(result,TypeIdent1left,AndDatBind_opt1right),
-rest671) end
-| (245,(_,(MlyValue.AndDatBind_opt AndDatBind_opt1,_,
-AndDatBind_opt1right))::(_,(MlyValue.ConBind ConBind1,_,_))::_::(_,(
-MlyValue.TypeIdent TypeIdent1,_,_))::(_,(MlyValue.TyVarSeq1 TyVarSeq11
-,TyVarSeq1left as TyVarSeq11left,_))::rest671) => let val result=
-MlyValue.DatBind_nonzero_arity(fn _ => let val TyVarSeq1 as TyVarSeq11
-=TyVarSeq11 ()
-val TypeIdent as TypeIdent1=TypeIdent1 ()
-val ConBind as ConBind1=ConBind1 ()
-val AndDatBind_opt as AndDatBind_opt1=AndDatBind_opt1 ()
+end)
+ in ( LrTable.NT 65, ( result, TypeIdent1left, AndDatBind_opt1right), 
+rest671)
+end
+|  ( 245, ( ( _, ( MlyValue.AndDatBind_opt AndDatBind_opt1, _, 
+AndDatBind_opt1right)) :: ( _, ( MlyValue.ConBind ConBind1, _, _)) ::
+ _ :: ( _, ( MlyValue.TypeIdent TypeIdent1, _, _)) :: ( _, ( 
+MlyValue.TyVarSeq1 TyVarSeq11, (TyVarSeq1left as TyVarSeq11left), _))
+ :: rest671)) => let val  result = MlyValue.DatBind_nonzero_arity (fn
+ _ => let val  (TyVarSeq1 as TyVarSeq11) = TyVarSeq11 ()
+ val  (TypeIdent as TypeIdent1) = TypeIdent1 ()
+ val  (ConBind as ConBind1) = ConBind1 ()
+ val  (AndDatBind_opt as AndDatBind_opt1) = AndDatBind_opt1 ()
  in (
  DATBIND (PP TyVarSeq1left
 				     (rightmost get_info_conbind ConBind
 				                get_info_datbind AndDatBind_opt),
 				   TyVarSeq1, mk_TyCon TypeIdent,
 				   ConBind, AndDatBind_opt) 
-) end
 )
- in (LrTable.NT 66,(result,TyVarSeq11left,AndDatBind_opt1right),
-rest671) end
-| (246,(_,(MlyValue.DatBind DatBind1,_,DatBind1right))::(_,(_,AND1left
-,_))::rest671) => let val result=MlyValue.AndDatBind_opt(fn _ => let 
-val DatBind as DatBind1=DatBind1 ()
- in ( SOME DatBind ) end
-)
- in (LrTable.NT 89,(result,AND1left,DatBind1right),rest671) end
-| (247,rest671) => let val result=MlyValue.AndDatBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 89,(result,defaultPos,defaultPos),rest671) end
-| (248,(_,(MlyValue.BarConBind_opt BarConBind_opt1,_,
-BarConBind_opt1right))::(_,(MlyValue.OfTy_opt OfTy_opt1,_,_))::(_,(
-MlyValue.LongOpIdent LongOpIdent1,LongOpIdentleft as LongOpIdent1left,
-LongOpIdentright))::rest671) => let val result=MlyValue.ConBind(fn _
- => let val LongOpIdent as LongOpIdent1=LongOpIdent1 ()
-val OfTy_opt as OfTy_opt1=OfTy_opt1 ()
-val BarConBind_opt as BarConBind_opt1=BarConBind_opt1 ()
+end)
+ in ( LrTable.NT 66, ( result, TyVarSeq11left, AndDatBind_opt1right), 
+rest671)
+end
+|  ( 246, ( ( _, ( MlyValue.DatBind DatBind1, _, DatBind1right)) :: (
+ _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndDatBind_opt (fn _ => let val  (DatBind as DatBind1) = 
+DatBind1 ()
+ in ( SOME DatBind )
+end)
+ in ( LrTable.NT 89, ( result, AND1left, DatBind1right), rest671)
+end
+|  ( 247, ( rest671)) => let val  result = MlyValue.AndDatBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 89, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 248, ( ( _, ( MlyValue.BarConBind_opt BarConBind_opt1, _, 
+BarConBind_opt1right)) :: ( _, ( MlyValue.OfTy_opt OfTy_opt1, _, _))
+ :: ( _, ( MlyValue.LongOpIdent LongOpIdent1, (LongOpIdentleft as 
+LongOpIdent1left), LongOpIdentright)) :: rest671)) => let val  result
+ = MlyValue.ConBind (fn _ => let val  (LongOpIdent as LongOpIdent1) = 
+LongOpIdent1 ()
+ val  (OfTy_opt as OfTy_opt1) = OfTy_opt1 ()
+ val  (BarConBind_opt as BarConBind_opt1) = BarConBind_opt1 ()
  in (
  let val OP_OPT (id, withOp) = LongOpIdent
                           in
@@ -4322,26 +4758,30 @@ val BarConBind_opt as BarConBind_opt1=BarConBind_opt1 ()
 				     OP_OPT (mk_LongId id, withOp),
 				     OfTy_opt, BarConBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 63,(result,LongOpIdent1left,BarConBind_opt1right),
-rest671) end
-| (249,(_,(MlyValue.ConBind ConBind1,_,ConBind1right))::(_,(_,BAR1left
-,_))::rest671) => let val result=MlyValue.BarConBind_opt(fn _ => let 
-val ConBind as ConBind1=ConBind1 ()
- in ( SOME ConBind ) end
-)
- in (LrTable.NT 90,(result,BAR1left,ConBind1right),rest671) end
-| (250,rest671) => let val result=MlyValue.BarConBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 90,(result,defaultPos,defaultPos),rest671) end
-| (251,(_,(MlyValue.AndExBind_opt AndExBind_opt1,_,AndExBind_opt1right
-))::(_,(MlyValue.OfTy_opt OfTy_opt1,_,_))::(_,(MlyValue.OpIdent 
-OpIdent1,OpIdentleft as OpIdent1left,OpIdentright))::rest671) => let 
-val result=MlyValue.ExBind(fn _ => let val OpIdent as OpIdent1=
-OpIdent1 ()
-val OfTy_opt as OfTy_opt1=OfTy_opt1 ()
-val AndExBind_opt as AndExBind_opt1=AndExBind_opt1 ()
+end)
+ in ( LrTable.NT 63, ( result, LongOpIdent1left, BarConBind_opt1right)
+, rest671)
+end
+|  ( 249, ( ( _, ( MlyValue.ConBind ConBind1, _, ConBind1right)) :: (
+ _, ( _, BAR1left, _)) :: rest671)) => let val  result = 
+MlyValue.BarConBind_opt (fn _ => let val  (ConBind as ConBind1) = 
+ConBind1 ()
+ in ( SOME ConBind )
+end)
+ in ( LrTable.NT 90, ( result, BAR1left, ConBind1right), rest671)
+end
+|  ( 250, ( rest671)) => let val  result = MlyValue.BarConBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 90, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 251, ( ( _, ( MlyValue.AndExBind_opt AndExBind_opt1, _, 
+AndExBind_opt1right)) :: ( _, ( MlyValue.OfTy_opt OfTy_opt1, _, _)) ::
+ ( _, ( MlyValue.OpIdent OpIdent1, (OpIdentleft as OpIdent1left), 
+OpIdentright)) :: rest671)) => let val  result = MlyValue.ExBind (fn _
+ => let val  (OpIdent as OpIdent1) = OpIdent1 ()
+ val  (OfTy_opt as OfTy_opt1) = OfTy_opt1 ()
+ val  (AndExBind_opt as AndExBind_opt1) = AndExBind_opt1 ()
  in (
  let val OP_OPT (id, withOp) = OpIdent
                           in
@@ -4352,17 +4792,18 @@ val AndExBind_opt as AndExBind_opt1=AndExBind_opt1 ()
 				    OP_OPT (mk_Id id, withOp),
 				    OfTy_opt, AndExBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 62,(result,OpIdent1left,AndExBind_opt1right),rest671)
- end
-| (252,(_,(MlyValue.AndExBind_opt AndExBind_opt1,_,AndExBind_opt1right
-))::(_,(MlyValue.LongOpEqIdent LongOpEqIdent1,_,LongOpEqIdentright))::
-_::(_,(MlyValue.OpIdent OpIdent1,OpIdentleft as OpIdent1left,_))::
-rest671) => let val result=MlyValue.ExBind(fn _ => let val OpIdent as 
-OpIdent1=OpIdent1 ()
-val LongOpEqIdent as LongOpEqIdent1=LongOpEqIdent1 ()
-val AndExBind_opt as AndExBind_opt1=AndExBind_opt1 ()
+end)
+ in ( LrTable.NT 62, ( result, OpIdent1left, AndExBind_opt1right), 
+rest671)
+end
+|  ( 252, ( ( _, ( MlyValue.AndExBind_opt AndExBind_opt1, _, 
+AndExBind_opt1right)) :: ( _, ( MlyValue.LongOpEqIdent LongOpEqIdent1,
+ _, LongOpEqIdentright)) :: _ :: ( _, ( MlyValue.OpIdent OpIdent1, (
+OpIdentleft as OpIdent1left), _)) :: rest671)) => let val  result = 
+MlyValue.ExBind (fn _ => let val  (OpIdent as OpIdent1) = OpIdent1 ()
+ val  (LongOpEqIdent as LongOpEqIdent1) = LongOpEqIdent1 ()
+ val  (AndExBind_opt as AndExBind_opt1) = AndExBind_opt1 ()
  in (
  let val OP_OPT (id1, withOp1) = OpIdent
 			      val OP_OPT (id2, withOp2) = LongOpEqIdent
@@ -4374,24 +4815,29 @@ val AndExBind_opt as AndExBind_opt1=AndExBind_opt1 ()
 				     OP_OPT (mk_LongId id2, withOp2),
 				     AndExBind_opt)
                           end 
-) end
 )
- in (LrTable.NT 62,(result,OpIdent1left,AndExBind_opt1right),rest671)
- end
-| (253,(_,(MlyValue.ExBind ExBind1,_,ExBind1right))::(_,(_,AND1left,_)
-)::rest671) => let val result=MlyValue.AndExBind_opt(fn _ => let val 
-ExBind as ExBind1=ExBind1 ()
- in ( SOME ExBind ) end
-)
- in (LrTable.NT 92,(result,AND1left,ExBind1right),rest671) end
-| (254,rest671) => let val result=MlyValue.AndExBind_opt(fn _ => (
- NONE ))
- in (LrTable.NT 92,(result,defaultPos,defaultPos),rest671) end
-| (255,(_,(MlyValue.AndFValBind_opt AndFValBind_opt1,_,
-AndFValBind_opt1right))::(_,(MlyValue.FClause FClause1,FClauseleft as 
-FClause1left,_))::rest671) => let val result=MlyValue.FValBind(fn _
- => let val FClause as FClause1=FClause1 ()
-val AndFValBind_opt as AndFValBind_opt1=AndFValBind_opt1 ()
+end)
+ in ( LrTable.NT 62, ( result, OpIdent1left, AndExBind_opt1right), 
+rest671)
+end
+|  ( 253, ( ( _, ( MlyValue.ExBind ExBind1, _, ExBind1right)) :: ( _, 
+( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndExBind_opt (fn _ => let val  (ExBind as ExBind1) = ExBind1
+ ()
+ in ( SOME ExBind )
+end)
+ in ( LrTable.NT 92, ( result, AND1left, ExBind1right), rest671)
+end
+|  ( 254, ( rest671)) => let val  result = MlyValue.AndExBind_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 92, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 255, ( ( _, ( MlyValue.AndFValBind_opt AndFValBind_opt1, _, 
+AndFValBind_opt1right)) :: ( _, ( MlyValue.FClause FClause1, (
+FClauseleft as FClause1left), _)) :: rest671)) => let val  result = 
+MlyValue.FValBind (fn _ => let val  (FClause as FClause1) = FClause1
+ ()
+ val  (AndFValBind_opt as AndFValBind_opt1) = AndFValBind_opt1 ()
  in (
  let  val (fv2, sortdecs) = AndFValBind_opt   in
                             (FVALBIND (PP FClauseleft
@@ -4399,213 +4845,268 @@ val AndFValBind_opt as AndFValBind_opt1=AndFValBind_opt1 ()
 				                     get_info_FValBind fv2),
 				          FClause, fv2), sortdecs)
                           end 
-) end
 )
- in (LrTable.NT 72,(result,FClause1left,AndFValBind_opt1right),rest671
-) end
-| (256,(_,(MlyValue.FValBind FValBind1,_,FValBind1right))::_::_::(_,(
-MlyValue.ValSDesc ValSDesc1,_,_))::(_,(_,ANDleft,_))::(_,(_,
-LCOMSPEC1left,_))::rest671) => let val result=MlyValue.AndFValBind_opt
-(fn _ => let val ValSDesc as ValSDesc1=ValSDesc1 ()
-val FValBind as FValBind1=FValBind1 ()
+end)
+ in ( LrTable.NT 72, ( result, FClause1left, AndFValBind_opt1right), 
+rest671)
+end
+|  ( 256, ( ( _, ( MlyValue.FValBind FValBind1, _, FValBind1right)) ::
+ _ :: _ :: ( _, ( MlyValue.ValSDesc ValSDesc1, _, _)) :: ( _, ( _, 
+ANDleft, _)) :: ( _, ( _, LCOMSPEC1left, _)) :: rest671)) => let val  
+result = MlyValue.AndFValBind_opt (fn _ => let val  (ValSDesc as 
+ValSDesc1) = ValSDesc1 ()
+ val  (FValBind as FValBind1) = FValBind1 ()
  in (
  let  val sortdec = 
                                    VALsdec (PP ANDleft (right (get_info_valsdesc ValSDesc)),
 			                    ValSDesc)
                                val (fv2, sortdecs) = FValBind
                           in   (SOME fv2, sortdec :: sortdecs)  end 
-) end
 )
- in (LrTable.NT 86,(result,LCOMSPEC1left,FValBind1right),rest671) end
-| (257,(_,(MlyValue.FValBind FValBind1,_,FValBind1right))::_::_::(_,(
-MlyValue.ValSDesc ValSDesc1,ValSDescleft,_))::(_,(_,LCOMSPEC1left,_))
-::rest671) => let val result=MlyValue.AndFValBind_opt(fn _ => let val 
-ValSDesc as ValSDesc1=ValSDesc1 ()
-val FValBind as FValBind1=FValBind1 ()
+end)
+ in ( LrTable.NT 86, ( result, LCOMSPEC1left, FValBind1right), rest671
+)
+end
+|  ( 257, ( ( _, ( MlyValue.FValBind FValBind1, _, FValBind1right)) ::
+ _ :: _ :: ( _, ( MlyValue.ValSDesc ValSDesc1, ValSDescleft, _)) :: (
+ _, ( _, LCOMSPEC1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndFValBind_opt (fn _ => let val  (ValSDesc as ValSDesc1) = 
+ValSDesc1 ()
+ val  (FValBind as FValBind1) = FValBind1 ()
  in (
  let  val sortdec = 
                                    VALsdec (PP ValSDescleft (right (get_info_valsdesc ValSDesc)),
 			                    ValSDesc)
                                val (fv2, sortdecs) = FValBind
                           in   (SOME fv2, sortdec :: sortdecs)  end 
-) end
 )
- in (LrTable.NT 86,(result,LCOMSPEC1left,FValBind1right),rest671) end
-| (258,(_,(MlyValue.FValBind FValBind1,_,FValBind1right))::(_,(_,
-AND1left,_))::rest671) => let val result=MlyValue.AndFValBind_opt(fn _
- => let val FValBind as FValBind1=FValBind1 ()
+end)
+ in ( LrTable.NT 86, ( result, LCOMSPEC1left, FValBind1right), rest671
+)
+end
+|  ( 258, ( ( _, ( MlyValue.FValBind FValBind1, _, FValBind1right)) ::
+ ( _, ( _, AND1left, _)) :: rest671)) => let val  result = 
+MlyValue.AndFValBind_opt (fn _ => let val  (FValBind as FValBind1) = 
+FValBind1 ()
  in (
  let  val (fv2, sortdecs) = FValBind  
                           in   (SOME fv2, sortdecs)  end 
-) end
 )
- in (LrTable.NT 86,(result,AND1left,FValBind1right),rest671) end
-| (259,rest671) => let val result=MlyValue.AndFValBind_opt(fn _ => (
- (NONE, []) ))
- in (LrTable.NT 86,(result,defaultPos,defaultPos),rest671) end
-| (260,(_,(MlyValue.BarFClause_opt BarFClause_opt1,_,
-BarFClause_opt1right))::(_,(MlyValue.Exp_ Exp_1,_,_))::_::(_,(
-MlyValue.ColonTy_opt ColonTy_opt1,_,_))::(_,(MlyValue.AtPat_seq2 
-AtPat_seq21,AtPat_seq2left as AtPat_seq21left,_))::rest671) => let 
-val result=MlyValue.FClause(fn _ => let val AtPat_seq2 as AtPat_seq21=
-AtPat_seq21 ()
-val ColonTy_opt as ColonTy_opt1=ColonTy_opt1 ()
-val Exp_ as Exp_1=Exp_1 ()
-val BarFClause_opt as BarFClause_opt1=BarFClause_opt1 ()
+end)
+ in ( LrTable.NT 86, ( result, AND1left, FValBind1right), rest671)
+end
+|  ( 259, ( rest671)) => let val  result = MlyValue.AndFValBind_opt
+ (fn _ => ( (NONE, []) ))
+ in ( LrTable.NT 86, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 260, ( ( _, ( MlyValue.BarFClause_opt BarFClause_opt1, _, 
+BarFClause_opt1right)) :: ( _, ( MlyValue.Exp_ Exp_1, _, _)) :: _ :: (
+ _, ( MlyValue.ColonTy_opt ColonTy_opt1, _, _)) :: ( _, ( 
+MlyValue.AtPat_seq2 AtPat_seq21, (AtPat_seq2left as AtPat_seq21left),
+ _)) :: rest671)) => let val  result = MlyValue.FClause (fn _ => let
+ val  (AtPat_seq2 as AtPat_seq21) = AtPat_seq21 ()
+ val  (ColonTy_opt as ColonTy_opt1) = ColonTy_opt1 ()
+ val  (Exp_ as Exp_1) = Exp_1 ()
+ val  (BarFClause_opt as BarFClause_opt1) = BarFClause_opt1 ()
  in (
  FCLAUSE (PP AtPat_seq2left
 				     (rightmost get_info_exp Exp_
 				                get_info_FClause BarFClause_opt),
 				   AtPat_seq2, ColonTy_opt,
 				   Exp_, BarFClause_opt) 
-) end
 )
- in (LrTable.NT 80,(result,AtPat_seq21left,BarFClause_opt1right),
-rest671) end
-| (261,(_,(MlyValue.FClause FClause1,_,FClause1right))::(_,(_,BAR1left
-,_))::rest671) => let val result=MlyValue.BarFClause_opt(fn _ => let 
-val FClause as FClause1=FClause1 ()
- in ( SOME FClause ) end
+end)
+ in ( LrTable.NT 80, ( result, AtPat_seq21left, BarFClause_opt1right),
+ rest671)
+end
+|  ( 261, ( ( _, ( MlyValue.FClause FClause1, _, FClause1right)) :: (
+ _, ( _, BAR1left, _)) :: rest671)) => let val  result = 
+MlyValue.BarFClause_opt (fn _ => let val  (FClause as FClause1) = 
+FClause1 ()
+ in ( SOME FClause )
+end)
+ in ( LrTable.NT 87, ( result, BAR1left, FClause1right), rest671)
+end
+|  ( 262, ( rest671)) => let val  result = MlyValue.BarFClause_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 87, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 263, ( ( _, ( MlyValue.AtPat_seq1 AtPat_seq11, _, 
+AtPat_seq11right)) :: ( _, ( MlyValue.AtPat AtPat1, AtPat1left, _)) ::
+ rest671)) => let val  result = MlyValue.AtPat_seq2 (fn _ => let val 
+ (AtPat as AtPat1) = AtPat1 ()
+ val  (AtPat_seq1 as AtPat_seq11) = AtPat_seq11 ()
+ in ( AtPat :: AtPat_seq1 )
+end)
+ in ( LrTable.NT 109, ( result, AtPat1left, AtPat_seq11right), rest671
 )
- in (LrTable.NT 87,(result,BAR1left,FClause1right),rest671) end
-| (262,rest671) => let val result=MlyValue.BarFClause_opt(fn _ => (
- NONE ))
- in (LrTable.NT 87,(result,defaultPos,defaultPos),rest671) end
-| (263,(_,(MlyValue.AtPat_seq1 AtPat_seq11,_,AtPat_seq11right))::(_,(
-MlyValue.AtPat AtPat1,AtPat1left,_))::rest671) => let val result=
-MlyValue.AtPat_seq2(fn _ => let val AtPat as AtPat1=AtPat1 ()
-val AtPat_seq1 as AtPat_seq11=AtPat_seq11 ()
- in ( AtPat :: AtPat_seq1 ) end
+end
+|  ( 264, ( ( _, ( MlyValue.AtPat_seq1 AtPat_seq11, _, 
+AtPat_seq11right)) :: ( _, ( MlyValue.AtPat AtPat1, AtPat1left, _)) ::
+ rest671)) => let val  result = MlyValue.AtPat_seq1 (fn _ => let val 
+ (AtPat as AtPat1) = AtPat1 ()
+ val  (AtPat_seq1 as AtPat_seq11) = AtPat_seq11 ()
+ in ( AtPat :: AtPat_seq1 )
+end)
+ in ( LrTable.NT 110, ( result, AtPat1left, AtPat_seq11right), rest671
 )
- in (LrTable.NT 109,(result,AtPat1left,AtPat_seq11right),rest671) end
-| (264,(_,(MlyValue.AtPat_seq1 AtPat_seq11,_,AtPat_seq11right))::(_,(
-MlyValue.AtPat AtPat1,AtPat1left,_))::rest671) => let val result=
-MlyValue.AtPat_seq1(fn _ => let val AtPat as AtPat1=AtPat1 ()
-val AtPat_seq1 as AtPat_seq11=AtPat_seq11 ()
- in ( AtPat :: AtPat_seq1 ) end
+end
+|  ( 265, ( ( _, ( MlyValue.AtPat AtPat1, AtPat1left, AtPat1right)) ::
+ rest671)) => let val  result = MlyValue.AtPat_seq1 (fn _ => let val 
+ (AtPat as AtPat1) = AtPat1 ()
+ in ( [AtPat] )
+end)
+ in ( LrTable.NT 110, ( result, AtPat1left, AtPat1right), rest671)
+end
+|  ( 266, ( ( _, ( MlyValue.Ty Ty1, _, Ty1right)) :: ( _, ( _, 
+COLON1left, _)) :: rest671)) => let val  result = MlyValue.ColonTy_opt
+ (fn _ => let val  (Ty as Ty1) = Ty1 ()
+ in ( SOME Ty )
+end)
+ in ( LrTable.NT 97, ( result, COLON1left, Ty1right), rest671)
+end
+|  ( 267, ( rest671)) => let val  result = MlyValue.ColonTy_opt (fn _
+ => ( NONE ))
+ in ( LrTable.NT 97, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 268, ( ( _, ( MlyValue.Ty Ty1, _, Ty1right)) :: ( _, ( _, OF1left
+, _)) :: rest671)) => let val  result = MlyValue.OfTy_opt (fn _ => let
+ val  (Ty as Ty1) = Ty1 ()
+ in ( SOME Ty )
+end)
+ in ( LrTable.NT 101, ( result, OF1left, Ty1right), rest671)
+end
+|  ( 269, ( rest671)) => let val  result = MlyValue.OfTy_opt (fn _ =>
+ ( NONE ))
+ in ( LrTable.NT 101, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 270, ( ( _, ( _, (UNDERBARleft as UNDERBAR1left), (UNDERBARright
+ as UNDERBAR1right))) :: rest671)) => let val  result = MlyValue.AtPat
+ (fn _ => ( WILDCARDatpat (PP UNDERBARleft UNDERBARright) ))
+ in ( LrTable.NT 61, ( result, UNDERBAR1left, UNDERBAR1right), rest671
 )
- in (LrTable.NT 110,(result,AtPat1left,AtPat_seq11right),rest671) end
-| (265,(_,(MlyValue.AtPat AtPat1,AtPat1left,AtPat1right))::rest671)
- => let val result=MlyValue.AtPat_seq1(fn _ => let val AtPat as AtPat1
-=AtPat1 ()
- in ( [AtPat] ) end
-)
- in (LrTable.NT 110,(result,AtPat1left,AtPat1right),rest671) end
-| (266,(_,(MlyValue.Ty Ty1,_,Ty1right))::(_,(_,COLON1left,_))::rest671
-) => let val result=MlyValue.ColonTy_opt(fn _ => let val Ty as Ty1=Ty1
- ()
- in ( SOME Ty ) end
-)
- in (LrTable.NT 97,(result,COLON1left,Ty1right),rest671) end
-| (267,rest671) => let val result=MlyValue.ColonTy_opt(fn _ => ( NONE 
-))
- in (LrTable.NT 97,(result,defaultPos,defaultPos),rest671) end
-| (268,(_,(MlyValue.Ty Ty1,_,Ty1right))::(_,(_,OF1left,_))::rest671)
- => let val result=MlyValue.OfTy_opt(fn _ => let val Ty as Ty1=Ty1 ()
- in ( SOME Ty ) end
-)
- in (LrTable.NT 101,(result,OF1left,Ty1right),rest671) end
-| (269,rest671) => let val result=MlyValue.OfTy_opt(fn _ => ( NONE ))
- in (LrTable.NT 101,(result,defaultPos,defaultPos),rest671) end
-| (270,(_,(_,UNDERBARleft as UNDERBAR1left,UNDERBARright as 
-UNDERBAR1right))::rest671) => let val result=MlyValue.AtPat(fn _ => (
- WILDCARDatpat (PP UNDERBARleft UNDERBARright) ))
- in (LrTable.NT 61,(result,UNDERBAR1left,UNDERBAR1right),rest671) end
-| (271,(_,(MlyValue.SCon SCon1,SConleft as SCon1left,SConright as 
-SCon1right))::rest671) => let val result=MlyValue.AtPat(fn _ => let 
-val SCon as SCon1=SCon1 ()
- in ( SCONatpat (PP SConleft SConright, SCon) ) end
-)
- in (LrTable.NT 61,(result,SCon1left,SCon1right),rest671) end
-| (272,(_,(MlyValue.LongOpIdent LongOpIdent1,LongOpIdentleft as 
-LongOpIdent1left,LongOpIdentright as LongOpIdent1right))::rest671) => 
-let val result=MlyValue.AtPat(fn _ => let val LongOpIdent as 
-LongOpIdent1=LongOpIdent1 ()
+end
+|  ( 271, ( ( _, ( MlyValue.SCon SCon1, (SConleft as SCon1left), (
+SConright as SCon1right))) :: rest671)) => let val  result = 
+MlyValue.AtPat (fn _ => let val  (SCon as SCon1) = SCon1 ()
+ in ( SCONatpat (PP SConleft SConright, SCon) )
+end)
+ in ( LrTable.NT 61, ( result, SCon1left, SCon1right), rest671)
+end
+|  ( 272, ( ( _, ( MlyValue.LongOpIdent LongOpIdent1, (LongOpIdentleft
+ as LongOpIdent1left), (LongOpIdentright as LongOpIdent1right))) :: 
+rest671)) => let val  result = MlyValue.AtPat (fn _ => let val  (
+LongOpIdent as LongOpIdent1) = LongOpIdent1 ()
  in (
  let val OP_OPT (id, withOp) = LongOpIdent
                           in
                             LONGIDatpat (PP LongOpIdentleft LongOpIdentright,
 					 OP_OPT (mk_LongId id, withOp))
                           end 
-) end
 )
- in (LrTable.NT 61,(result,LongOpIdent1left,LongOpIdent1right),rest671
-) end
-| (273,(_,(_,_,EQUALSright as EQUALS1right))::(_,(_,OPleft as OP1left,
-_))::rest671) => let val result=MlyValue.AtPat(fn _ => (
+end)
+ in ( LrTable.NT 61, ( result, LongOpIdent1left, LongOpIdent1right), 
+rest671)
+end
+|  ( 273, ( ( _, ( _, _, (EQUALSright as EQUALS1right))) :: ( _, ( _,
+ (OPleft as OP1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtPat (fn _ => (
  LONGIDatpat (PP OPleft EQUALSright,
 				       OP_OPT (mk_LongId ["="], true)) 
 ))
- in (LrTable.NT 61,(result,OP1left,EQUALS1right),rest671) end
-| (274,(_,(_,_,RBRACEright as RBRACE1right))::(_,(MlyValue.PatRow_opt 
-PatRow_opt1,_,_))::(_,(_,LBRACEleft as LBRACE1left,_))::rest671) => 
-let val result=MlyValue.AtPat(fn _ => let val PatRow_opt as 
-PatRow_opt1=PatRow_opt1 ()
- in ( RECORDatpat (PP LBRACEleft RBRACEright, PatRow_opt) ) end
-)
- in (LrTable.NT 61,(result,LBRACE1left,RBRACE1right),rest671) end
-| (275,(_,(_,_,RPARENright as RPAREN1right))::(_,(MlyValue.Pat Pat1,_,
-_))::(_,(_,LPARENleft as LPAREN1left,_))::rest671) => let val result=
-MlyValue.AtPat(fn _ => let val Pat as Pat1=Pat1 ()
- in ( PARatpat (PP LPARENleft RPARENright, Pat) ) end
-)
- in (LrTable.NT 61,(result,LPAREN1left,RPAREN1right),rest671) end
-| (276,(_,(_,_,RPARENright as RPAREN1right))::(_,(_,LPARENleft as 
-LPAREN1left,_))::rest671) => let val result=MlyValue.AtPat(fn _ => (
+ in ( LrTable.NT 61, ( result, OP1left, EQUALS1right), rest671)
+end
+|  ( 274, ( ( _, ( _, _, (RBRACEright as RBRACE1right))) :: ( _, ( 
+MlyValue.PatRow_opt PatRow_opt1, _, _)) :: ( _, ( _, (LBRACEleft as 
+LBRACE1left), _)) :: rest671)) => let val  result = MlyValue.AtPat (fn
+ _ => let val  (PatRow_opt as PatRow_opt1) = PatRow_opt1 ()
+ in ( RECORDatpat (PP LBRACEleft RBRACEright, PatRow_opt) )
+end)
+ in ( LrTable.NT 61, ( result, LBRACE1left, RBRACE1right), rest671)
+
+end
+|  ( 275, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.Pat Pat1, _, _)) :: ( _, ( _, (LPARENleft as LPAREN1left), _)
+) :: rest671)) => let val  result = MlyValue.AtPat (fn _ => let val  (
+Pat as Pat1) = Pat1 ()
+ in ( PARatpat (PP LPARENleft RPARENright, Pat) )
+end)
+ in ( LrTable.NT 61, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 276, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( _,
+ (LPARENleft as LPAREN1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtPat (fn _ => (
  RECORDatpat (PP LPARENleft RPARENright, NONE) ))
- in (LrTable.NT 61,(result,LPAREN1left,RPAREN1right),rest671) end
-| (277,(_,(_,_,RPARENright as RPAREN1right))::(_,(
-MlyValue.PatComma_seq2 PatComma_seq21,_,_))::(_,(_,LPARENleft as 
-LPAREN1left,_))::rest671) => let val result=MlyValue.AtPat(fn _ => 
-let val PatComma_seq2 as PatComma_seq21=PatComma_seq21 ()
+ in ( LrTable.NT 61, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 277, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.PatComma_seq2 PatComma_seq21, _, _)) :: ( _, ( _, (LPARENleft
+ as LPAREN1left), _)) :: rest671)) => let val  result = MlyValue.AtPat
+ (fn _ => let val  (PatComma_seq2 as PatComma_seq21) = PatComma_seq21
+ ()
  in ( tuple_atpat_with_info (PP LPARENleft RPARENright) PatComma_seq2 
-) end
 )
- in (LrTable.NT 61,(result,LPAREN1left,RPAREN1right),rest671) end
-| (278,(_,(_,_,RBRACKETright as RBRACKET1right))::(_,(
-MlyValue.PatComma_seq0 PatComma_seq01,_,_))::(_,(_,LBRACKETleft as 
-LBRACKET1left,_))::rest671) => let val result=MlyValue.AtPat(fn _ => 
-let val PatComma_seq0 as PatComma_seq01=PatComma_seq01 ()
- in ( list_atpat (PP LBRACKETleft RBRACKETright) PatComma_seq0 ) end
+end)
+ in ( LrTable.NT 61, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 278, ( ( _, ( _, _, (RBRACKETright as RBRACKET1right))) :: ( _, (
+ MlyValue.PatComma_seq0 PatComma_seq01, _, _)) :: ( _, ( _, (
+LBRACKETleft as LBRACKET1left), _)) :: rest671)) => let val  result = 
+MlyValue.AtPat (fn _ => let val  (PatComma_seq0 as PatComma_seq01) = 
+PatComma_seq01 ()
+ in ( list_atpat (PP LBRACKETleft RBRACKETright) PatComma_seq0 )
+end)
+ in ( LrTable.NT 61, ( result, LBRACKET1left, RBRACKET1right), rest671
 )
- in (LrTable.NT 61,(result,LBRACKET1left,RBRACKET1right),rest671) end
-| (279,(_,(MlyValue.PatRow PatRow1,PatRow1left,PatRow1right))::rest671
-) => let val result=MlyValue.PatRow_opt(fn _ => let val PatRow as 
-PatRow1=PatRow1 ()
- in ( SOME PatRow ) end
-)
- in (LrTable.NT 94,(result,PatRow1left,PatRow1right),rest671) end
-| (280,rest671) => let val result=MlyValue.PatRow_opt(fn _ => ( NONE )
-)
- in (LrTable.NT 94,(result,defaultPos,defaultPos),rest671) end
-| (281,(_,(_,DOTDOTDOTleft as DOTDOTDOT1left,DOTDOTDOTright as 
-DOTDOTDOT1right))::rest671) => let val result=MlyValue.PatRow(fn _ => 
-( DecGrammar.DOTDOTDOT (PP DOTDOTDOTleft DOTDOTDOTright) ))
- in (LrTable.NT 60,(result,DOTDOTDOT1left,DOTDOTDOT1right),rest671)
- end
-| (282,(_,(MlyValue.CommaPatRow_opt CommaPatRow_opt1,_,
-CommaPatRow_opt1right))::(_,(MlyValue.Pat Pat1,_,_))::_::(_,(
-MlyValue.Label Label1,Labelleft as Label1left,_))::rest671) => let 
-val result=MlyValue.PatRow(fn _ => let val Label as Label1=Label1 ()
-val Pat as Pat1=Pat1 ()
-val CommaPatRow_opt as CommaPatRow_opt1=CommaPatRow_opt1 ()
+end
+|  ( 279, ( ( _, ( MlyValue.PatRow PatRow1, PatRow1left, PatRow1right)
+) :: rest671)) => let val  result = MlyValue.PatRow_opt (fn _ => let
+ val  (PatRow as PatRow1) = PatRow1 ()
+ in ( SOME PatRow )
+end)
+ in ( LrTable.NT 94, ( result, PatRow1left, PatRow1right), rest671)
+
+end
+|  ( 280, ( rest671)) => let val  result = MlyValue.PatRow_opt (fn _
+ => ( NONE ))
+ in ( LrTable.NT 94, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 281, ( ( _, ( _, (DOTDOTDOTleft as DOTDOTDOT1left), (
+DOTDOTDOTright as DOTDOTDOT1right))) :: rest671)) => let val  result =
+ MlyValue.PatRow (fn _ => (
+ DecGrammar.DOTDOTDOT (PP DOTDOTDOTleft DOTDOTDOTright) ))
+ in ( LrTable.NT 60, ( result, DOTDOTDOT1left, DOTDOTDOT1right), 
+rest671)
+end
+|  ( 282, ( ( _, ( MlyValue.CommaPatRow_opt CommaPatRow_opt1, _, 
+CommaPatRow_opt1right)) :: ( _, ( MlyValue.Pat Pat1, _, _)) :: _ :: (
+ _, ( MlyValue.Label Label1, (Labelleft as Label1left), _)) :: rest671
+)) => let val  result = MlyValue.PatRow (fn _ => let val  (Label as 
+Label1) = Label1 ()
+ val  (Pat as Pat1) = Pat1 ()
+ val  (CommaPatRow_opt as CommaPatRow_opt1) = CommaPatRow_opt1 ()
  in (
  PATROW (PP Labelleft
 				    (rightmost get_info_pat Pat
 				               get_info_patrow CommaPatRow_opt),
 				  Label, Pat, CommaPatRow_opt) 
-) end
 )
- in (LrTable.NT 60,(result,Label1left,CommaPatRow_opt1right),rest671)
- end
-| (283,(_,(MlyValue.CommaPatRow_opt CommaPatRow_opt1,_,
-CommaPatRow_opt1right))::(_,(MlyValue.AsPat_opt AsPat_opt1,_,_))::(_,(
-MlyValue.ColonTy_opt ColonTy_opt1,_,_))::(_,(MlyValue.Ident Ident1,
-Identleft as Ident1left,Identright))::rest671) => let val result=
-MlyValue.PatRow(fn _ => let val Ident as Ident1=Ident1 ()
-val ColonTy_opt as ColonTy_opt1=ColonTy_opt1 ()
-val AsPat_opt as AsPat_opt1=AsPat_opt1 ()
-val CommaPatRow_opt as CommaPatRow_opt1=CommaPatRow_opt1 ()
+end)
+ in ( LrTable.NT 60, ( result, Label1left, CommaPatRow_opt1right), 
+rest671)
+end
+|  ( 283, ( ( _, ( MlyValue.CommaPatRow_opt CommaPatRow_opt1, _, 
+CommaPatRow_opt1right)) :: ( _, ( MlyValue.AsPat_opt AsPat_opt1, _, _)
+) :: ( _, ( MlyValue.ColonTy_opt ColonTy_opt1, _, _)) :: ( _, ( 
+MlyValue.Ident Ident1, (Identleft as Ident1left), Identright)) :: 
+rest671)) => let val  result = MlyValue.PatRow (fn _ => let val  (
+Ident as Ident1) = Ident1 ()
+ val  (ColonTy_opt as ColonTy_opt1) = ColonTy_opt1 ()
+ val  (AsPat_opt as AsPat_opt1) = AsPat_opt1 ()
+ val  (CommaPatRow_opt as CommaPatRow_opt1) = CommaPatRow_opt1 ()
  in (
  PATROW
 			    (PP Identleft
@@ -4633,395 +5134,485 @@ val CommaPatRow_opt as CommaPatRow_opt1=CommaPatRow_opt1 ()
 			       | (NONE, NONE) => idPat
 			     end,
 			     CommaPatRow_opt) 
-) end
 )
- in (LrTable.NT 60,(result,Ident1left,CommaPatRow_opt1right),rest671)
- end
-| (284,(_,(MlyValue.Pat Pat1,_,Pat1right))::(_,(_,AS1left,_))::rest671
-) => let val result=MlyValue.AsPat_opt(fn _ => let val Pat as Pat1=
-Pat1 ()
- in ( SOME Pat ) end
-)
- in (LrTable.NT 95,(result,AS1left,Pat1right),rest671) end
-| (285,rest671) => let val result=MlyValue.AsPat_opt(fn _ => ( NONE ))
- in (LrTable.NT 95,(result,defaultPos,defaultPos),rest671) end
-| (286,(_,(MlyValue.PatRow PatRow1,_,PatRow1right))::(_,(_,COMMA1left,
-_))::rest671) => let val result=MlyValue.CommaPatRow_opt(fn _ => let 
-val PatRow as PatRow1=PatRow1 ()
- in ( SOME PatRow ) end
-)
- in (LrTable.NT 96,(result,COMMA1left,PatRow1right),rest671) end
-| (287,rest671) => let val result=MlyValue.CommaPatRow_opt(fn _ => (
- NONE ))
- in (LrTable.NT 96,(result,defaultPos,defaultPos),rest671) end
-| (288,(_,(MlyValue.PatComma_seq1 PatComma_seq11,PatComma_seq11left,
-PatComma_seq11right))::rest671) => let val result=
-MlyValue.PatComma_seq0(fn _ => let val PatComma_seq1 as PatComma_seq11
-=PatComma_seq11 ()
- in ( PatComma_seq1 ) end
-)
- in (LrTable.NT 105,(result,PatComma_seq11left,PatComma_seq11right),
-rest671) end
-| (289,rest671) => let val result=MlyValue.PatComma_seq0(fn _ => (
- nil ))
- in (LrTable.NT 105,(result,defaultPos,defaultPos),rest671) end
-| (290,(_,(MlyValue.PatComma_seq1 PatComma_seq11,_,PatComma_seq11right
-))::_::(_,(MlyValue.Pat Pat1,Pat1left,_))::rest671) => let val result=
-MlyValue.PatComma_seq1(fn _ => let val Pat as Pat1=Pat1 ()
-val PatComma_seq1 as PatComma_seq11=PatComma_seq11 ()
- in ( Pat :: PatComma_seq1 ) end
-)
- in (LrTable.NT 106,(result,Pat1left,PatComma_seq11right),rest671) end
-| (291,(_,(MlyValue.Pat Pat1,Pat1left,Pat1right))::rest671) => let 
-val result=MlyValue.PatComma_seq1(fn _ => let val Pat as Pat1=Pat1 ()
- in ( [Pat] ) end
-)
- in (LrTable.NT 106,(result,Pat1left,Pat1right),rest671) end
-| (292,(_,(MlyValue.PatComma_seq1 PatComma_seq11,_,PatComma_seq11right
-))::_::(_,(MlyValue.Pat Pat1,Pat1left,_))::rest671) => let val result=
-MlyValue.PatComma_seq2(fn _ => let val Pat as Pat1=Pat1 ()
-val PatComma_seq1 as PatComma_seq11=PatComma_seq11 ()
- in ( Pat :: PatComma_seq1 ) end
-)
- in (LrTable.NT 107,(result,Pat1left,PatComma_seq11right),rest671) end
-| (293,(_,(MlyValue.AtPat AtPat1,AtPat1left,AtPat1right))::rest671)
- => let val result=MlyValue.Pat(fn _ => let val AtPat as AtPat1=AtPat1
- ()
- in ( ATPATpat (get_info_atpat AtPat, AtPat) ) end
-)
- in (LrTable.NT 59,(result,AtPat1left,AtPat1right),rest671) end
-| (294,(_,(MlyValue.AtPat_seq2 AtPat_seq21,AtPat_seq2left as 
-AtPat_seq21left,AtPat_seq2right as AtPat_seq21right))::rest671) => 
-let val result=MlyValue.Pat(fn _ => let val AtPat_seq2 as AtPat_seq21=
-AtPat_seq21 ()
+end)
+ in ( LrTable.NT 60, ( result, Ident1left, CommaPatRow_opt1right), 
+rest671)
+end
+|  ( 284, ( ( _, ( MlyValue.Pat Pat1, _, Pat1right)) :: ( _, ( _, 
+AS1left, _)) :: rest671)) => let val  result = MlyValue.AsPat_opt (fn
+ _ => let val  (Pat as Pat1) = Pat1 ()
+ in ( SOME Pat )
+end)
+ in ( LrTable.NT 95, ( result, AS1left, Pat1right), rest671)
+end
+|  ( 285, ( rest671)) => let val  result = MlyValue.AsPat_opt (fn _ =>
+ ( NONE ))
+ in ( LrTable.NT 95, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 286, ( ( _, ( MlyValue.PatRow PatRow1, _, PatRow1right)) :: ( _, 
+( _, COMMA1left, _)) :: rest671)) => let val  result = 
+MlyValue.CommaPatRow_opt (fn _ => let val  (PatRow as PatRow1) = 
+PatRow1 ()
+ in ( SOME PatRow )
+end)
+ in ( LrTable.NT 96, ( result, COMMA1left, PatRow1right), rest671)
+end
+|  ( 287, ( rest671)) => let val  result = MlyValue.CommaPatRow_opt
+ (fn _ => ( NONE ))
+ in ( LrTable.NT 96, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 288, ( ( _, ( MlyValue.PatComma_seq1 PatComma_seq11, 
+PatComma_seq11left, PatComma_seq11right)) :: rest671)) => let val  
+result = MlyValue.PatComma_seq0 (fn _ => let val  (PatComma_seq1 as 
+PatComma_seq11) = PatComma_seq11 ()
+ in ( PatComma_seq1 )
+end)
+ in ( LrTable.NT 105, ( result, PatComma_seq11left, 
+PatComma_seq11right), rest671)
+end
+|  ( 289, ( rest671)) => let val  result = MlyValue.PatComma_seq0 (fn
+ _ => ( nil ))
+ in ( LrTable.NT 105, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 290, ( ( _, ( MlyValue.PatComma_seq1 PatComma_seq11, _, 
+PatComma_seq11right)) :: _ :: ( _, ( MlyValue.Pat Pat1, Pat1left, _))
+ :: rest671)) => let val  result = MlyValue.PatComma_seq1 (fn _ => let
+ val  (Pat as Pat1) = Pat1 ()
+ val  (PatComma_seq1 as PatComma_seq11) = PatComma_seq11 ()
+ in ( Pat :: PatComma_seq1 )
+end)
+ in ( LrTable.NT 106, ( result, Pat1left, PatComma_seq11right), 
+rest671)
+end
+|  ( 291, ( ( _, ( MlyValue.Pat Pat1, Pat1left, Pat1right)) :: rest671
+)) => let val  result = MlyValue.PatComma_seq1 (fn _ => let val  (Pat
+ as Pat1) = Pat1 ()
+ in ( [Pat] )
+end)
+ in ( LrTable.NT 106, ( result, Pat1left, Pat1right), rest671)
+end
+|  ( 292, ( ( _, ( MlyValue.PatComma_seq1 PatComma_seq11, _, 
+PatComma_seq11right)) :: _ :: ( _, ( MlyValue.Pat Pat1, Pat1left, _))
+ :: rest671)) => let val  result = MlyValue.PatComma_seq2 (fn _ => let
+ val  (Pat as Pat1) = Pat1 ()
+ val  (PatComma_seq1 as PatComma_seq11) = PatComma_seq11 ()
+ in ( Pat :: PatComma_seq1 )
+end)
+ in ( LrTable.NT 107, ( result, Pat1left, PatComma_seq11right), 
+rest671)
+end
+|  ( 293, ( ( _, ( MlyValue.AtPat AtPat1, AtPat1left, AtPat1right)) ::
+ rest671)) => let val  result = MlyValue.Pat (fn _ => let val  (AtPat
+ as AtPat1) = AtPat1 ()
+ in ( ATPATpat (get_info_atpat AtPat, AtPat) )
+end)
+ in ( LrTable.NT 59, ( result, AtPat1left, AtPat1right), rest671)
+end
+|  ( 294, ( ( _, ( MlyValue.AtPat_seq2 AtPat_seq21, (AtPat_seq2left
+ as AtPat_seq21left), (AtPat_seq2right as AtPat_seq21right))) :: 
+rest671)) => let val  result = MlyValue.Pat (fn _ => let val  (
+AtPat_seq2 as AtPat_seq21) = AtPat_seq21 ()
  in (
  UNRES_INFIXpat (PP AtPat_seq2left AtPat_seq2right,
 					  AtPat_seq2) 
-) end
 )
- in (LrTable.NT 59,(result,AtPat_seq21left,AtPat_seq21right),rest671)
- end
-| (295,(_,(MlyValue.Ty Ty1,_,Tyright as Ty1right))::_::(_,(
-MlyValue.Pat Pat1,Patleft as Pat1left,_))::rest671) => let val result=
-MlyValue.Pat(fn _ => let val Pat as Pat1=Pat1 ()
-val Ty as Ty1=Ty1 ()
- in ( TYPEDpat (PP Patleft Tyright, Pat, Ty) ) end
-)
- in (LrTable.NT 59,(result,Pat1left,Ty1right),rest671) end
-| (296,(_,(_,_,RCOMSPECright as RCOMSPEC1right))::(_,(
-MlyValue.TyComma_seq1 TyComma_seq11,_,_))::(_,(MlyValue.OfSort OfSort1
-,_,_))::_::(_,(MlyValue.Pat Pat1,Patleft as Pat1left,_))::rest671) => 
-let val result=MlyValue.Pat(fn _ => let val Pat as Pat1=Pat1 ()
-val OfSort1=OfSort1 ()
-val TyComma_seq1 as TyComma_seq11=TyComma_seq11 ()
- in ( SORTEDpat (PP Patleft RCOMSPECright, Pat, TyComma_seq1) ) end
-)
- in (LrTable.NT 59,(result,Pat1left,RCOMSPEC1right),rest671) end
-| (297,(_,(MlyValue.Pat Pat2,_,Pat2right))::_::(_,(MlyValue.Pat Pat1,
-Pat1left,_))::rest671) => let val result=MlyValue.Pat(fn _ => let val 
-Pat1=Pat1 ()
-val Pat2=Pat2 ()
- in ( layeredPat (PP Pat1left Pat2right, Pat1, Pat2) ) end
-)
- in (LrTable.NT 59,(result,Pat1left,Pat2right),rest671) end
-| (298,(_,(MlyValue.Ty_sans_INTER Ty_sans_INTER1,Ty_sans_INTER1left,
-Ty_sans_INTER1right))::rest671) => let val result=MlyValue.Ty(fn _ => 
-let val Ty_sans_INTER as Ty_sans_INTER1=Ty_sans_INTER1 ()
+end)
+ in ( LrTable.NT 59, ( result, AtPat_seq21left, AtPat_seq21right), 
+rest671)
+end
+|  ( 295, ( ( _, ( MlyValue.Ty Ty1, _, (Tyright as Ty1right))) :: _ ::
+ ( _, ( MlyValue.Pat Pat1, (Patleft as Pat1left), _)) :: rest671)) =>
+ let val  result = MlyValue.Pat (fn _ => let val  (Pat as Pat1) = Pat1
+ ()
+ val  (Ty as Ty1) = Ty1 ()
+ in ( TYPEDpat (PP Patleft Tyright, Pat, Ty) )
+end)
+ in ( LrTable.NT 59, ( result, Pat1left, Ty1right), rest671)
+end
+|  ( 296, ( ( _, ( _, _, (RCOMSPECright as RCOMSPEC1right))) :: ( _, (
+ MlyValue.TyComma_seq1 TyComma_seq11, _, _)) :: ( _, ( MlyValue.OfSort
+ OfSort1, _, _)) :: _ :: ( _, ( MlyValue.Pat Pat1, (Patleft as 
+Pat1left), _)) :: rest671)) => let val  result = MlyValue.Pat (fn _ =>
+ let val  (Pat as Pat1) = Pat1 ()
+ val  OfSort1 = OfSort1 ()
+ val  (TyComma_seq1 as TyComma_seq11) = TyComma_seq11 ()
+ in ( SORTEDpat (PP Patleft RCOMSPECright, Pat, TyComma_seq1) )
+end)
+ in ( LrTable.NT 59, ( result, Pat1left, RCOMSPEC1right), rest671)
+end
+|  ( 297, ( ( _, ( MlyValue.Pat Pat2, _, Pat2right)) :: _ :: ( _, ( 
+MlyValue.Pat Pat1, Pat1left, _)) :: rest671)) => let val  result = 
+MlyValue.Pat (fn _ => let val  Pat1 = Pat1 ()
+ val  Pat2 = Pat2 ()
+ in ( layeredPat (PP Pat1left Pat2right, Pat1, Pat2) )
+end)
+ in ( LrTable.NT 59, ( result, Pat1left, Pat2right), rest671)
+end
+|  ( 298, ( ( _, ( MlyValue.Ty_sans_INTER Ty_sans_INTER1, 
+Ty_sans_INTER1left, Ty_sans_INTER1right)) :: rest671)) => let val  
+result = MlyValue.Ty (fn _ => let val  (Ty_sans_INTER as 
+Ty_sans_INTER1) = Ty_sans_INTER1 ()
  in ( Ty_sans_INTER
-			) end
-)
- in (LrTable.NT 52,(result,Ty_sans_INTER1left,Ty_sans_INTER1right),
-rest671) end
-| (299,(_,(MlyValue.Ty Ty1,_,Tyright as Ty1right))::_::(_,(
-MlyValue.Ty_sans_INTER Ty_sans_INTER1,Ty_sans_INTERleft as 
-Ty_sans_INTER1left,_))::rest671) => let val result=MlyValue.Ty(fn _
- => let val Ty_sans_INTER as Ty_sans_INTER1=Ty_sans_INTER1 ()
-val Ty as Ty1=Ty1 ()
+			)
+end)
+ in ( LrTable.NT 52, ( result, Ty_sans_INTER1left, Ty_sans_INTER1right
+), rest671)
+end
+|  ( 299, ( ( _, ( MlyValue.Ty Ty1, _, (Tyright as Ty1right))) :: _ ::
+ ( _, ( MlyValue.Ty_sans_INTER Ty_sans_INTER1, (Ty_sans_INTERleft as 
+Ty_sans_INTER1left), _)) :: rest671)) => let val  result = MlyValue.Ty
+ (fn _ => let val  (Ty_sans_INTER as Ty_sans_INTER1) = Ty_sans_INTER1
+ ()
+ val  (Ty as Ty1) = Ty1 ()
  in (
  INTERty (PP Ty_sans_INTERleft Tyright,
 				Ty_sans_INTER, Ty
 			      )
 			
-) end
 )
- in (LrTable.NT 52,(result,Ty_sans_INTER1left,Ty1right),rest671) end
-| (300,(_,(MlyValue.Ty_sans_INTER Ty_sans_INTER1,_,Ty_sans_INTERright
- as Ty_sans_INTER1right))::_::(_,(MlyValue.TupleTy TupleTy1,
-TupleTyleft as TupleTy1left,_))::rest671) => let val result=
-MlyValue.Ty_sans_INTER(fn _ => let val TupleTy as TupleTy1=TupleTy1 ()
-val Ty_sans_INTER as Ty_sans_INTER1=Ty_sans_INTER1 ()
+end)
+ in ( LrTable.NT 52, ( result, Ty_sans_INTER1left, Ty1right), rest671)
+
+end
+|  ( 300, ( ( _, ( MlyValue.Ty_sans_INTER Ty_sans_INTER1, _, (
+Ty_sans_INTERright as Ty_sans_INTER1right))) :: _ :: ( _, ( 
+MlyValue.TupleTy TupleTy1, (TupleTyleft as TupleTy1left), _)) :: 
+rest671)) => let val  result = MlyValue.Ty_sans_INTER (fn _ => let
+ val  (TupleTy as TupleTy1) = TupleTy1 ()
+ val  (Ty_sans_INTER as Ty_sans_INTER1) = Ty_sans_INTER1 ()
  in (
  FNty (PP TupleTyleft Ty_sans_INTERright,
 				(case TupleTy of
 				   [t] => t
 				 | ts => tuple_type (PP TupleTyleft Ty_sans_INTERright) ts),
 				Ty_sans_INTER) 
-) end
 )
- in (LrTable.NT 53,(result,TupleTy1left,Ty_sans_INTER1right),rest671)
- end
-| (301,(_,(MlyValue.TupleTy TupleTy1,TupleTyleft as TupleTy1left,
-TupleTyright as TupleTy1right))::rest671) => let val result=
-MlyValue.Ty_sans_INTER(fn _ => let val TupleTy as TupleTy1=TupleTy1 ()
+end)
+ in ( LrTable.NT 53, ( result, TupleTy1left, Ty_sans_INTER1right), 
+rest671)
+end
+|  ( 301, ( ( _, ( MlyValue.TupleTy TupleTy1, (TupleTyleft as 
+TupleTy1left), (TupleTyright as TupleTy1right))) :: rest671)) => let
+ val  result = MlyValue.Ty_sans_INTER (fn _ => let val  (TupleTy as 
+TupleTy1) = TupleTy1 ()
  in (
  (case TupleTy of
 			     [t] => t
 			   | ts => tuple_type (PP TupleTyleft TupleTyright) ts) 
-) end
 )
- in (LrTable.NT 53,(result,TupleTy1left,TupleTy1right),rest671) end
-| (302,(_,(MlyValue.Ty_sans_STAR Ty_sans_STAR1,Ty_sans_STAR1left,
-Ty_sans_STAR1right))::rest671) => let val result=MlyValue.TupleTy(fn _
- => let val Ty_sans_STAR as Ty_sans_STAR1=Ty_sans_STAR1 ()
- in ( [Ty_sans_STAR] ) end
-)
- in (LrTable.NT 54,(result,Ty_sans_STAR1left,Ty_sans_STAR1right),
-rest671) end
-| (303,(_,(MlyValue.TupleTy TupleTy1,_,TupleTy1right))::_::(_,(
-MlyValue.Ty_sans_STAR Ty_sans_STAR1,Ty_sans_STAR1left,_))::rest671)
- => let val result=MlyValue.TupleTy(fn _ => let val Ty_sans_STAR as 
-Ty_sans_STAR1=Ty_sans_STAR1 ()
-val TupleTy as TupleTy1=TupleTy1 ()
- in ( Ty_sans_STAR :: TupleTy ) end
-)
- in (LrTable.NT 54,(result,Ty_sans_STAR1left,TupleTy1right),rest671)
- end
-| (304,(_,(MlyValue.LongTypeIdent LongTypeIdent1,_,LongTypeIdentright
- as LongTypeIdent1right))::_::(_,(MlyValue.TyComma_seq2 TyComma_seq21,
-_,_))::(_,(_,LPARENleft as LPAREN1left,_))::rest671) => let val result
-=MlyValue.Ty_sans_STAR(fn _ => let val TyComma_seq2 as TyComma_seq21=
-TyComma_seq21 ()
-val LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
+end)
+ in ( LrTable.NT 53, ( result, TupleTy1left, TupleTy1right), rest671)
+
+end
+|  ( 302, ( ( _, ( MlyValue.Ty_sans_STAR Ty_sans_STAR1, 
+Ty_sans_STAR1left, Ty_sans_STAR1right)) :: rest671)) => let val  
+result = MlyValue.TupleTy (fn _ => let val  (Ty_sans_STAR as 
+Ty_sans_STAR1) = Ty_sans_STAR1 ()
+ in ( [Ty_sans_STAR] )
+end)
+ in ( LrTable.NT 54, ( result, Ty_sans_STAR1left, Ty_sans_STAR1right),
+ rest671)
+end
+|  ( 303, ( ( _, ( MlyValue.TupleTy TupleTy1, _, TupleTy1right)) :: _
+ :: ( _, ( MlyValue.Ty_sans_STAR Ty_sans_STAR1, Ty_sans_STAR1left, _))
+ :: rest671)) => let val  result = MlyValue.TupleTy (fn _ => let val 
+ (Ty_sans_STAR as Ty_sans_STAR1) = Ty_sans_STAR1 ()
+ val  (TupleTy as TupleTy1) = TupleTy1 ()
+ in ( Ty_sans_STAR :: TupleTy )
+end)
+ in ( LrTable.NT 54, ( result, Ty_sans_STAR1left, TupleTy1right), 
+rest671)
+end
+|  ( 304, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, _, (
+LongTypeIdentright as LongTypeIdent1right))) :: _ :: ( _, ( 
+MlyValue.TyComma_seq2 TyComma_seq21, _, _)) :: ( _, ( _, (LPARENleft
+ as LPAREN1left), _)) :: rest671)) => let val  result = 
+MlyValue.Ty_sans_STAR (fn _ => let val  (TyComma_seq2 as TyComma_seq21
+) = TyComma_seq21 ()
+ val  (LongTypeIdent as LongTypeIdent1) = LongTypeIdent1 ()
  in (
  CONty (PP LPARENleft LongTypeIdentright,
 				 TyComma_seq2, mk_LongTyCon LongTypeIdent) 
-) end
 )
- in (LrTable.NT 55,(result,LPAREN1left,LongTypeIdent1right),rest671)
- end
-| (305,(_,(MlyValue.LongTypeIdent LongTypeIdent1,_,LongTypeIdentright
- as LongTypeIdent1right))::(_,(MlyValue.Ty_sans_STAR Ty_sans_STAR1,
-Ty_sans_STARleft as Ty_sans_STAR1left,_))::rest671) => let val result=
-MlyValue.Ty_sans_STAR(fn _ => let val Ty_sans_STAR as Ty_sans_STAR1=
-Ty_sans_STAR1 ()
-val LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
+end)
+ in ( LrTable.NT 55, ( result, LPAREN1left, LongTypeIdent1right), 
+rest671)
+end
+|  ( 305, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, _, (
+LongTypeIdentright as LongTypeIdent1right))) :: ( _, ( 
+MlyValue.Ty_sans_STAR Ty_sans_STAR1, (Ty_sans_STARleft as 
+Ty_sans_STAR1left), _)) :: rest671)) => let val  result = 
+MlyValue.Ty_sans_STAR (fn _ => let val  (Ty_sans_STAR as Ty_sans_STAR1
+) = Ty_sans_STAR1 ()
+ val  (LongTypeIdent as LongTypeIdent1) = LongTypeIdent1 ()
  in (
  CONty (PP Ty_sans_STARleft LongTypeIdentright,
 				 [Ty_sans_STAR], mk_LongTyCon LongTypeIdent) 
-) end
 )
- in (LrTable.NT 55,(result,Ty_sans_STAR1left,LongTypeIdent1right),
-rest671) end
-| (306,(_,(MlyValue.AtomicTy AtomicTy1,AtomicTy1left,AtomicTy1right))
-::rest671) => let val result=MlyValue.Ty_sans_STAR(fn _ => let val 
-AtomicTy as AtomicTy1=AtomicTy1 ()
- in ( AtomicTy ) end
+end)
+ in ( LrTable.NT 55, ( result, Ty_sans_STAR1left, LongTypeIdent1right)
+, rest671)
+end
+|  ( 306, ( ( _, ( MlyValue.AtomicTy AtomicTy1, AtomicTy1left, 
+AtomicTy1right)) :: rest671)) => let val  result = 
+MlyValue.Ty_sans_STAR (fn _ => let val  (AtomicTy as AtomicTy1) = 
+AtomicTy1 ()
+ in ( AtomicTy )
+end)
+ in ( LrTable.NT 55, ( result, AtomicTy1left, AtomicTy1right), rest671
 )
- in (LrTable.NT 55,(result,AtomicTy1left,AtomicTy1right),rest671) end
-| (307,(_,(MlyValue.TyComma_seq2 TyComma_seq21,_,TyComma_seq21right))
-::_::(_,(MlyValue.Ty Ty1,Ty1left,_))::rest671) => let val result=
-MlyValue.TyComma_seq2(fn _ => let val Ty as Ty1=Ty1 ()
-val TyComma_seq2 as TyComma_seq21=TyComma_seq21 ()
- in ( Ty :: TyComma_seq2 ) end
-)
- in (LrTable.NT 114,(result,Ty1left,TyComma_seq21right),rest671) end
-| (308,(_,(MlyValue.Ty Ty2,_,Ty2right))::_::(_,(MlyValue.Ty Ty1,
-Ty1left,_))::rest671) => let val result=MlyValue.TyComma_seq2(fn _ => 
-let val Ty1=Ty1 ()
-val Ty2=Ty2 ()
- in ( [Ty1, Ty2] ) end
-)
- in (LrTable.NT 114,(result,Ty1left,Ty2right),rest671) end
-| (309,(_,(MlyValue.Ty Ty1,Ty1left,Ty1right))::rest671) => let val 
-result=MlyValue.TyComma_seq1(fn _ => let val Ty as Ty1=Ty1 ()
- in ([Ty]) end
-)
- in (LrTable.NT 115,(result,Ty1left,Ty1right),rest671) end
-| (310,(_,(MlyValue.TyComma_seq2 TyComma_seq21,TyComma_seq21left,
-TyComma_seq21right))::rest671) => let val result=MlyValue.TyComma_seq1
-(fn _ => let val TyComma_seq2 as TyComma_seq21=TyComma_seq21 ()
- in (TyComma_seq2) end
-)
- in (LrTable.NT 115,(result,TyComma_seq21left,TyComma_seq21right),
-rest671) end
-| (311,(_,(MlyValue.LongTypeIdent LongTypeIdent1,LongTypeIdentleft as 
-LongTypeIdent1left,LongTypeIdentright as LongTypeIdent1right))::
-rest671) => let val result=MlyValue.AtomicTy(fn _ => let val 
-LongTypeIdent as LongTypeIdent1=LongTypeIdent1 ()
+end
+|  ( 307, ( ( _, ( MlyValue.TyComma_seq2 TyComma_seq21, _, 
+TyComma_seq21right)) :: _ :: ( _, ( MlyValue.Ty Ty1, Ty1left, _)) :: 
+rest671)) => let val  result = MlyValue.TyComma_seq2 (fn _ => let val 
+ (Ty as Ty1) = Ty1 ()
+ val  (TyComma_seq2 as TyComma_seq21) = TyComma_seq21 ()
+ in ( Ty :: TyComma_seq2 )
+end)
+ in ( LrTable.NT 114, ( result, Ty1left, TyComma_seq21right), rest671)
+
+end
+|  ( 308, ( ( _, ( MlyValue.Ty Ty2, _, Ty2right)) :: _ :: ( _, ( 
+MlyValue.Ty Ty1, Ty1left, _)) :: rest671)) => let val  result = 
+MlyValue.TyComma_seq2 (fn _ => let val  Ty1 = Ty1 ()
+ val  Ty2 = Ty2 ()
+ in ( [Ty1, Ty2] )
+end)
+ in ( LrTable.NT 114, ( result, Ty1left, Ty2right), rest671)
+end
+|  ( 309, ( ( _, ( MlyValue.Ty Ty1, Ty1left, Ty1right)) :: rest671))
+ => let val  result = MlyValue.TyComma_seq1 (fn _ => let val  (Ty as 
+Ty1) = Ty1 ()
+ in ([Ty])
+end)
+ in ( LrTable.NT 115, ( result, Ty1left, Ty1right), rest671)
+end
+|  ( 310, ( ( _, ( MlyValue.TyComma_seq2 TyComma_seq21, 
+TyComma_seq21left, TyComma_seq21right)) :: rest671)) => let val  
+result = MlyValue.TyComma_seq1 (fn _ => let val  (TyComma_seq2 as 
+TyComma_seq21) = TyComma_seq21 ()
+ in (TyComma_seq2)
+end)
+ in ( LrTable.NT 115, ( result, TyComma_seq21left, TyComma_seq21right)
+, rest671)
+end
+|  ( 311, ( ( _, ( MlyValue.LongTypeIdent LongTypeIdent1, (
+LongTypeIdentleft as LongTypeIdent1left), (LongTypeIdentright as 
+LongTypeIdent1right))) :: rest671)) => let val  result = 
+MlyValue.AtomicTy (fn _ => let val  (LongTypeIdent as LongTypeIdent1)
+ = LongTypeIdent1 ()
  in (
  CONty (PP LongTypeIdentleft LongTypeIdentright,
 				 [], mk_LongTyCon LongTypeIdent) 
-) end
 )
- in (LrTable.NT 56,(result,LongTypeIdent1left,LongTypeIdent1right),
-rest671) end
-| (312,(_,(MlyValue.TYVAR TYVAR1,TYVARleft as TYVAR1left,TYVARright
- as TYVAR1right))::rest671) => let val result=MlyValue.AtomicTy(fn _
- => let val TYVAR as TYVAR1=TYVAR1 ()
- in ( TYVARty(PP TYVARleft TYVARright, mk_TyVar TYVAR) ) end
-)
- in (LrTable.NT 56,(result,TYVAR1left,TYVAR1right),rest671) end
-| (313,(_,(_,_,RBRACEright as RBRACE1right))::(_,(MlyValue.TyRow_opt 
-TyRow_opt1,_,_))::(_,(_,LBRACEleft as LBRACE1left,_))::rest671) => 
-let val result=MlyValue.AtomicTy(fn _ => let val TyRow_opt as 
-TyRow_opt1=TyRow_opt1 ()
- in ( RECORDty (PP LBRACEleft RBRACEright, TyRow_opt) ) end
-)
- in (LrTable.NT 56,(result,LBRACE1left,RBRACE1right),rest671) end
-| (314,(_,(_,_,RPARENright as RPAREN1right))::(_,(MlyValue.Ty Ty1,_,_)
-)::(_,(_,LPARENleft as LPAREN1left,_))::rest671) => let val result=
-MlyValue.AtomicTy(fn _ => let val Ty as Ty1=Ty1 ()
- in ( PARty (PP LPARENleft RPARENright, Ty) ) end
-)
- in (LrTable.NT 56,(result,LPAREN1left,RPAREN1right),rest671) end
-| (315,(_,(MlyValue.TyRow TyRow1,TyRow1left,TyRow1right))::rest671)
- => let val result=MlyValue.TyRow_opt(fn _ => let val TyRow as TyRow1=
-TyRow1 ()
- in ( SOME TyRow ) end
-)
- in (LrTable.NT 99,(result,TyRow1left,TyRow1right),rest671) end
-| (316,rest671) => let val result=MlyValue.TyRow_opt(fn _ => ( NONE ))
- in (LrTable.NT 99,(result,defaultPos,defaultPos),rest671) end
-| (317,(_,(MlyValue.CommaTyRow_opt CommaTyRow_opt1,_,
-CommaTyRow_opt1right))::(_,(MlyValue.Ty Ty1,_,_))::(_,(MlyValue.OfSort
- OfSort1,_,_))::(_,(MlyValue.Label Label1,Labelleft as Label1left,_))
-::rest671) => let val result=MlyValue.TyRow(fn _ => let val Label as 
-Label1=Label1 ()
-val OfSort1=OfSort1 ()
-val Ty as Ty1=Ty1 ()
-val CommaTyRow_opt as CommaTyRow_opt1=CommaTyRow_opt1 ()
+end)
+ in ( LrTable.NT 56, ( result, LongTypeIdent1left, LongTypeIdent1right
+), rest671)
+end
+|  ( 312, ( ( _, ( MlyValue.TYVAR TYVAR1, (TYVARleft as TYVAR1left), (
+TYVARright as TYVAR1right))) :: rest671)) => let val  result = 
+MlyValue.AtomicTy (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ( TYVARty(PP TYVARleft TYVARright, mk_TyVar TYVAR) )
+end)
+ in ( LrTable.NT 56, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 313, ( ( _, ( _, _, (RBRACEright as RBRACE1right))) :: ( _, ( 
+MlyValue.TyRow_opt TyRow_opt1, _, _)) :: ( _, ( _, (LBRACEleft as 
+LBRACE1left), _)) :: rest671)) => let val  result = MlyValue.AtomicTy
+ (fn _ => let val  (TyRow_opt as TyRow_opt1) = TyRow_opt1 ()
+ in ( RECORDty (PP LBRACEleft RBRACEright, TyRow_opt) )
+end)
+ in ( LrTable.NT 56, ( result, LBRACE1left, RBRACE1right), rest671)
+
+end
+|  ( 314, ( ( _, ( _, _, (RPARENright as RPAREN1right))) :: ( _, ( 
+MlyValue.Ty Ty1, _, _)) :: ( _, ( _, (LPARENleft as LPAREN1left), _))
+ :: rest671)) => let val  result = MlyValue.AtomicTy (fn _ => let val 
+ (Ty as Ty1) = Ty1 ()
+ in ( PARty (PP LPARENleft RPARENright, Ty) )
+end)
+ in ( LrTable.NT 56, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 315, ( ( _, ( MlyValue.TyRow TyRow1, TyRow1left, TyRow1right)) ::
+ rest671)) => let val  result = MlyValue.TyRow_opt (fn _ => let val  (
+TyRow as TyRow1) = TyRow1 ()
+ in ( SOME TyRow )
+end)
+ in ( LrTable.NT 99, ( result, TyRow1left, TyRow1right), rest671)
+end
+|  ( 316, ( rest671)) => let val  result = MlyValue.TyRow_opt (fn _ =>
+ ( NONE ))
+ in ( LrTable.NT 99, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 317, ( ( _, ( MlyValue.CommaTyRow_opt CommaTyRow_opt1, _, 
+CommaTyRow_opt1right)) :: ( _, ( MlyValue.Ty Ty1, _, _)) :: ( _, ( 
+MlyValue.OfSort OfSort1, _, _)) :: ( _, ( MlyValue.Label Label1, (
+Labelleft as Label1left), _)) :: rest671)) => let val  result = 
+MlyValue.TyRow (fn _ => let val  (Label as Label1) = Label1 ()
+ val  OfSort1 = OfSort1 ()
+ val  (Ty as Ty1) = Ty1 ()
+ val  (CommaTyRow_opt as CommaTyRow_opt1) = CommaTyRow_opt1 ()
  in (
  TYROW (PP Labelleft
 				   (rightmost get_info_ty Ty
 				              get_info_tyrow CommaTyRow_opt),
 				 Label, Ty, CommaTyRow_opt) 
-) end
 )
- in (LrTable.NT 51,(result,Label1left,CommaTyRow_opt1right),rest671)
- end
-| (318,(_,(MlyValue.TyRow TyRow1,_,TyRow1right))::(_,(_,COMMA1left,_))
-::rest671) => let val result=MlyValue.CommaTyRow_opt(fn _ => let val 
-TyRow as TyRow1=TyRow1 ()
- in ( SOME TyRow ) end
-)
- in (LrTable.NT 100,(result,COMMA1left,TyRow1right),rest671) end
-| (319,rest671) => let val result=MlyValue.CommaTyRow_opt(fn _ => (
- NONE ))
- in (LrTable.NT 100,(result,defaultPos,defaultPos),rest671) end
-| (320,(_,(MlyValue.DECPOSINTEGER DECPOSINTEGER1,DECPOSINTEGERleft as 
-DECPOSINTEGER1left,DECPOSINTEGER1right))::rest671) => let val result=
-MlyValue.Integer(fn _ => let val DECPOSINTEGER as DECPOSINTEGER1=
-DECPOSINTEGER1 ()
+end)
+ in ( LrTable.NT 51, ( result, Label1left, CommaTyRow_opt1right), 
+rest671)
+end
+|  ( 318, ( ( _, ( MlyValue.TyRow TyRow1, _, TyRow1right)) :: ( _, ( _
+, COMMA1left, _)) :: rest671)) => let val  result = 
+MlyValue.CommaTyRow_opt (fn _ => let val  (TyRow as TyRow1) = TyRow1
+ ()
+ in ( SOME TyRow )
+end)
+ in ( LrTable.NT 100, ( result, COMMA1left, TyRow1right), rest671)
+end
+|  ( 319, ( rest671)) => let val  result = MlyValue.CommaTyRow_opt (fn
+ _ => ( NONE ))
+ in ( LrTable.NT 100, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 320, ( ( _, ( MlyValue.DECPOSINTEGER DECPOSINTEGER1, (
+DECPOSINTEGERleft as DECPOSINTEGER1left), DECPOSINTEGER1right)) :: 
+rest671)) => let val  result = MlyValue.Integer (fn _ => let val  (
+DECPOSINTEGER as DECPOSINTEGER1) = DECPOSINTEGER1 ()
  in (
  raise_lexical_error_if_none
 			    DECPOSINTEGERleft DECPOSINTEGER )
- end
-)
- in (LrTable.NT 142,(result,DECPOSINTEGER1left,DECPOSINTEGER1right),
-rest671) end
-| (321,(_,(MlyValue.DECNEGINTEGER DECNEGINTEGER1,DECNEGINTEGERleft as 
-DECNEGINTEGER1left,DECNEGINTEGER1right))::rest671) => let val result=
-MlyValue.Integer(fn _ => let val DECNEGINTEGER as DECNEGINTEGER1=
-DECNEGINTEGER1 ()
+
+end)
+ in ( LrTable.NT 142, ( result, DECPOSINTEGER1left, 
+DECPOSINTEGER1right), rest671)
+end
+|  ( 321, ( ( _, ( MlyValue.DECNEGINTEGER DECNEGINTEGER1, (
+DECNEGINTEGERleft as DECNEGINTEGER1left), DECNEGINTEGER1right)) :: 
+rest671)) => let val  result = MlyValue.Integer (fn _ => let val  (
+DECNEGINTEGER as DECNEGINTEGER1) = DECNEGINTEGER1 ()
  in (
  raise_lexical_error_if_none
 			    DECNEGINTEGERleft DECNEGINTEGER )
- end
-)
- in (LrTable.NT 142,(result,DECNEGINTEGER1left,DECNEGINTEGER1right),
-rest671) end
-| (322,(_,(MlyValue.HEXINTEGER HEXINTEGER1,HEXINTEGERleft as 
-HEXINTEGER1left,HEXINTEGER1right))::rest671) => let val result=
-MlyValue.Integer(fn _ => let val HEXINTEGER as HEXINTEGER1=HEXINTEGER1
- ()
+
+end)
+ in ( LrTable.NT 142, ( result, DECNEGINTEGER1left, 
+DECNEGINTEGER1right), rest671)
+end
+|  ( 322, ( ( _, ( MlyValue.HEXINTEGER HEXINTEGER1, (HEXINTEGERleft
+ as HEXINTEGER1left), HEXINTEGER1right)) :: rest671)) => let val  
+result = MlyValue.Integer (fn _ => let val  (HEXINTEGER as HEXINTEGER1
+) = HEXINTEGER1 ()
  in ( raise_lexical_error_if_none
 			    HEXINTEGERleft HEXINTEGER )
- end
-)
- in (LrTable.NT 142,(result,HEXINTEGER1left,HEXINTEGER1right),rest671)
- end
-| (323,(_,(MlyValue.DIGIT DIGIT1,DIGIT1left,DIGIT1right))::rest671)
- => let val result=MlyValue.Integer(fn _ => let val DIGIT as DIGIT1=
-DIGIT1 ()
- in ( DIGIT ) end
-)
- in (LrTable.NT 142,(result,DIGIT1left,DIGIT1right),rest671) end
-| (324,(_,(MlyValue.STRING STRING1,STRINGleft,STRING1right))::(_,(_,
-HASH1left,_))::rest671) => let val result=MlyValue.Char(fn _ => let 
-val STRING as STRING1=STRING1 ()
+
+end)
+ in ( LrTable.NT 142, ( result, HEXINTEGER1left, HEXINTEGER1right), 
+rest671)
+end
+|  ( 323, ( ( _, ( MlyValue.DIGIT DIGIT1, DIGIT1left, DIGIT1right)) ::
+ rest671)) => let val  result = MlyValue.Integer (fn _ => let val  (
+DIGIT as DIGIT1) = DIGIT1 ()
+ in ( DIGIT )
+end)
+ in ( LrTable.NT 142, ( result, DIGIT1left, DIGIT1right), rest671)
+end
+|  ( 324, ( ( _, ( MlyValue.STRING STRING1, STRINGleft, STRING1right))
+ :: ( _, ( _, HASH1left, _)) :: rest671)) => let val  result = 
+MlyValue.Char (fn _ => let val  (STRING as STRING1) = STRING1 ()
  in (
  case explode STRING
                             of [c] => ord c
                              | _ => raise LEXICAL_ERROR (STRINGleft, "string must have length 1") 
-) end
 )
- in (LrTable.NT 143,(result,HASH1left,STRING1right),rest671) end
-| (325,(_,(MlyValue.Integer Integer1,Integer1left,Integer1right))::
-rest671) => let val result=MlyValue.SCon(fn _ => let val Integer as 
-Integer1=Integer1 ()
- in ( mk_IntSCon Integer ) end
-)
- in (LrTable.NT 58,(result,Integer1left,Integer1right),rest671) end
-| (326,(_,(MlyValue.WORD WORD1,WORDleft as WORD1left,WORD1right))::
-rest671) => let val result=MlyValue.SCon(fn _ => let val WORD as WORD1
-=WORD1 ()
- in ( mk_WordSCon (raise_lexical_error_if_none WORDleft WORD) ) end
-)
- in (LrTable.NT 58,(result,WORD1left,WORD1right),rest671) end
-| (327,(_,(MlyValue.STRING STRING1,STRING1left,STRING1right))::rest671
-) => let val result=MlyValue.SCon(fn _ => let val STRING as STRING1=
-STRING1 ()
- in ( mk_StringSCon STRING ) end
-)
- in (LrTable.NT 58,(result,STRING1left,STRING1right),rest671) end
-| (328,(_,(MlyValue.Char Char1,Char1left,Char1right))::rest671) => 
-let val result=MlyValue.SCon(fn _ => let val Char as Char1=Char1 ()
- in ( mk_CharSCon Char ) end
-)
- in (LrTable.NT 58,(result,Char1left,Char1right),rest671) end
-| (329,(_,(MlyValue.REAL REAL1,REALleft as REAL1left,REAL1right))::
-rest671) => let val result=MlyValue.SCon(fn _ => let val REAL as REAL1
-=REAL1 ()
- in ( mk_RealSCon (raise_lexical_error_if_none REALleft REAL) ) end
-)
- in (LrTable.NT 58,(result,REAL1left,REAL1right),rest671) end
-| (330,(_,(MlyValue.TyVarSeq1 TyVarSeq11,TyVarSeq11left,
-TyVarSeq11right))::rest671) => let val result=MlyValue.TyVarSeq(fn _
- => let val TyVarSeq1 as TyVarSeq11=TyVarSeq11 ()
- in ( TyVarSeq1 ) end
-)
- in (LrTable.NT 57,(result,TyVarSeq11left,TyVarSeq11right),rest671)
- end
-| (331,rest671) => let val result=MlyValue.TyVarSeq(fn _ => ( [] ))
- in (LrTable.NT 57,(result,defaultPos,defaultPos),rest671) end
-| (332,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671)
- => let val result=MlyValue.TyVarSeq1(fn _ => let val TYVAR as TYVAR1=
-TYVAR1 ()
- in ( [mk_TyVar TYVAR] ) end
-)
- in (LrTable.NT 112,(result,TYVAR1left,TYVAR1right),rest671) end
-| (333,(_,(_,_,RPAREN1right))::(_,(MlyValue.TyVarComma_seq1 
-TyVarComma_seq11,_,_))::(_,(_,LPAREN1left,_))::rest671) => let val 
-result=MlyValue.TyVarSeq1(fn _ => let val TyVarComma_seq1 as 
-TyVarComma_seq11=TyVarComma_seq11 ()
- in ( TyVarComma_seq1 ) end
-)
- in (LrTable.NT 112,(result,LPAREN1left,RPAREN1right),rest671) end
-| (334,(_,(MlyValue.TyVarComma_seq1 TyVarComma_seq11,_,
-TyVarComma_seq11right))::_::(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,_))::
-rest671) => let val result=MlyValue.TyVarComma_seq1(fn _ => let val 
-TYVAR as TYVAR1=TYVAR1 ()
-val TyVarComma_seq1 as TyVarComma_seq11=TyVarComma_seq11 ()
- in ( mk_TyVar TYVAR :: TyVarComma_seq1 ) end
-)
- in (LrTable.NT 113,(result,TYVAR1left,TyVarComma_seq11right),rest671)
- end
-| (335,(_,(MlyValue.TYVAR TYVAR1,TYVAR1left,TYVAR1right))::rest671)
- => let val result=MlyValue.TyVarComma_seq1(fn _ => let val TYVAR as 
-TYVAR1=TYVAR1 ()
- in ( [mk_TyVar TYVAR] ) end
-)
- in (LrTable.NT 113,(result,TYVAR1left,TYVAR1right),rest671) end
+end)
+ in ( LrTable.NT 143, ( result, HASH1left, STRING1right), rest671)
+end
+|  ( 325, ( ( _, ( MlyValue.Integer Integer1, Integer1left, 
+Integer1right)) :: rest671)) => let val  result = MlyValue.SCon (fn _
+ => let val  (Integer as Integer1) = Integer1 ()
+ in ( mk_IntSCon Integer )
+end)
+ in ( LrTable.NT 58, ( result, Integer1left, Integer1right), rest671)
+
+end
+|  ( 326, ( ( _, ( MlyValue.WORD WORD1, (WORDleft as WORD1left), 
+WORD1right)) :: rest671)) => let val  result = MlyValue.SCon (fn _ =>
+ let val  (WORD as WORD1) = WORD1 ()
+ in ( mk_WordSCon (raise_lexical_error_if_none WORDleft WORD) )
+end)
+ in ( LrTable.NT 58, ( result, WORD1left, WORD1right), rest671)
+end
+|  ( 327, ( ( _, ( MlyValue.STRING STRING1, STRING1left, STRING1right)
+) :: rest671)) => let val  result = MlyValue.SCon (fn _ => let val  (
+STRING as STRING1) = STRING1 ()
+ in ( mk_StringSCon STRING )
+end)
+ in ( LrTable.NT 58, ( result, STRING1left, STRING1right), rest671)
+
+end
+|  ( 328, ( ( _, ( MlyValue.Char Char1, Char1left, Char1right)) :: 
+rest671)) => let val  result = MlyValue.SCon (fn _ => let val  (Char
+ as Char1) = Char1 ()
+ in ( mk_CharSCon Char )
+end)
+ in ( LrTable.NT 58, ( result, Char1left, Char1right), rest671)
+end
+|  ( 329, ( ( _, ( MlyValue.REAL REAL1, (REALleft as REAL1left), 
+REAL1right)) :: rest671)) => let val  result = MlyValue.SCon (fn _ =>
+ let val  (REAL as REAL1) = REAL1 ()
+ in ( mk_RealSCon (raise_lexical_error_if_none REALleft REAL) )
+end)
+ in ( LrTable.NT 58, ( result, REAL1left, REAL1right), rest671)
+end
+|  ( 330, ( ( _, ( MlyValue.TyVarSeq1 TyVarSeq11, TyVarSeq11left, 
+TyVarSeq11right)) :: rest671)) => let val  result = MlyValue.TyVarSeq
+ (fn _ => let val  (TyVarSeq1 as TyVarSeq11) = TyVarSeq11 ()
+ in ( TyVarSeq1 )
+end)
+ in ( LrTable.NT 57, ( result, TyVarSeq11left, TyVarSeq11right), 
+rest671)
+end
+|  ( 331, ( rest671)) => let val  result = MlyValue.TyVarSeq (fn _ =>
+ ( [] ))
+ in ( LrTable.NT 57, ( result, defaultPos, defaultPos), rest671)
+end
+|  ( 332, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) ::
+ rest671)) => let val  result = MlyValue.TyVarSeq1 (fn _ => let val  (
+TYVAR as TYVAR1) = TYVAR1 ()
+ in ( [mk_TyVar TYVAR] )
+end)
+ in ( LrTable.NT 112, ( result, TYVAR1left, TYVAR1right), rest671)
+end
+|  ( 333, ( ( _, ( _, _, RPAREN1right)) :: ( _, ( 
+MlyValue.TyVarComma_seq1 TyVarComma_seq11, _, _)) :: ( _, ( _, 
+LPAREN1left, _)) :: rest671)) => let val  result = MlyValue.TyVarSeq1
+ (fn _ => let val  (TyVarComma_seq1 as TyVarComma_seq11) = 
+TyVarComma_seq11 ()
+ in ( TyVarComma_seq1 )
+end)
+ in ( LrTable.NT 112, ( result, LPAREN1left, RPAREN1right), rest671)
+
+end
+|  ( 334, ( ( _, ( MlyValue.TyVarComma_seq1 TyVarComma_seq11, _, 
+TyVarComma_seq11right)) :: _ :: ( _, ( MlyValue.TYVAR TYVAR1, 
+TYVAR1left, _)) :: rest671)) => let val  result = 
+MlyValue.TyVarComma_seq1 (fn _ => let val  (TYVAR as TYVAR1) = TYVAR1
+ ()
+ val  (TyVarComma_seq1 as TyVarComma_seq11) = TyVarComma_seq11 ()
+ in ( mk_TyVar TYVAR :: TyVarComma_seq1 )
+end)
+ in ( LrTable.NT 113, ( result, TYVAR1left, TyVarComma_seq11right), 
+rest671)
+end
+|  ( 335, ( ( _, ( MlyValue.TYVAR TYVAR1, TYVAR1left, TYVAR1right)) ::
+ rest671)) => let val  result = MlyValue.TyVarComma_seq1 (fn _ => let
+ val  (TYVAR as TYVAR1) = TYVAR1 ()
+ in ( [mk_TyVar TYVAR] )
+end)
+ in ( LrTable.NT 113, ( result, TYVAR1left, TYVAR1right), rest671)
+end
 | _ => raise (mlyAction i392)
 end
 val void = MlyValue.VOID

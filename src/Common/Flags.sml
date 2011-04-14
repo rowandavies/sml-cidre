@@ -658,6 +658,9 @@ struct
 
   fun mk_header text below : item = {text=text,attr=VALUE(fn _ => ""),below=below}
 
+  (* Overwrite TextIO.inputLine to old definition *)
+  val inputLine = 
+     fn stream => (case TextIO.inputLine stream of SOME s => s | NONE => "")
 
   (*read_string r () = read a string from TextIO.stdIn.  If the input is some
    string in quotes, read_string assigns it to the ref r (and sets the global
@@ -670,7 +673,7 @@ struct
   fun read_string r () =
       (u_or_q_from_read_string := false ;
        outLine "<string in double quotes>, Up (u), or Quit (quit): >" ;
-       let val cs = explode(TextIO.inputLine TextIO.stdIn)
+       let val cs = explode (inputLine TextIO.stdIn)
 	   val cs = StringCvt.skipWS getc cs
        in
 	 case cs of 
@@ -686,7 +689,7 @@ struct
 
   fun read_int r () =
     (outLine "<number> or up (u): >";
-     let val cs = explode(TextIO.inputLine TextIO.stdIn)
+     let val cs = explode(inputLine TextIO.stdIn)
          val cs = StringCvt.skipWS getc cs
      in case cs 
 	  of [] => (help(); read_int r ())
@@ -927,7 +930,7 @@ struct
   
   fun read_display_cmd(): cmd =
     (print "\n>";
-     let val cs = explode(TextIO.inputLine TextIO.stdIn)
+     let val cs = explode(inputLine TextIO.stdIn)
          val cs = StringCvt.skipWS getc cs
      in case cs of
           [] => HELP
@@ -946,7 +949,7 @@ struct
   
   fun read_button_cmd () : cmd =
         (print "\n>";
-	 let val cs = explode(TextIO.inputLine TextIO.stdIn)
+	 let val cs = explode(inputLine TextIO.stdIn)
 	     val cs = StringCvt.skipWS getc cs
 	 in case cs of
 	   [] => HELP
@@ -977,7 +980,7 @@ struct
   fun read_int_list r () =
     (outLine "<type an int list, e.g. [4,3]> or up (u): >";
      let
-       val s = TextIO.inputLine TextIO.stdIn
+       val s = inputLine TextIO.stdIn
        val cs = explode s
      in
        case cs
@@ -994,7 +997,7 @@ struct
     (outLine "<type an int pair list of region variables,\n\
 	  \e.g. [(formal reg. var. at pp.,letregion bound reg. var.)]> or up (u): >" ;
      let
-       val s = TextIO.inputLine TextIO.stdIn
+       val s = inputLine TextIO.stdIn
        val cs = explode s
      in
        case cs

@@ -33,12 +33,7 @@ signature ELAB_INFO =
     type TypeInfo = TypeInfo.TypeInfo
     type OverloadingInfo = OverloadingInfo.OverloadingInfo
 
-    (*other types imported from other modules:*)
-    type StringTree       sharing type StringTree
-                                       = ParseInfo.StringTree
-                                       = TypeInfo.StringTree
-		                       = OverloadingInfo.StringTree
-    sharing type ErrorInfo.Report = ParseInfo.SourceInfo.Report
+    (*sharing type ErrorInfo.Report = ParseInfo.SourceInfo.Report*)
 
     val plus_ErrorInfo :         ElabInfo -> ErrorInfo -> ElabInfo
     val plus_TypeInfo :          ElabInfo -> TypeInfo -> ElabInfo
@@ -54,5 +49,5 @@ signature ELAB_INFO =
 
     val report_SourceInfo : ElabInfo -> ErrorInfo.Report
     val retractRight : ElabInfo * ElabInfo -> ElabInfo
-    val layout : ElabInfo -> StringTree
+    val layout : ElabInfo -> StringTree.t
   end;

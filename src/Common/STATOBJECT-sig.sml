@@ -18,11 +18,13 @@ signature STATOBJECT =
     type realisation(*tyrea*)
 
     (*types from other modules:*)
-    type ExplicitTyVar (*the type of type variables explicit in the source*)
-    structure TyName : TYNAME
-    type TyName = TyName.TyName
-    type StringTree = TyName.Set.StringTree
-    type lab 
+    eqtype ExplicitTyVar (*the type of type variables explicit in the source*)
+    type TyName
+    type tycon 
+    structure TyName : TYNAME 
+       where type TyName = TyName 
+       where type tycon = tycon
+    eqtype lab 
     type scon
     type strid
 
@@ -59,7 +61,7 @@ signature STATOBJECT =
 	val string                  : TyVar -> string
 	val string'                 : (Type -> string) -> TyVar -> string
 	val pretty_string           : TVNames -> TyVar -> string
-	val layout                  : TyVar -> StringTree
+	val layout                  : TyVar -> StringTree.t
 
 	(*TODO 26/01/1997 14:17. tho.: ugly ad hoc set functions:*)
 	val intersectTyVarSet       : TyVar list * TyVar list -> TyVar list
@@ -79,7 +81,7 @@ signature STATOBJECT =
 	val string_as_ty            : Type * Type -> string
 	      (*The second type is a guide for printing*)
 	val pretty_string_as_ty     : TVNames -> (Type*Type) -> string
-	val layout                  : Type -> StringTree
+	val layout                  : Type -> StringTree.t
 	val from_TyVar              : TyVar -> Type
 	val to_TyVar                : Type -> TyVar option
 
@@ -159,7 +161,7 @@ signature STATOBJECT =
 	val tynames                 : TypeScheme -> TyName.Set.Set
 	val string                  : TypeScheme -> string
 	val pretty_string           : TVNames -> TypeScheme -> string
-	val layout                  : TypeScheme -> StringTree
+	val layout                  : TypeScheme -> StringTree.t
 
 	(* Get an instance of a TypeScheme; instance' also gives
 	 * the list of types to which the generic type variables of the type
@@ -234,7 +236,7 @@ signature STATOBJECT =
 
 	val pretty_string : TVNames -> TypeFcn -> {vars: string, body: string}
 	val pretty_string' : TVNames -> TypeFcn -> string
-	val layout : TypeFcn -> StringTree
+	val layout : TypeFcn -> StringTree.t
 
 	(*for compilation manager:*)
 	val match : TypeFcn * TypeFcn -> unit
@@ -270,7 +272,7 @@ signature STATOBJECT =
 	val match                   : realisation * realisation -> unit
 	val dom                     : realisation -> TyName.Set.Set
 	val eq                      : realisation * realisation -> bool
-	val layout                  : realisation -> StringTree
+	val layout                  : realisation -> StringTree.t
 
       end (*Realisation*)
 

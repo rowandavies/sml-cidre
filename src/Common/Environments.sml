@@ -4,13 +4,14 @@
 
 (* Static semantic objects - Definition v3 page 17 *)
 
-functor Environments(structure DecGrammar: DEC_GRAMMAR
-		     structure StrId: STRID
+functor Environments(
+             structure DecGrammar: DEC_GRAMMAR
+             structure StrId: STRID
 
 		     structure Ident: IDENT
-		       sharing type Ident.strid = StrId.strid
-		       sharing type Ident.longid = DecGrammar.longid
-		       sharing type Ident.id = DecGrammar.id
+		       where type strid = StrId.strid
+		       where type longid = DecGrammar.longid
+		       where type id = DecGrammar.id
 
 		     structure TyCon: TYCON
 		       sharing type TyCon.strid = StrId.strid
@@ -19,30 +20,25 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
 		       sharing type TyName.tycon = TyCon.tycon
 
 		     structure StatObject: STATOBJECT
-		       sharing type StatObject.ExplicitTyVar = DecGrammar.tyvar
-		       sharing StatObject.TyName = TyName
+		       where type ExplicitTyVar = DecGrammar.tyvar
+		       where type TyName = TyName.TyName
+		       where type tycon = TyName.tycon
 
 		     structure PP: PRETTYPRINT
-		       sharing type StatObject.StringTree = PP.StringTree
-                       sharing type DecGrammar.StringTree = PP.StringTree
+
+		     structure Report: REPORT
 
 		     structure SortedFinMap: SORTED_FINMAP
-		       sharing type SortedFinMap.StringTree = PP.StringTree
+                where type Report = Report.Report
 
 		     structure FinMap: FINMAP
-		       sharing type FinMap.StringTree = PP.StringTree
+                where type Report = Report.Report
 
 		     structure Timestamp: TIMESTAMP
 
-		     structure Report: REPORT
-		       sharing type SortedFinMap.Report
-				    = FinMap.Report
-				    = Report.Report
-
 		     structure Flags: FLAGS
 		     structure Crash: CRASH
-		    ) : ENVIRONMENTS =
-  struct
+		    ) : ENVIRONMENTS = struct
 
     structure ListPair = Edlib.ListPair
     structure FinMap = FinMap
@@ -89,7 +85,6 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
     type longstrid         = StrId.longstrid
     type pat               = DecGrammar.pat
     type ty                = DecGrammar.ty
-    type StringTree        = PP.StringTree
     type Report            = Report.Report
 
 
@@ -156,7 +151,7 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
        val add = FinMap.add
        val plus = FinMap.plus
        val layout = FinMap.layoutMap {start="", finish="",sep=", ", eq=" => "} 
-				     (PP.LEAF o TyCon.pr_TyCon) TyName.layout
+				     (StringTree.LEAF o TyCon.pr_TyCon) TyName.layout
     end
 
     datatype TyGoals = TYGOALS of (id, ToRealise * TypeScheme) FinMap.map
@@ -175,7 +170,7 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
             FinMap.lookup map id
 	  fun layout (TYGOALS m) = 
  	    FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-		     (PP.LEAF o Ident.pr_id) (PP.layout_pair ToRea.layout TypeScheme.layout) m
+		     (StringTree.LEAF o Ident.pr_id) (PP.layout_pair ToRea.layout TypeScheme.layout) m
       end
 
     fun layoutT T = TyName.Set.layoutSet {start ="{", sep=", ", finish="}"} TyName.layout T
@@ -322,7 +317,7 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
 
     fun layoutSE (STRENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-      (fn s => PP.LEAF ("structure " ^ StrId.pr_StrId s)) layoutEnv m
+      (fn s => StringTree.LEAF ("structure " ^ StrId.pr_StrId s)) layoutEnv m
 (*
           let val l = FinMap.Fold (op ::) nil m
 
@@ -343,7 +338,7 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
 
     and layoutTE (TYENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-      (fn t => PP.LEAF ("tycon " ^ TyCon.pr_TyCon t)) layoutTystr m
+      (fn t => StringTree.LEAF ("tycon " ^ TyCon.pr_TyCon t)) layoutTystr m
 (*
           let val l = FinMap.Fold (op ::) nil m
 
@@ -360,7 +355,7 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
     and layoutVE (VARENV m) =
           let 
 	    fun layout_id id = 
-	      (fn s => PP.LEAF (s ^ Ident.pr_id id))
+	      (fn s => StringTree.LEAF (s ^ Ident.pr_id id))
 	      (case FinMap.lookup m id 
 		 of SOME(LONGVARpriv _) => "val " 
 		  | SOME(LONGCONpriv _) => "con "
@@ -383,16 +378,16 @@ functor Environments(structure DecGrammar: DEC_GRAMMAR
 	  end
 *)
     and layoutTystr (TYSTR {theta, VE}) =
-          PP.NODE {start="(", finish=")", indent=0,
+          StringTree.NODE {start="(", finish=")", indent=0,
 		   children=[TypeFcn.layout theta, layoutVE VE],
-		   childsep=PP.RIGHT ", "}
+		   childsep=StringTree.RIGHT ", "}
 
     and layoutTG TG = TG.layout TG
 
     and layoutEnv (ENV{SE, TE, VE, TG}) =
-          PP.NODE {start="{", finish="}", indent=1,
+          StringTree.NODE {start="{", finish="}", indent=1,
 		   children=[layoutSE SE, layoutTE TE, layoutVE VE, layoutTG TG],
-		   childsep = PP.NOSEP}
+		   childsep = StringTree.NOSEP}
 
     infix // val op // = Report.//
 

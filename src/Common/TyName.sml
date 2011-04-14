@@ -134,8 +134,7 @@ functor TyName(
 			     structure Crash = Crash
 			     structure PP = PrettyPrint)
 
-    type StringTree = PrettyPrint.StringTree
-    val layout = PrettyPrint.LEAF o pr_TyName
+    val layout = StringTree.LEAF o pr_TyName
 
     structure TestMap =
       struct

@@ -11,11 +11,10 @@ signature SOURCE_INFO =
     (*types imported from other modules:*)
     type pos (*from LexBasics, I think*)
     type Report
-    type StringTree
 
     val from_positions : pos -> pos -> SourceInfo
     val to_positions : SourceInfo -> pos * pos
 
     val report : SourceInfo -> Report
-    val layout : SourceInfo -> StringTree
+    val layout : SourceInfo -> StringTree.t
   end;

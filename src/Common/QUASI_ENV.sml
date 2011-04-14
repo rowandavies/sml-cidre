@@ -21,8 +21,7 @@ signature QUASI_ENV =
 
     val combine: 'a map * 'a qmap -> 'a qmap
 
-    type StringTree sharing type StringTree = Env.StringTree
     val layout : {start:string,finish:string,eq:string,sep:string} -> 
-      (int -> StringTree) -> ('_a -> StringTree) -> '_a qmap -> StringTree
+      (int -> StringTree.t) -> ('_a -> StringTree.t) -> '_a qmap -> StringTree.t
   end
       

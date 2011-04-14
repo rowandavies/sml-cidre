@@ -13,7 +13,7 @@ signature DF_INFO =
     type InfixBasis
     datatype DFInfo = UNITEXP_df | TUPLE_df | CASE_df | IF_df | ORELSE_df
                     | FUN_df | VALIT_df | INFIX_df | INFIX_BASIS of InfixBasis
-    type StringTree
+
     val string : DFInfo -> string
-    val layout : DFInfo -> StringTree
+    val layout : DFInfo -> StringTree.t
   end;

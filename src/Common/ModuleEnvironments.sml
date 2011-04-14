@@ -3,32 +3,30 @@ functor ModuleEnvironments(
 	  structure StrId  : STRID
 	  structure SigId  : SIGID
 	  structure FunId  : FUNID
-	  structure TyCon  : TYCON
+	  structure TyCon  : TYCON where type strid = StrId.strid
 	  structure Ident  : IDENT
 
 	  structure StatObject : STATOBJECT
 (*            sharing type StatObject.TyName.tycon = TyCon.tycon *)
 
 	  structure Environments : ENVIRONMENTS 
-	    sharing Environments.TyName = StatObject.TyName
-	    sharing type Environments.longstrid = StrId.longstrid
-	    sharing type Environments.strid      = StrId.strid = TyCon.strid
-	    sharing type Environments.tycon      = TyCon.tycon
-	    sharing type Environments.longtycon      = TyCon.longtycon
-	    sharing type Environments.TypeScheme = StatObject.TypeScheme
-	    sharing type Environments.TyVar = StatObject.TyVar
-	    sharing type Environments.Type = StatObject.Type
-	    sharing type Environments.realisation = StatObject.realisation
-	    sharing type Environments.id = Ident.id
-	    sharing type Environments.longid = Ident.longid
+	    where type TyName = StatObject.TyName
+	    where type Environments.longstrid = StrId.longstrid
+	    where type strid      = TyCon.strid
+	    where type tycon      = TyCon.tycon
+	    where type longtycon      = TyCon.longtycon
+	    where type TypeScheme = StatObject.TypeScheme
+	    where type TyVar = StatObject.TyVar
+	    where type Type = StatObject.Type
+	    where type realisation = StatObject.realisation
+	    where type id = Ident.id
+	    where type longid = Ident.longid
 
           structure RefObject : REFOBJECT
 
           structure RefinedEnvironments : REFINED_ENVIRONMENTS
             sharing type RefinedEnvironments.id = Ident.id
             sharing type RefinedEnvironments.SortVar = RefObject.SortVar
-            sharing type RefinedEnvironments.StringTree
-	               = RefObject.StringTree = Environments.StringTree
             sharing type RefinedEnvironments.SortName    = RefObject.SortName
             sharing type RefinedEnvironments.strid = StrId.strid
             sharing type RefinedEnvironments.longstrid = StrId.longstrid
@@ -44,18 +42,15 @@ functor ModuleEnvironments(
 	    sharing type ModuleStatObject.TyVar = StatObject.TyVar
 
 	  structure PP : PRETTYPRINT
-	    sharing type ModuleStatObject.StringTree = PP.StringTree
 
 	  structure Report: REPORT
             sharing type Report.Report = PP.Report
 	  structure Flags : FLAGS
 
 	  structure FinMap : FINMAP
-	    sharing type FinMap.StringTree = PP.StringTree
 	    sharing type FinMap.Report = Report.Report
 
 	  structure FinMapEq : FINMAPEQ
-	    sharing type FinMapEq.StringTree = PP.StringTree
 	    sharing type FinMapEq.Report = Report.Report
 
 	  structure Crash : CRASH
@@ -113,7 +108,6 @@ functor ModuleEnvironments(
     type longid            = Ident.longid
     type strid             = StrId.strid
     type Report            = Report.Report
-    type StringTree        = PP.StringTree
 
     
 

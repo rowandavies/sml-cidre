@@ -63,38 +63,42 @@ above), to preserve left justification.
 
 *)
 
-signature PRETTYPRINT =
-  sig
-    datatype StringTree = LEAF of string
+structure StringTree = 
+struct
+    datatype t = LEAF of string
                         | NODE of {start : string, finish: string, indent: int,
-                                   children: StringTree list,
+                                   children: t list,
                                    childsep: childsep}
                         | HNODE of {start : string, finish: string, 
-                                    children: StringTree list,
+                                    children: t list,
                                     childsep: childsep}
     and childsep = NOSEP | LEFT of string | RIGHT of string
+end
+
+signature PRETTYPRINT =
+  sig
 
     type minipage
 
-    val layoutAtom: ('a -> string) -> ('a -> StringTree)
+    val layoutAtom: ('a -> string) -> ('a -> StringTree.t)
 			(* Given a simple printing routine, return a function
 			   to build a leaf. *)
 
-    val layoutSet: ('a -> StringTree) -> 'a EqSet.Set -> StringTree
+    val layoutSet: ('a -> StringTree.t) -> 'a EqSet.Set -> StringTree.t
 
-    val layout_opt : ('a -> StringTree) -> 'a option -> StringTree
-    val layout_pair : ('a -> StringTree) -> ('b -> StringTree)
-                      -> 'a * 'b -> StringTree
-    val layout_list : ('a -> StringTree) -> 'a list -> StringTree
-    val layout_together : StringTree list -> int -> StringTree
+    val layout_opt : ('a -> StringTree.t) -> 'a option -> StringTree.t
+    val layout_pair : ('a -> StringTree.t) -> ('b -> StringTree.t)
+                      -> 'a * 'b -> StringTree.t
+    val layout_list : ('a -> StringTree.t) -> 'a list -> StringTree.t
+    val layout_together : StringTree.t list -> int -> StringTree.t
       (*int is the indent*)
 
-    val flatten1: StringTree -> string
-    val oneLiner: ('a -> StringTree) -> ('a -> string)
-			(* format a StringTree to a single string of
+    val flatten1: StringTree.t -> string
+    val oneLiner: ('a -> StringTree.t) -> ('a -> string)
+			(* format a StringTree.t to a single string of
 			   indefinite length. *)
 
-    val format: int * StringTree -> minipage
+    val format: int * StringTree.t -> minipage
             (*  ^page width         ^pretty-printed tree *)
             (*  must be >= 3                             *)
 
@@ -111,11 +115,11 @@ signature PRETTYPRINT =
      leading or trailing newline).
     *)
 
-    val outputTree : (string -> unit) * StringTree * int -> unit
+    val outputTree : (string -> unit) * StringTree.t * int -> unit
 
     type Report
-    val reportStringTree: StringTree -> Report
-    val reportStringTree': int -> StringTree -> Report
+    val reportStringTree: StringTree.t -> Report
+    val reportStringTree': int -> StringTree.t -> Report
       (*                    ^ width *)
 
   end;

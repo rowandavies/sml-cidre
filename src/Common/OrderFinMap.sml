@@ -465,22 +465,22 @@ old *)
 	     of SOME r0 => en(r0,r)
 	      | NONE => false) true m
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
 
     fun layoutMap {start, eq=equal, sep, finish} 
       layoutDom layoutRan m =
-      PP.NODE {start=start,
+      StringTree.NODE {start=start,
 	       finish=finish,
 	       children=map (fn (d,r) => 
-			     PP.NODE {start="",
+			     StringTree.NODE {start="",
 				      finish="",
 				      children=[layoutDom d, 
 						layoutRan r],
 				      indent=3,
-				      childsep=PP.RIGHT equal})
+				      childsep=StringTree.RIGHT equal})
 	       (list m),
 	       indent=3,
-	       childsep=PP.RIGHT sep}
+	       childsep=StringTree.RIGHT sep}
 
     type Report = Report.Report
 

@@ -5,50 +5,53 @@
 functor RefinedEnvironments
                     (structure StrId: STRID
                      structure Ident: IDENT
-                       sharing type Ident.strid = StrId.strid
+                        where type strid = StrId.strid
                      structure TyCon: TYCON
-                       sharing type TyCon.strid = StrId.strid
+                        where type strid = StrId.strid
                      structure TyName: TYNAME
-                       sharing type TyName.tycon = TyCon.tycon
+                        where type tycon = TyCon.tycon
                      structure SortName: SORTNAME
-                       sharing type SortName.TyName = TyName.TyName
-                       sharing type SortName.sortcon = TyCon.tycon
+                        where type TyName = TyName.TyName
+                        where type sortcon = TyCon.tycon 
                      structure StatObject: STATOBJECT
-                       sharing type StatObject.TyName = TyName.TyName
+                        where type tycon = TyName.tycon
+                        where type TyName = TyName.TyName
+                        where type TyName.Set.Set = TyName.Set.Set
                      structure Environments : ENVIRONMENTS
-                        sharing type Environments.Type = StatObject.Type
-                        sharing type Environments.ExplicitTyVar = StatObject.ExplicitTyVar
+                        where type ExplicitTyVar = StatObject.ExplicitTyVar
+                        where type Type = StatObject.Type
+                        where type tycon = TyName.tycon
+                        where type TyName = TyName.TyName
+                        where type realisation = StatObject.realisation
+                        where type TyName.Set.Set = TyName.Set.Set
                      structure RefObject: REFOBJECT
-                        sharing type RefObject.Variance = SortName.Variance
-                        sharing type RefObject.SortName = SortName.SortName
-                        sharing type RefObject.TyName = TyName.TyName
-                        sharing type RefObject.TypeFcn = StatObject.TypeFcn
-                        sharing type RefObject.TyVar = StatObject.TyVar
-                        sharing type RefObject.Type = StatObject.Type                        
-                        sharing type RefObject.lab = StatObject.lab
-                        sharing RefObject.SortName = SortName                       
+                        where type SortName = SortName.SortName
+                        where type TypeFcn = StatObject.TypeFcn
+                        where type TyVar = StatObject.TyVar
+                        where type TyName = TyName.TyName
+                        where type Type = StatObject.Type
+                        where type lab = StatObject.lab
+                        where type realisation = StatObject.realisation
+                        where type SortName.Set.Set = SortName.Set.Set
+                        (* sharing RefObject.SortName = SortName *)
                      structure PP: PRETTYPRINT
-                       sharing type RefObject.StringTree = PP.StringTree
-                       sharing type Environments.FinMap.StringTree = PP.StringTree
-                       sharing type SortName.StringTree = PP.StringTree
+                        where type Report = Environments.FinMap.Report
                      structure SortedFinMap: SORTED_FINMAP
-                       sharing type SortedFinMap.StringTree = PP.StringTree
-                     structure FinMapEq: FINMAPEQ
-                       sharing type FinMapEq.StringTree = PP.StringTree
+                        where type Report = Environments.FinMap.Report
+                     structure FinMapEq: FINMAPEQ 
+                        where type Report = Environments.FinMap.Report
                      structure Flags : FLAGS
                      structure Timestamp: TIMESTAMP
                      structure ListHacks: LIST_HACKS
                      structure Report: REPORT
-                       sharing type SortedFinMap.Report
-                                    = Environments.FinMap.Report
-                                    = FinMapEq.Report
-                                    = PP.Report
-                                    = Report.Report                               
+                        where type Report = Environments.FinMap.Report
+
                      structure Crash: CRASH
                     ) : REFINED_ENVIRONMENTS =
   struct
 
-    structure RO = RefObject and SO = StatObject (* local abbreviations *)
+    structure RO = RefObject 
+    structure SO = StatObject (* local abbreviations *)
     structure Rea = RO.Realisation
     structure FinMap = Environments.FinMap
 
@@ -73,7 +76,6 @@ functor RefinedEnvironments
      and SortName     = RO.SortName
      and SortVar      = RO.SortVar 
      and Type         = StatObject.Type
-     and StringTree   = PP.StringTree
      and ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
      and ExplicitTyVar = Environments.ExplicitTyVar
     type realisation = RO.realisation
@@ -215,7 +217,7 @@ functor RefinedEnvironments
     val _ = RO.assert_ref := (*no_debug*) assert
 
 
-    fun pr (msg : string, t : PP.StringTree) : unit =
+    fun pr (msg : string, t : StringTree.t) : unit =
           Report.print (Report.decorate (msg, PP.reportStringTree t))
   
     fun pr_debug msg t = if !Flags.DEBUG_ENVIRONMENTS then  pr (msg, t () )
@@ -337,7 +339,7 @@ structure SortNameMap =
        val plus = FinMap.plus
        val map = FinMap.composemap
        val layout = FinMap.layoutMap {start="", finish="",sep=", ", eq=" => "} 
-                                     (PP.LEAF o TyCon.pr_TyCon) SortName.layout
+                                     (StringTree.LEAF o TyCon.pr_TyCon) SortName.layout
     end
 
     (* This should really be "sort goals".  Oh well.  I'll fix it later.  - Rowan *)
@@ -357,7 +359,7 @@ structure SortNameMap =
             FinMap.lookup map id
           fun layout (TYGOALS m) = 
             FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-                     (PP.LEAF o Ident.pr_id) (PP.layout_pair ToRea.layout 
+                     (StringTree.LEAF o Ident.pr_id) (PP.layout_pair ToRea.layout 
                      (PP.layout_list RO.layoutSortScheme)) m
       end
 
@@ -422,7 +424,7 @@ structure SortNameMap =
 	    !outstr
 	end
 
-    fun layoutRL RL = PP.LEAF (prRL RL)
+    fun layoutRL RL = StringTree.LEAF (prRL RL)
 (*       FinMapEq.layoutMap {start="intersect ", finish="",sep="", eq=" = "}  *)
 (*         (fn (sn1, sn2) => PP.NODE *)
 (*                {start = "(", finish = ")", childsep = PP.RIGHT ") with (", indent=1, *)
@@ -431,7 +433,7 @@ structure SortNameMap =
 
     fun layoutCE (CONENV m) =
       SortedFinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-      (fn id => PP.LEAF ("con " ^ Ident.pr_id id)) RO.layoutSortScheme m
+      (fn id => StringTree.LEAF ("con " ^ Ident.pr_id id)) RO.layoutSortScheme m
 
     fun layoutRCsvn svnames (SORTCONS m) =
       let
@@ -446,21 +448,21 @@ structure SortNameMap =
                     children=[PP.LEAF (Ident.pr_id id), layout_sfcns sfcns] }
           | doit (id, NONE) = PP.LEAF (Ident.pr_id id)
 *)
-        fun layout_id_sfcn id sfcn = PP.LEAF (Ident.pr_id id ^ " of " ^ pr_srtfcn svnames sfcn)
+        fun layout_id_sfcn id sfcn = StringTree.LEAF (Ident.pr_id id ^ " of " ^ pr_srtfcn svnames sfcn)
           (* PP.NODE{start="", finish="", indent=0, childsep=PP.RIGHT " of ",
                     children=[PP.LEAF (Ident.pr_id id), PP.LEAF (pr_srtfcn svnames sfcn)] } *)
 
         fun doit (id, SOME sfcns) = map (layout_id_sfcn id) sfcns
 (*            PP.NODE{start="", finish="", indent=2, childsep=PP.LEFT " | ",
                     children=map (layout_id_sfcn id) sfcns }  *)
-          | doit (id, NONE) = [PP.LEAF (Ident.pr_id id)]
+          | doit (id, NONE) = [StringTree.LEAF (Ident.pr_id id)]
 
         val RClist = SortedFinMap.Fold (op ::) [] m
-        val childnodes = case RClist of [] => [PP.LEAF "<EMPTY>"]
+        val childnodes = case RClist of [] => [StringTree.LEAF "<EMPTY>"]
                                       |  _ => ListHacks.flatten (map doit RClist)
       in
-        PP.NODE{start="  ", finish="", indent=2,
-                childsep=PP.LEFT " | ", children=childnodes
+        StringTree.NODE{start="  ", finish="", indent=2,
+                childsep=StringTree.LEFT " | ", children=childnodes
                }
       end
       (* WAS:  (until 14jan03)
@@ -472,8 +474,8 @@ structure SortNameMap =
     val layoutRC = layoutRCsvn (RO.newSVNames ())
 
     fun layoutRCsvnIndented svnames RC =
-        PP.NODE{start="", finish="", indent=2,
-                childsep=PP.NOSEP, children=[layoutRCsvn svnames RC]
+        StringTree.NODE{start="", finish="", indent=2,
+                childsep=StringTree.NOSEP, children=[layoutRCsvn svnames RC]
                }
 
     fun RtoOld m =  (* Convert to the old representation for reporting. *)
@@ -492,7 +494,7 @@ structure SortNameMap =
 	  val m_old = RtoOld m
       in
         FinMapEq.layoutMapLeftSep {start="", finish="",sep=nspaces 999, eq=" = "}
-                                  (fn sn => PP.LEAF ("datasort " ^ pr_sn sn))
+                                  (fn sn => StringTree.LEAF ("datasort " ^ pr_sn sn))
 				  (layoutRCsvnIndented (!svnames))
 				  m_old
       end
@@ -500,7 +502,7 @@ structure SortNameMap =
     fun layoutVE (VARENV m) =
           let 
             fun layout_id id = 
-              (fn s => PP.LEAF (s ^ Ident.pr_id id))
+              (fn s => StringTree.LEAF (s ^ Ident.pr_id id))
               (case FinMap.lookup m id 
                  of SOME(LONGVAR _) => "val " 
                   | SOME(LONGCON _) => "con "
@@ -516,33 +518,33 @@ structure SortNameMap =
 
     fun layoutSE (STRENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-        (fn s => PP.LEAF ("structure " ^ StrId.pr_StrId s)) layoutEnv m
+        (fn s => StringTree.LEAF ("structure " ^ StrId.pr_StrId s)) layoutEnv m
     and layoutTE (TYENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-        (fn t => PP.LEAF ("tycon " ^ TyCon.pr_TyCon t)) RO.layoutSortFcn m
+        (fn t => StringTree.LEAF ("tycon " ^ TyCon.pr_TyCon t)) RO.layoutSortFcn m
     and layoutRE (SORTENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-        (fn t => PP.LEAF ("sortcon " ^ TyCon.pr_TyCon t)) RO.layoutSortFcn m
+        (fn t => StringTree.LEAF ("sortcon " ^ TyCon.pr_TyCon t)) RO.layoutSortFcn m
     and layoutEE (EXCONENV m) = 
       FinMap.layoutMap {start="", finish="",sep=", ", eq=" : "} 
-        (fn id => PP.LEAF ("excon " ^ Ident.pr_id id)) RO.layoutSort m
+        (fn id => StringTree.LEAF ("excon " ^ Ident.pr_id id)) RO.layoutSort m
     and layoutTG TG = TG.layout TG
     and layoutEnv (ENV{SE, TE, RE, VE, EE, TG}) =
-          PP.NODE {start="{", finish="}", indent=1,
+          StringTree.NODE {start="{", finish="}", indent=1,
                    children=[layoutSE SE, layoutTE TE, layoutRE RE, layoutVE VE, 
                              layoutEE EE, layoutTG TG],
-                   childsep = PP.NOSEP}
+                   childsep = StringTree.NOSEP}
 
     fun layoutTyStr (TYSTR {CE, R, mlSN, covariant, RL}) =
-          PP.NODE {start="(", finish=")", indent=1,
+          StringTree.NODE {start="(", finish=")", indent=1,
                    children=[layoutCE CE, layoutR R,
-                             PP.LEAF ("defaultRefinement " ^ SortName.pr_SortName ("", mlSN)),
-                             PP.LEAF ("covariant " ^ Bool.toString covariant),
+                             StringTree.LEAF ("defaultRefinement " ^ SortName.pr_SortName ("", mlSN)),
+                             StringTree.LEAF ("covariant " ^ Bool.toString covariant),
                              layoutRL RL], 
-                   childsep=PP.RIGHT ", "}
+                   childsep=StringTree.RIGHT ", "}
     fun layoutT (TYNAMEENV m) = 
         FinMapEq.layoutMap {start="", finish="",sep=", ", eq=" => "} 
-          (fn t => PP.LEAF ("tyname " ^ TyName.pr_TyName t)) layoutTyStr m
+          (fn t => StringTree.LEAF ("tyname " ^ TyName.pr_TyName t)) layoutTyStr m
     fun layoutC (CONTEXT {T, E, U}) = 
         PP.layout_pair layoutT layoutEnv (T, E)
 

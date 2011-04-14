@@ -4,8 +4,15 @@
 (*$REFINED_ENVIRONMENTS*)
 signature REFINED_ENVIRONMENTS =
   sig
+    type SortName 
+    eqtype tycon
+    type TyName
+    type Variance 
     structure SortName : SORTNAME 
-    type SortName = SortName.SortName 
+       where type SortName = SortName
+       where type TyName = TyName
+       where type Variance = Variance
+       where type sortcon = tycon
 
     (* Basis is currently really Context *)
     type Basis and Context and Env and TyNameEnv and SortVar and Type
@@ -35,8 +42,6 @@ signature REFINED_ENVIRONMENTS =
     PrettyPrinting functions
     ********)
 
-    type StringTree
-
     (** TyGoals **)
     type ToRealise   (* for opaque sortnames in TyGoals *)
     type TyGoals (* Type goals for RML *)
@@ -52,7 +57,7 @@ signature REFINED_ENVIRONMENTS =
         val map                  : (ToRealise * SortScheme list -> ToRealise * SortScheme list) 
                                     -> TyGoals -> TyGoals
         (* use Lookup_tygoals which realises opaque tycons in the goals *)
-        val layout               : TyGoals -> StringTree
+        val layout               : TyGoals -> StringTree.t
       end
 
 
@@ -233,7 +238,6 @@ signature REFINED_ENVIRONMENTS =
     Type constructors
     ********)
 
-    eqtype tycon
 
     (********
     Type environments
@@ -304,8 +308,6 @@ signature REFINED_ENVIRONMENTS =
     TypeName Environments
     ********)
     
-    type TyName = SortName.TyName  (* Env is at top *)
-    type Variance = SortName.Variance
 
     val emptyT    : TyNameEnv
 
@@ -429,11 +431,11 @@ signature REFINED_ENVIRONMENTS =
     structure Rea :
       sig
         type conjSN = SortName * SortName -> SortName
-        type trealisation
- 	val on_SortName             : conjSN -> realisation -> SortName -> SortFcn
-	val on_Sort                 : conjSN -> realisation -> Sort -> Sort
-	val on_SortFcn              : conjSN -> realisation -> SortFcn -> SortFcn
-	val on_SortScheme           : conjSN -> realisation -> SortScheme -> SortScheme
+        type trealisation 
+        val on_SortName             : conjSN -> realisation -> SortName -> SortFcn
+        val on_Sort                 : conjSN -> realisation -> Sort -> Sort
+        val on_SortFcn              : conjSN -> realisation -> SortFcn -> SortFcn
+        val on_SortScheme           : conjSN -> realisation -> SortScheme -> SortScheme
 	val Id                      : realisation
 	val is_Id                   : realisation -> bool
 	val oo                      : conjSN -> realisation -> realisation -> realisation
@@ -445,7 +447,7 @@ signature REFINED_ENVIRONMENTS =
 	val renaming'        : trealisation -> SortName.Set.Set -> SortName.Set.Set * realisation
 	val dom                     : realisation -> SortName.Set.Set
         val plus                    : realisation -> realisation -> realisation
-	val layout                  : realisation -> StringTree
+	val layout                  : realisation -> StringTree.t
         (* Vals Above are inherited from RefObject, below are defined in RefinedEnviroments. *)
         val on_Env : conjSN -> realisation -> Env -> Env
         val on_VarEnv : conjSN -> realisation -> VarEnv -> VarEnv
@@ -472,19 +474,19 @@ signature REFINED_ENVIRONMENTS =
     val reportEE: ExConEnv -> Report
     val reportT : TyNameEnv -> Report
 
-    val layoutRL : RefLattice -> StringTree
-    val layoutCE : ConEnv -> StringTree
-    val layoutRC : SortCons -> StringTree
-    val layoutR : SortNameEnv -> StringTree
-    val layoutVE : VarEnv -> StringTree
-    val layoutSE : StrEnv -> StringTree
-    val layoutTE : TyEnv -> StringTree
-    val layoutRE : SortEnv -> StringTree
-    val layoutEE : ExConEnv -> StringTree
-    val layoutEnv : Env -> StringTree
-    val layoutTyStr : TyStr -> StringTree
-    val layoutT : TyNameEnv -> StringTree
-    val layoutC : Context -> StringTree
+    val layoutRL : RefLattice -> StringTree.t
+    val layoutCE : ConEnv -> StringTree.t
+    val layoutRC : SortCons -> StringTree.t
+    val layoutR : SortNameEnv -> StringTree.t
+    val layoutVE : VarEnv -> StringTree.t
+    val layoutSE : StrEnv -> StringTree.t
+    val layoutTE : TyEnv -> StringTree.t
+    val layoutRE : SortEnv -> StringTree.t
+    val layoutEE : ExConEnv -> StringTree.t
+    val layoutEnv : Env -> StringTree.t
+    val layoutTyStr : TyStr -> StringTree.t
+    val layoutT : TyNameEnv -> StringTree.t
+    val layoutC : Context -> StringTree.t
     val reportLayoutC : Context -> Report
 
     val debug_push : (unit -> string list) -> unit

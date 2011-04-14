@@ -5,8 +5,11 @@
 signature ENVIRONMENTS = 
   sig
     (*types from other modules:*)
-    structure TyName : TYNAME
-    type TyName = TyName.TyName
+    type TyName
+    eqtype tycon 
+    structure TyName : TYNAME 
+       where type TyName = TyName
+       where type tycon = tycon 
     type TyVar
     type Type
     type TypeScheme
@@ -16,7 +19,6 @@ signature ENVIRONMENTS =
     type realisation
     eqtype id
     type strid
-    type tycon = TyName.tycon 
     eqtype ExplicitTyVar
     structure FinMap : FINMAP
 
@@ -39,7 +41,6 @@ signature ENVIRONMENTS =
     type ty (*syntactic class of explicit type annotations*)
     type pat (*syntactic class of patterns*)
     type valbind (*syntactic class of valbinds*)
-    type StringTree = TyName.Set.StringTree
     type Report
       
 
@@ -49,7 +50,7 @@ signature ENVIRONMENTS =
        to return the same type, list or set.
        yes, and they oughta be in DecGrammar instead of here.*)
 
-    val layoutT : TyName.Set.Set -> StringTree
+    val layoutT : TyName.Set.Set -> StringTree.t
 
                        (*value environments*) 
 
@@ -83,7 +84,7 @@ signature ENVIRONMENTS =
 	val tynames              : VarEnv -> TyName.Set.Set
 	val restrict             : VarEnv * id list -> VarEnv 
 	val close                : VarEnv -> VarEnv
-	val layout               : VarEnv -> StringTree
+	val layout               : VarEnv -> StringTree.t
 	val report               : (id * range -> Report) * VarEnv -> Report
 	val ids_with_tyvar_in_type_scheme : VarEnv -> TyVar -> id list
       end (*VE*)
@@ -100,7 +101,7 @@ signature ENVIRONMENTS =
 	val eq                   : TyStr * TyStr -> bool
 	val shares               : TyStr * TyStr -> bool
 	val tynames              : TyStr -> TyName.Set.Set
-	val layout               : TyStr -> StringTree
+	val layout               : TyStr -> StringTree.t
       end (*TyStr*)
 
     
@@ -125,7 +126,7 @@ signature ENVIRONMENTS =
 	val init'                : ExplicitTyVar list -> tycon -> TyName * TyEnv
 	val report               : {tyEnv : TyEnv, bindings : bool} -> Report
 	val tynames              : TyEnv -> TyName.Set.Set
-	val layout               : TyEnv -> StringTree
+	val layout               : TyEnv -> StringTree.t
       end (*TE*)
 
     structure TG :
@@ -153,7 +154,7 @@ signature ENVIRONMENTS =
 	val apply                : (strid * Env -> unit) -> StrEnv -> unit
 	val map                  : (Env -> Env) -> StrEnv -> StrEnv
 	val report               : (strid * Env -> Report) * StrEnv -> Report
-	val layout               : StrEnv -> StringTree
+	val layout               : StrEnv -> StringTree.t
       end (*SE*)
 
 
@@ -189,7 +190,7 @@ signature ENVIRONMENTS =
 	val tyvars               : Env -> TyVar list
 	val tyvars'              : Env -> (id * TyVar list) list
 	val tynames              : Env -> TyName.Set.Set
-	val layout               : Env -> StringTree
+	val layout               : Env -> StringTree.t
 
 	(* Support for recompilation *)
 	val restrict             : Env * {longvids:longid list, longtycons:longtycon list, 
@@ -248,7 +249,7 @@ signature ENVIRONMENTS =
 	       only variables and not constructors appearing in pat;
 	       therefore C is needed to get the identifier status of id's.*)
 
-	val layout : Context -> StringTree
+	val layout : Context -> StringTree.t
       end (*C*)
 
 
@@ -318,7 +319,7 @@ signature ENVIRONMENTS =
 
 	val renaming             : TyName.Set.Set -> realisation
 	val renaming'            : TyName.Set.Set -> TyName.Set.Set * realisation  
-	val layout : realisation -> StringTree
+	val layout : realisation -> StringTree.t
 
       end (*Realisation*)
 

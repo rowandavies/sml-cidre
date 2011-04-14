@@ -71,16 +71,16 @@ functor SortedFinMap(structure Report: REPORT
     fun Fold (f : ((''a * 'b) * 'c) -> 'c) (x : 'c) (m : (''a,'b) map) : 'c =
 	foldl (fn ((a, b), c) => f((a, b), c)) x m
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
     fun layoutMap {start, eq, sep, finish} layoutDom layoutRan m =
       let
-	fun doit(x, y) = PP.NODE{start="", finish="", indent=0,
-				 childsep=PP.RIGHT eq,
+	fun doit(x, y) = StringTree.NODE{start="", finish="", indent=0,
+				 childsep=StringTree.RIGHT eq,
 				 children=[layoutDom x, layoutRan y]
 				}
       in
-	PP.NODE{start=start, finish=finish, indent=0,
-		childsep=PP.RIGHT sep, children=map doit m
+	StringTree.NODE{start=start, finish=finish, indent=0,
+		childsep=StringTree.RIGHT sep, children=map doit m
 	       }
       end
 

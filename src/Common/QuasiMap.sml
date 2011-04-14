@@ -198,12 +198,12 @@ functor QuasiMap(structure IntFinMap : MONO_FINMAP where type dom = int
 		       end                                     (* using refs. *)
       
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
       
     fun layoutMap {start, eq, sep, finish} pp_dom pp_range m =
-      let fun layout_entry (d, r) = PP.NODE{start="",finish="",indent=1,childsep=PP.RIGHT eq,
+      let fun layout_entry (d, r) = StringTree.NODE{start="",finish="",indent=1,childsep=StringTree.RIGHT eq,
 					    children = [pp_dom d, pp_range r]}
-      in PP.NODE{start=start,finish=finish,indent=1,childsep=PP.RIGHT sep,
+      in StringTree.NODE{start=start,finish=finish,indent=1,childsep=StringTree.RIGHT sep,
 		 children = map layout_entry (list m)}
       end
 

@@ -2,13 +2,11 @@
 
 functor SourceInfo (structure LexBasics : LEX_BASICS
 		    structure PrettyPrint : PRETTYPRINT
-		    sharing type LexBasics.StringTree = PrettyPrint.StringTree
 		    structure Crash: CRASH
 		      ) : SOURCE_INFO =
   struct
     type pos = LexBasics.pos
     type Report = LexBasics.Report
-    type StringTree = PrettyPrint.StringTree
 
     datatype SourceInfo = POSinfo of {left : pos, right : pos}
 
@@ -19,8 +17,8 @@ functor SourceInfo (structure LexBasics : LEX_BASICS
           LexBasics.reportPosition {left=left, right=right}
 
     fun layout (POSinfo {left, right}) =
-          PrettyPrint.NODE {start="SourceInfo(", finish=")", indent=0,
-			    childsep=PrettyPrint.RIGHT ", ",
+          StringTree.NODE {start="SourceInfo(", finish=")", indent=0,
+			    childsep=StringTree.RIGHT ", ",
 			    children=[LexBasics.layoutPos left,
 				      LexBasics.layoutPos right]}
   end;

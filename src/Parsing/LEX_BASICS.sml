@@ -51,6 +51,5 @@ signature LEX_BASICS =
     val reportPosition: {left: pos, right: pos} -> Report
     val output_source : {os: TextIO.outstream, left: pos, right: pos} -> unit
 
-    type StringTree
-    val layoutPos: pos -> StringTree
+    val layoutPos: pos -> StringTree.t
   end;

@@ -9,7 +9,6 @@ functor DFInfo (structure PrettyPrint : PRETTYPRINT
     datatype DFInfo = UNITEXP_df | TUPLE_df | CASE_df | IF_df | ORELSE_df
                     | FUN_df | VALIT_df | INFIX_df | INFIX_BASIS of InfixBasis
 
-    type StringTree = PrettyPrint.StringTree
     fun string UNITEXP_df = "UNITEXP"
       | string TUPLE_df   = "TUPLE"
       | string CASE_df    = "CASE"
@@ -19,5 +18,5 @@ functor DFInfo (structure PrettyPrint : PRETTYPRINT
       | string VALIT_df   = "VALIT_df"
       | string INFIX_df   = "INFIX_df"
       | string (INFIX_BASIS _) = "INFIX_BASIS"
-    val layout = PrettyPrint.LEAF o string
+    val layout = StringTree.LEAF o string
   end;

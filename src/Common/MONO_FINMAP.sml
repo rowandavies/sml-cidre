@@ -39,9 +39,8 @@ signature MONO_FINMAP =
          such that b \in B and a \in (A \restrict dom(B)) 
 	 we have en(a,b). *)
 
-    type StringTree
     val layoutMap : {start: string, eq: string, sep: string, finish: string} ->
-      (dom -> StringTree) -> ('b -> StringTree) -> 'b map -> StringTree
+      (dom -> StringTree.t) -> ('b -> StringTree.t) -> 'b map -> StringTree.t
 
     type Report
     val reportMap: (dom * 'b -> Report) -> 'b map -> Report

@@ -6,7 +6,6 @@ functor InfixBasis(structure Ident: IDENT
 		     sharing type FinMap.Report = Report.Report
 
 		   structure PP: PRETTYPRINT
-		     sharing type FinMap.StringTree = PP.StringTree
 		  ): INFIX_BASIS =
   struct
 
@@ -57,7 +56,7 @@ functor InfixBasis(structure Ident: IDENT
 		     Report.line(pr_InfixEntry entry ^ " " ^ Ident.pr_id id)
 		  )
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
 
     val layoutBasis =
       FinMap.layoutMap {start="<iBas: ", eq=" -> ", sep="; ", finish=">"}

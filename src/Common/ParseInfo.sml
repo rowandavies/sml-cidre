@@ -4,8 +4,6 @@ functor ParseInfo
   (structure SourceInfo : SOURCE_INFO
    structure DFInfo : DF_INFO
    structure PrettyPrint : PRETTYPRINT
-   sharing type SourceInfo.StringTree
-     = DFInfo.StringTree = PrettyPrint.StringTree 
    structure Crash : CRASH
      ) : PARSE_INFO =
   struct
@@ -15,7 +13,6 @@ functor ParseInfo
     structure DFInfo = DFInfo
     type SourceInfo      = SourceInfo.SourceInfo
     type DFInfo          = DFInfo.DFInfo
-    type StringTree      = PrettyPrint.StringTree
 
     datatype ParseInfo =
       PARSE_INFO of {SourceInfo : SourceInfo, DFInfo : DFInfo option}
@@ -31,10 +28,10 @@ functor ParseInfo
     fun to_DFInfo (PARSE_INFO {DFInfo, ...}) = DFInfo
 
     fun layout (PARSE_INFO {SourceInfo, DFInfo}) =
-          PrettyPrint.NODE {start="ParseInfo{",
+          StringTree.NODE {start="ParseInfo{",
 			    finish="}",
 			    indent=3,
 			    children=[SourceInfo.layout SourceInfo,
 				      PrettyPrint.layout_opt DFInfo.layout DFInfo],
-			    childsep=PrettyPrint.RIGHT "; "}
+			    childsep=StringTree.RIGHT "; "}
   end;

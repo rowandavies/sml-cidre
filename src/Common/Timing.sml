@@ -106,7 +106,7 @@ functor Timing(structure Flags: FLAGS
       (chat("\n");
        let 
 	 val _ = timingNow := false
-	 val {gc, sys=system, usr=non_gc} = Timer.checkCPUTimer (!t)
+	 val {sys=system, usr=non_gc} = Timer.checkCPUTimer (!t)
 	 val wallclock = Timer.checkRealTimer (!rt)
 
 	 val padL = StringCvt.padLeft #" " 15 
@@ -114,7 +114,7 @@ functor Timing(structure Flags: FLAGS
 	 val time_elem = {name = name,
 			  non_gc = non_gc,
 			  system = system,
-			  gc = gc,
+			  gc = Time.zeroTime,
 			  wallclock = wallclock}
 
 	 val _ = maybe_export_timings time_elem
@@ -129,7 +129,7 @@ functor Timing(structure Flags: FLAGS
 	 (concat([name,"\n","\t",padL "non-gc", padL "system", padL "gc", padL"wallclock",
 		  "\n\t"] @  (* Sort checking is a problem with refinements of lists. *)
 		 [padL (Time.toString non_gc),padL (Time.toString system),
-		  padL (Time.toString gc),padL (Time.toString wallclock)] ))
+		  padL (Time.toString Time.zeroTime),padL (Time.toString wallclock)] ))
        end;
        chat("\n"))
       

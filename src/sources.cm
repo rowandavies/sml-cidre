@@ -4,7 +4,9 @@ structure R
 
 is
 
-Common/common.cm
+$/basis.cm
+(* $/smlnj-lib.cm *)
+Common/common.cm 
 (* Compiler/compiler.cm *)
 
 (* Manager/FREE_IDS.sml

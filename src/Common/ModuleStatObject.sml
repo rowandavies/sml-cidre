@@ -4,52 +4,50 @@ functor ModuleStatObject(structure StrId  : STRID
 			 structure FunId  : FUNID
 			 structure TyName : TYNAME
 			 structure Name   : NAME
-			   sharing type Name.name = TyName.name
+			   where type name = TyName.name
 			 structure TyCon : TYCON
-			   sharing type TyCon.strid = StrId.strid
-			   sharing type TyCon.tycon = TyName.tycon
+			   where type strid = StrId.strid
+			   where type tycon = TyName.tycon
 
 			 structure StatObject : STATOBJECT
-			   sharing StatObject.TyName = TyName
+                where type tycon = TyName.tycon
+                where type TyName.name = TyName.name
+			    where type TyName = TyName.TyName
 
-			 structure Environments : ENVIRONMENTS
-			   sharing Environments.TyName = StatObject.TyName
-			   sharing type Environments.TypeFcn    = StatObject.TypeFcn
-			   sharing type Environments.Type       = StatObject.Type
-			   sharing type Environments.TyVar      = StatObject.TyVar
-			   sharing type Environments.TypeScheme = StatObject.TypeScheme
-			   sharing type Environments.strid      = StrId.strid
-			   sharing type Environments.realisation = StatObject.realisation
-			   sharing type Environments.ExplicitTyVar = StatObject.ExplicitTyVar
+             structure Environments : ENVIRONMENTS
+                where type TyName = TyName.TyName
+                where type tycon = StatObject.tycon
+                where type TyName.Set.Set = StatObject.TyName.Set.Set
+                where type TypeFcn    = StatObject.TypeFcn
+                where type Type       = StatObject.Type
+                where type TyVar      = StatObject.TyVar
+                where type TypeScheme = StatObject.TypeScheme
+                where type strid      = StrId.strid
+                where type realisation = StatObject.realisation
+                where type ExplicitTyVar = StatObject.ExplicitTyVar
 
-                         structure RefObject : REFOBJECT
-                           sharing type RefObject.trealisation = StatObject.realisation
-                           sharing type RefObject.TypeFcn = StatObject.TypeFcn
-                           sharing type RefObject.ExplicitTyVar.SyntaxTyVar 
-				      = StatObject.ExplicitTyVar
-                           sharing type RefObject.Type = StatObject.Type
-                           sharing type RefObject.TyVar = StatObject.TyVar
+             structure RefObject : REFOBJECT
+                where type trealisation = StatObject.realisation
+                where type TypeFcn = StatObject.TypeFcn
+                where type ExplicitTyVar.SyntaxTyVar = StatObject.ExplicitTyVar
+                where type Type = StatObject.Type
+                where type TyVar = StatObject.TyVar
 
-                         structure RefinedEnvironments : REFINED_ENVIRONMENTS
-                           sharing type RefinedEnvironments.strid = StrId.strid
-                           sharing type RefinedEnvironments.SortVar = RefObject.SortVar
-                           sharing type RefinedEnvironments.SortName    = RefObject.SortName
-                           sharing type RefinedEnvironments.Rea.trealisation 
+             structure RefinedEnvironments : REFINED_ENVIRONMENTS
+                where type strid = StrId.strid
+                where type SortVar = RefObject.SortVar
+                where type SortName    = RefObject.SortName
+                where type Rea.trealisation 
                                         = StatObject.realisation
-                           sharing type RefinedEnvironments.TyName = TyName.TyName
-                           sharing type RefinedEnvironments.SortFcn = RefObject.SortFcn
-                           sharing type RefinedEnvironments.sortcon = TyCon.tycon
-                           sharing type RefinedEnvironments.SortName.Variance 
-                                      = RefObject.ExplicitTyVar.Variance
-                           sharing type RefinedEnvironments.Sort = RefObject.Sort
-                           sharing type RefinedEnvironments.SortScheme = RefObject.SortScheme
-                           sharing type RefinedEnvironments.id = Environments.id
+                where type TyName = TyName.TyName
+                where type SortFcn = RefObject.SortFcn
+                where type tycon = TyCon.tycon
+                where type Variance = RefObject.ExplicitTyVar.Variance
+                where type Sort = RefObject.Sort
+                where type SortScheme = RefObject.SortScheme
+                where type id = Environments.id
 
 			 structure PP : PRETTYPRINT
-			   sharing type PP.StringTree (*= Environments.StringTree*)
-				 = TyName.Set.StringTree (*= StatObject.StringTree*)
-                                 = RefinedEnvironments.StringTree
-                                 = RefObject.StringTree
 
 			 structure Flags : FLAGS
 			) : MODULE_STATOBJECT =
@@ -95,7 +93,6 @@ functor ModuleStatObject(structure StrId  : STRID
     type Sort = RO.Sort
 
     type tycon             = TyCon.tycon
-    type StringTree        = PP.StringTree
     type strid             = StrId.strid
     type longstrid         = StrId.longstrid
     type longtycon         = TyCon.longtycon
@@ -130,12 +127,12 @@ functor ModuleStatObject(structure StrId  : STRID
     fun out_debug str = if !DEBUG andalso report_file_sig() then 
                            TextIO.output (TextIO.stdErr, str() ^"\n")
                         else ()
-    fun prtree (t : PP.StringTree) : unit =
+    fun prtree (t : StringTree.t) : unit =
            (* PP.outputTree (print, t, 100) *)
            (debug_push_must (fn () => debug_layout t); 
             debug_pop (fn () => []))
 
-    fun prtree_debug (t : unit -> PP.StringTree) : unit =
+    fun prtree_debug (t : unit -> StringTree.t) : unit =
           if !DEBUG andalso report_file_sig() then
             prtree (t())
           else ()
@@ -475,7 +472,7 @@ functor ModuleStatObject(structure StrId  : STRID
 	      in  (phiconj, conjphi)
 	      end
 
-          fun sn_layout sn = PP.layout_list (fn sn2 => PP.LEAF (SortName.pr_SortName ("", sn2))) 
+          fun sn_layout sn = PP.layout_list (fn sn2 => StringTree.LEAF (SortName.pr_SortName ("", sn2))) 
                                             (SortName.sortNameConjuncts sn)
 
 	  fun checkSNs sn1 sn2 =
@@ -704,9 +701,9 @@ functor ModuleStatObject(structure StrId  : STRID
 
       fun layout (SIGMA {T, E, rT, rE}) =
 	      let val Ttree = TyName.Set.layoutSet {start="(", sep=",", finish=")"} TyName.layout T
-	      in PP.NODE {start="SIGMA{", finish="}", indent=0,
+	      in StringTree.NODE {start="SIGMA{", finish="}", indent=0,
 			  children=[Ttree, E.layout E, rEnv.layoutT rT, rEnv.layoutEnv rE], 
-                          childsep=PP.NOSEP}
+                          childsep=StringTree.NOSEP}
 	      end
 
       fun match (rTfull, Sig as SIGMA {T, E, rT, rE}, E', rE') : Env * rEnv =
@@ -895,14 +892,14 @@ functor ModuleStatObject(structure StrId  : STRID
       fun layout (FUNSIG{T, E, rT, rE, T'E'}) =
 	    let
 	      val Ttree = TyName.Set.layoutSet {start="(", sep=",", finish=")"} TyName.layout T
-	      val body = PP.NODE {start="Phi(", finish=")", indent=1,
+	      val body = StringTree.NODE {start="Phi(", finish=")", indent=1,
 				  children=[E.layout E, rEnv.layoutT rT,
                                             rEnv.layoutEnv rE, Sigma.layout T'E'], 
-				  childsep=PP.RIGHT ", "}
+				  childsep=StringTree.RIGHT ", "}
 	    in 
-	      PP.NODE {start="", finish="", indent=1,
+	      StringTree.NODE {start="", finish="", indent=1,
 		       children=[Ttree,body],
-		       childsep=PP.NOSEP}
+		       childsep=StringTree.NOSEP}
 	    end
     end (*Phi*)
 

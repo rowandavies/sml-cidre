@@ -17,9 +17,8 @@ signature HASH_TABLE =
     val fold : ('a * 'b -> 'b) -> 'b -> 'a hash_table -> 'b
     val Fold : ((int * 'a) * 'b -> 'b) -> 'b -> 'a hash_table -> 'b
 
-    type StringTree
     val layout_map : {start: string, eq: string, sep: string, finish: string} ->
-                     (int -> StringTree) -> ('a -> StringTree) -> 'a hash_table -> StringTree
+                     (int -> StringTree.t) -> ('a -> StringTree.t) -> 'a hash_table -> StringTree.t
 
     val pp_table_usage : 'a hash_table -> string
   end
@@ -29,7 +28,6 @@ functor HashTable(structure PP : PRETTYPRINT) : HASH_TABLE =
 
     type dom = int
     type 'a hash_table = int * ((dom*'a)list Array.array)
-    type StringTree = PP.StringTree
     (*	  val table_size = 127*) (* bin: 11111111 *)
     (*	  val table_size = 63*)  (* bin: 111111 *)
     fun hash (key,size) = Word.toInt (Word.andb (Word.fromInt key,Word.fromInt size))
@@ -153,18 +151,18 @@ functor HashTable(structure PP : PRETTYPRINT) : HASH_TABLE =
     
     fun layout_map {start, eq=equal, sep, finish} 
       layoutDom layoutRan table =
-      PP.NODE {start=start,
+      StringTree.NODE {start=start,
 	       finish=finish,
 	       children=map (fn (d,r) => 
-				  PP.NODE {start="",
+				  StringTree.NODE {start="",
 					   finish="",
 					   children=[layoutDom d, 
 						     layoutRan r],
 					   indent=3,
-					   childsep=PP.RIGHT equal})
+					   childsep=StringTree.RIGHT equal})
 	       (list table),
 	       indent=3,
-	       childsep=PP.RIGHT sep}
+	       childsep=StringTree.RIGHT sep}
       
     fun pp_table_usage (table_size, table) =
       let

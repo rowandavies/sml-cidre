@@ -9,6 +9,7 @@ Group
 
 is
 
+$/basis.cm
 Edlib.sml
 EDLIB_GENERAL.sml
 EdlibGeneral.sml

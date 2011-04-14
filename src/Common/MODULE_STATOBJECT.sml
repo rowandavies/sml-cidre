@@ -29,8 +29,6 @@ signature MODULE_STATOBJECT =
     type tycon
     type longtycon
 
-    type StringTree sharing type StringTree = TyName.Set.StringTree
-
     datatype SigMatchError =
       MISSINGSTR  of longstrid
     | MISSINGTYPE of longtycon
@@ -63,7 +61,7 @@ signature MODULE_STATOBJECT =
 	val tynames                : Sig -> TyName.Set.Set
 	val tyvars                 : Sig -> TyVar list
 	val bogus                  : Sig
-	val layout                 : Sig -> StringTree
+	val layout                 : Sig -> StringTree.t
 
 	(*instance Sigma = the E from a signature where the bound
 	 tynames have been replaced by fresh tynames:*)
@@ -90,7 +88,7 @@ signature MODULE_STATOBJECT =
 	val tynames                : FunSig -> TyName.Set.Set
 	val tyvars                 : FunSig -> TyVar list
 	val tyvars'                : FunSig -> (id * TyVar list) list
-	val layout                 : FunSig -> StringTree
+	val layout                 : FunSig -> StringTree.t
 
 	(*If Sigma'= match (Phi, E) succeeds, then E matches the
 	 argument signature of the functor signature Phi and Sigma' is 

@@ -2,8 +2,10 @@
 (* Environment for Opacity elimination *)
 signature OPACITY_ENV =
   sig
-    structure TyName : TYNAME
-    type opaq_env and funid and realisation
+    structure TyName : TYNAME 
+    type opaq_env 
+    type funid 
+    type realisation
 
     val from_rea : realisation -> opaq_env
     val from_funid : funid * (TyName.Set.Set * realisation) -> opaq_env
@@ -17,17 +19,15 @@ signature OPACITY_ENV =
     val restrict : opaq_env * (funid list * TyName.Set.Set) -> opaq_env
     val match : opaq_env * opaq_env -> unit
 
-    type StringTree
-    val layout : opaq_env -> StringTree
+    val layout : opaq_env -> StringTree.t
   end
 
-functor OpacityEnv(structure FunId : FUNID
-		   structure Crash : CRASH
-		   structure PP : PRETTYPRINT
-		   structure Report : REPORT
+functor OpacityEnv(structure PP : PRETTYPRINT
+           structure FunId : FUNID 
+		   structure Crash : CRASH 
+		   structure Report : REPORT 
 		   structure Environments : ENVIRONMENTS   (* for TyName and for env and for Realisation *)
-		     sharing type Environments.StringTree = PP.StringTree
-		     ) : OPACITY_ENV =
+		     ) : OPACITY_ENV  =
   struct
     fun die s = Crash.impossible ("OpacityEnv." ^ s)
     structure TyName = Environments.TyName
@@ -59,14 +59,14 @@ functor OpacityEnv(structure FunId : FUNID
       handle FE.Restrict s => die ("restrict; funid " ^ s ^ " is not in the environment")
     fun match((fe1,rea1),(fe2,rea2)) = Realisation.match(rea1,rea2)
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
     fun layout_fe_entry (T,rea) = 
-      PP.NODE{start="[", finish="", childsep=PP.RIGHT "]", indent=1,
+      StringTree.NODE{start="[", finish="", childsep=StringTree.RIGHT "]", indent=1,
 	      children=[TyName.Set.layoutSet {start="{",finish="}",sep=","} TyName.layout T, 
 			Realisation.layout rea]}
-    fun layout_fe fe = FE.layoutMap {start="{",finish="}",eq=" -> ",sep=","} (PP.LEAF o FunId.pr_FunId)
+    fun layout_fe fe = FE.layoutMap {start="{",finish="}",eq=" -> ",sep=","} (StringTree.LEAF o FunId.pr_FunId)
       layout_fe_entry fe
     fun layout (fe,rea) =
-      PP.NODE{start="OPAQ_ENV(",finish=")",childsep=PP.RIGHT",",indent=1,
+      StringTree.NODE{start="OPAQ_ENV(",finish=")",childsep=StringTree.RIGHT",",indent=1,
 	      children=[layout_fe fe, Realisation.layout rea]}
   end

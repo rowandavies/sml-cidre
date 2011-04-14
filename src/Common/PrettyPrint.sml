@@ -13,14 +13,7 @@ functor PrettyPrint(structure Report: REPORT
           
     datatype childsep = NOSEP | LEFT of string | RIGHT of string
 
-    datatype StringTree =
-        NODE of {start : string, finish: string, indent: int,
-                 children: StringTree list, childsep: childsep
-                }
-      | HNODE of {start : string, finish: string, 
-                  children: StringTree list, childsep: childsep
-                }
-      | LEAF of string
+    open StringTree 
         
     (* mk_lines textwidth texts:  break texts into lines, 
        each of width textwidth (or a bit more) *)
@@ -100,12 +93,12 @@ functor PrettyPrint(structure Report: REPORT
         | foldChildren f (child::rest, LEFT s, acc) =
             foldChildren f (rest, LEFT s, f(s, fold f (child, acc)))
     in
-      val flatten: StringTree -> string list = fn t => rev(fold (op ::) (t, nil))
-      val flatten1: StringTree -> string = concat o flatten
+      val flatten: StringTree.t -> string list = fn t => rev(fold (op ::) (t, nil))
+      val flatten1: StringTree.t -> string = concat o flatten
       fun flattenOrRaiseFlatString(t,width) = concat(rev(#1(fold consIfEnoughRoom (t, (nil,width)))))
     end
 
-    fun oneLiner (f: 'a -> StringTree) (x: 'a) = flatten1(f x)
+    fun oneLiner (f: 'a -> StringTree.t) (x: 'a) = flatten1(f x)
       
     datatype minipage = LINES of string list
                       | INDENT of int * minipage
@@ -346,7 +339,7 @@ functor PrettyPrint(structure Report: REPORT
     | PILE(m1,m2) =>
         interpret(indent,m1,interpret(indent,m2,acc))
 
-    fun format(width: int, t: StringTree): minipage =
+    fun format(width: int, t: StringTree.t): minipage =
       if width < 3 then
         Crash.impossible "PrettyPrint.format: width too small"
       else
@@ -378,7 +371,7 @@ functor PrettyPrint(structure Report: REPORT
     val s128="                                                                                                                                ";
         
 
-  fun outputTree(device: string -> unit, t: StringTree, width) : unit =
+  fun outputTree(device: string -> unit, t: StringTree.t, width) : unit =
     let
 (*old
        fun output_line indent text =

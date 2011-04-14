@@ -30,9 +30,8 @@ signature FINMAP =
     val mergeMap:
       (('b * 'b) -> 'b) -> (''a, 'b) map -> (''a, 'b) map -> (''a, 'b) map
 
-    type StringTree
     val layoutMap : {start: string, eq: string, sep: string, finish: string} ->
-      (''a -> StringTree) -> ('b -> StringTree) -> (''a , 'b) map -> StringTree
+      (''a -> StringTree.t) -> ('b -> StringTree.t) -> (''a , 'b) map -> StringTree.t
 
     type Report
     val reportMap: (''a * 'b -> Report) -> (''a, 'b) map -> Report

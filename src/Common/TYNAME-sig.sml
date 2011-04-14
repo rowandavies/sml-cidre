@@ -68,11 +68,9 @@ signature TYNAME =
     val tyName_REF     : TyName
     val tyName_EXN     : TyName
 
-    type StringTree
-    val layout : TyName -> StringTree
+    val layout : TyName -> StringTree.t
 
-    structure Map : MONO_FINMAP
-    structure Set : KIT_MONO_SET
-    sharing type Set.elt = Map.dom = TyName
-    sharing type Set.StringTree = Map.StringTree = StringTree
-  end
+    structure Map : MONO_FINMAP where type dom = TyName
+    structure Set : KIT_MONO_SET where type elt = TyName
+
+ end

@@ -3,22 +3,21 @@
 functor RefObject( structure StatObject : STATOBJECT
 		   structure ExplicitTyVar: TYVAR
 		   structure SortName: SORTNAME
-		     sharing type SortName.TyName = StatObject.TyName
-		     sharing type SortName.Variance = ExplicitTyVar.Variance
-		   structure Lab: LAB
-		     sharing type Lab.lab = StatObject.lab
+		     where type TyName = StatObject.TyName 
+		     where type Variance = ExplicitTyVar.Variance 
+		   structure Lab: LAB where type lab = StatObject.lab
 		   structure Name : NAME
-		   structure Crash: CRASH
-       		   structure FinMap: FINMAP
-       		   structure SortedFinMap: SORTED_FINMAP
+      	   structure Crash: CRASH
+       		   structure FinMap: FINMAP 
+       	   structure SortedFinMap: SORTED_FINMAP 
 		   structure Flags: FLAGS
 		   structure SCon: SCON
 		   structure ListHacks: LIST_HACKS
 		   structure Report: REPORT
 		   structure PP: PRETTYPRINT
 		     sharing type PP.Report = Report.Report
-		     sharing type SortedFinMap.StringTree = PP.StringTree
-		     sharing type SortName.StringTree = PP.StringTree
+(*		     sharing type SortedFinMap.StringTree = PP.StringTree
+		     sharing type SortName.StringTree = PP.StringTree *)
 		  ):REFOBJECT =
   struct
 
@@ -488,20 +487,19 @@ functor RefObject( structure StatObject : STATOBJECT
 	      body=pr_SortPRETTY names sort
 	     }
 
-    type StringTree = PP.StringTree
 
-    fun layoutSortName sortname = PP.LEAF(SortName.pr_SortName ("", sortname))
-    and layoutSortVar tv = PP.LEAF(pr_SortVar tv)
+    fun layoutSortName sortname = StringTree.LEAF(SortName.pr_SortName ("", sortname))
+    and layoutSortVar tv = StringTree.LEAF(pr_SortVar tv)
 
 
     and layoutSort(CONSSORT([], sortname)) =
 	  layoutSortName sortname
 
       | layoutSort(CONSSORT(sort_list, sortname)) = 
-	PP.NODE{start="(", finish=") (" ^ (SortName.pr_SortName ("", sortname)) ^ ")", 
+	StringTree.NODE{start="(", finish=") (" ^ (SortName.pr_SortName ("", sortname)) ^ ")", 
 		indent=1,
 		children=(map layoutSort sort_list),
-		childsep=PP.LEFT ", "
+		childsep=StringTree.LEFT ", "
 		}
 
       | layoutSort(RECSORT r) =
@@ -517,36 +515,36 @@ functor RefObject( structure StatObject : STATOBJECT
 	  end
 
       | layoutSort(ARROW(sort, sort')) =
-	  PP.NODE{start="(", finish=")", indent=1,
+	  StringTree.NODE{start="(", finish=")", indent=1,
 		  children=[layoutSort sort, layoutSort sort'],
-		  childsep=PP.LEFT " -> "
+		  childsep=StringTree.LEFT " -> "
 		 }
 
       | layoutSort(SORTVAR sv) = layoutSortVar sv
 
       | layoutSort(CONJSORT(sort, sort')) =
-	  PP.NODE{start="(", finish=")", indent=1,
+	  StringTree.NODE{start="(", finish=")", indent=1,
 		  children=[layoutSort sort, layoutSort sort'],
-		  childsep=PP.LEFT " & "
+		  childsep=StringTree.LEFT " & "
 		 }
-      | layoutSort BOGUSSORT = PP.LEAF "<invalid>"
+      | layoutSort BOGUSSORT = StringTree.LEAF "<invalid>"
 
-    and layoutField ABSENTfield = PP.LEAF "<absent>"
+    and layoutField ABSENTfield = StringTree.LEAF "<absent>"
       | layoutField(PRESENTfield sort) = layoutSort sort
       | layoutField(VARfield fv) = PP.layoutAtom pr_FieldVar fv
 
     fun layoutSortFcn(SORTFCN {sortvars, sort}) =
-      PP.NODE{start=ListHacks.stringSep "LAMBDA (" "). " ", " pr_SortVar' sortvars,
-	      finish="", indent=0, childsep=PP.NOSEP,
+      StringTree.NODE{start=ListHacks.stringSep "LAMBDA (" "). " ", " pr_SortVar' sortvars,
+	      finish="", indent=0, childsep=StringTree.NOSEP,
 	      children=[layoutSort sort]
 	     }
 
     fun layoutSortScheme(SORTFCN{sort, ...}) = layoutSort sort
 
     fun layoutSortNameSet sortname_list =
-      PP.NODE{start="{", finish = "}", indent=1,
+      StringTree.NODE{start="{", finish = "}", indent=1,
 	      children=(map layoutSortName sortname_list),
-	      childsep=PP.LEFT ", "
+	      childsep=StringTree.LEFT ", "
 	      }
 
     (********
@@ -1662,9 +1660,9 @@ functor RefObject( structure StatObject : STATOBJECT
 	       val sigma = Sort_in_SortScheme sort
 		 
 	       val tree =
-		 PP.NODE{start="Sort_in_SortScheme: ", finish="", indent=0,
+		 StringTree.NODE{start="Sort_in_SortScheme: ", finish="", indent=0,
 			 children=[layoutSort sort, layoutSortScheme sigma],
-			 childsep=PP.LEFT " => "
+			 childsep=StringTree.LEFT " => "
 			}
 			   
 	       val report = PP.reportStringTree tree
@@ -2116,7 +2114,7 @@ functor RefObject( structure StatObject : STATOBJECT
 *)
       fun layoutSortFcn' (SORTNAME t) = SortName.layout t
 	| layoutSortFcn' (EXPANDED theta) = layoutSortFcn theta
-      fun layout Realisation_Id = PP.LEAF "Id"
+      fun layout Realisation_Id = StringTree.LEAF "Id"
 	| layout (Not_Id m) = SortName.Map.layoutMap {start="{",eq=" -> ", finish="}",sep=", "}
 	SortName.layout layoutSortFcn' m
 

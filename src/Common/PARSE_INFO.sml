@@ -31,13 +31,9 @@ signature PARSE_INFO =
     type SourceInfo  sharing type SourceInfo = SourceInfo.SourceInfo
     type DFInfo      sharing type DFInfo = DFInfo.DFInfo
 
-    type StringTree       sharing type StringTree
-                                       = DFInfo.StringTree
-                                       = SourceInfo.StringTree
-
     val from_SourceInfo : SourceInfo -> ParseInfo
     val to_SourceInfo   : ParseInfo -> SourceInfo
     val plus_DFInfo     : ParseInfo -> DFInfo -> ParseInfo
     val to_DFInfo       : ParseInfo -> DFInfo option
-    val layout          : ParseInfo -> StringTree
+    val layout          : ParseInfo -> StringTree.t
   end;

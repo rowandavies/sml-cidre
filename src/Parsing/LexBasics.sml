@@ -221,7 +221,7 @@ functor LexBasics(structure BasicIO: BASIC_IO
 	    val _ = BasicIO.print prompt
 
 	    val line =
-	      untabify (String.size prompt) (TextIO.inputLine TextIO.stdIn)
+	      untabify (String.size prompt) (case TextIO.inputLine TextIO.stdIn of SOME s => s | NONE => "")
 
 	   (* The lines (and character positions) that we've got so far,
 	      in reverse order (latest at front of list): *)
@@ -289,20 +289,18 @@ functor LexBasics(structure BasicIO: BASIC_IO
 	Crash.impossible "LexBasics.highlight: width or column <0"
 
 
-    type StringTree = PP.StringTree
-
     fun layoutPos (POSITION f) =
 	  let
 	    val {file, line, column, getLine} = f ()
 	  in
-	    PP.NODE {start="POSITION(", finish=")",
-		     indent=3, childsep=PP.RIGHT ",",
-		     children=[PP.LEAF("\"" ^ file ^ "\""),
-			       PP.LEAF("line " ^ Int.toString line),
-			       PP.LEAF("column " ^ Int.toString column),
-			       PP.LEAF("\"" ^ getLine line ^ "\"")]}
+	    StringTree.NODE {start="POSITION(", finish=")",
+		     indent=3, childsep=StringTree.RIGHT ",",
+		     children=[StringTree.LEAF("\"" ^ file ^ "\""),
+			       StringTree.LEAF("line " ^ Int.toString line),
+			       StringTree.LEAF("column " ^ Int.toString column),
+			       StringTree.LEAF("\"" ^ getLine line ^ "\"")]}
 	  end
-      | layoutPos DUMMY = PP.LEAF "DUMMY"
+      | layoutPos DUMMY = StringTree.LEAF "DUMMY"
 
     fun reportPosition {left=POSITION posLfn, right=POSITION posRfn} =
           let
