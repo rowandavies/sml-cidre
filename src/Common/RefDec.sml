@@ -66,6 +66,8 @@ functor RefDec(
                       where type longtycon = TyCon.longtycon
                       where type Report = Report.Report
 
+                      where type ExplicitTyVar = TyVar.SyntaxTyVar
+
                 structure RefineErrorInfo : REFINE_ERROR_INFO
                      where type Sort  = RefObject.Sort
                      where type SortScheme  = RefObject.SortScheme
@@ -75,12 +77,17 @@ functor RefDec(
                      (* where type Error = Comp.Error *)
 
                 structure Comp: COMP 
-	       where type Error = RefineErrorInfo.Error
+                     where type Error = RefineErrorInfo.Error
 
                 structure RefInfo : REF_INFO  
 (*                     where type Comp.Error = RefineErrorInfo.Error *)
                      where Comp = Comp
-                     where REnv = RefinedEnvironments
+
+                     where type REnv.VarEnv = RefinedEnvironments.VarEnv
+                     where type REnv.TyNameEnv = RefinedEnvironments.TyNameEnv
+                     where type REnv.Env = RefinedEnvironments.Env
+		     where type REnv.Sort = RefObject.Sort 
+
                      where type ElabInfo.TypeInfo.longid = Ident.longid
                      where type ElabInfo.TypeInfo.Type    = StatObject.Type
                      where type ElabInfo.TypeInfo.TyName.TyName  = StatObject.TyName
@@ -102,8 +109,11 @@ functor RefDec(
                     where type IG.SCon.scon = StatObject.scon
                     where type IG.StrId.longstrid = RefinedEnvironments.longstrid
 
-(*                    where type OG.TyVar.SyntaxTyVar = RefinedEnvironments.ExplicitTyVar    (* Implied by MAP_DEC_INFO *) *)
 
+(*                    where type IG.TyVar.SyntaxTyVar = RefinedEnvironments.ExplicitTyVar    (* Implied by MAP_DEC_INFO *)
+
+                    where type OG.TyVar.tyvar = RefinedEnvironments.ExplicitTyVar    (* Implied by MAP_DEC_INFO *)
+*)
                     
                 structure MapDecRtoE: MAP_DEC_INFO 
                       where IG = MapDecEtoR.OG
@@ -206,7 +216,7 @@ in
                            pr_indent (str())
                         else ()
 
-    fun pr (msg : string, t : PP.StringTree) : unit =
+    fun pr (msg : string, t : StringTree.t) : unit =
           Report.print' (Report.decorate (msg, PP.reportStringTree t)) TextIO.stdErr
 
     fun pr_debug (msg, t) = if !Flags.DEBUG_REFDEC then pr (nspaces (!debug_indent) ^ msg, t () )
@@ -1725,7 +1735,7 @@ in
 	     val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt) *)
 	     val _ = pr_debug ("  info for check_exp: ", 
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
-			           NONE =>  PP.LEAF "NO-INFO"
+			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
 (*             val () = Env.debug_push (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutExp exp)) *)
@@ -1749,7 +1759,7 @@ in
 	     val _ = out_debug (fn () => "  sort for check_atexp: "^ RO.pr_Sort gsrt)
 	     val _ = pr_debug ("  info for check_atexp: ", 
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
-			           NONE =>  PP.LEAF "NO-INFO"
+			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
 (*             val () = Env.debug_push (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutAtexp atexp)) *)
@@ -1767,7 +1777,7 @@ in
            : RO.Sort Redo Result = 
          let val _ = pr_debug ("  info for infer_exp: ", 
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
-			           NONE =>  PP.LEAF "NO-INFO"
+			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)	       
 (*             val () = Env.debug_push (fn () => ("\n****infer_exp: ")
                                                :: lines_pp (RG.layoutExp exp)) *)
@@ -1787,7 +1797,7 @@ in
 		             fn () => Env.layoutC C ) *)
 	     val _ = pr_debug ("  info for infer_atexp: ", 
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
-			           NONE =>  PP.LEAF "NO-INFO"
+			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
 (*             val () = Env.debug_push (fn () => ("\n****infer_atexp: ")
                                                :: lines_pp (RG.layoutAtexp atexp)) *)
