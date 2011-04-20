@@ -1,87 +1,114 @@
-functor RefDec( structure RefineErrorInfo : REFINE_ERROR_INFO
-                structure RefInfo : REF_INFO  where type Comp.Error = RefineErrorInfo.Error
+functor RefDec( 
 
-                structure MapDecEtoR: MAP_DEC_INFO where type OG.info = RefInfo.RefInfo
-                structure MapDecRtoE: MAP_DEC_INFO where type IG.info = RefInfo.RefInfo
-                    sharing MapDecEtoR.IG = MapDecRtoE.OG
-                    sharing MapDecEtoR.OG = MapDecRtoE.IG
-                structure RefinedEnvironments: REFINED_ENVIRONMENTS
-                      sharing type RefinedEnvironments.longtycon   = MapDecEtoR.IG.longtycon
-                      sharing type RefinedEnvironments.tycon       = MapDecEtoR.IG.tycon
-                      sharing type RefinedEnvironments.id          = MapDecEtoR.IG.id
-                      sharing type RefinedEnvironments.longid   = MapDecEtoR.IG.longid
-                      sharing type RefinedEnvironments.ExplicitTyVar = MapDecEtoR.OG.tyvar
-                      sharing type RefinedEnvironments.longstrid   = MapDecEtoR.IG.longstrid
-                structure StatObject: STATOBJECT
-                      sharing type StatObject.ExplicitTyVar  = MapDecEtoR.IG.tyvar
-                      sharing type StatObject.scon  = MapDecEtoR.IG.scon
-                      sharing type StatObject.lab   = MapDecEtoR.IG.lab
-                      sharing type StatObject.TypeFcn = RefinedEnvironments.TypeFcn 
-                      sharing type StatObject.TyName = RefinedEnvironments.TyName
-                      sharing type StatObject.Type = RefinedEnvironments.Type
-                structure RefObject: REFOBJECT
-                      sharing type RefObject.scon  = MapDecEtoR.IG.scon
-                      sharing type RefObject.lab   = MapDecEtoR.IG.lab
-                      sharing type RefObject.SortName = RefinedEnvironments.SortName
-                      sharing type RefObject.SortFcn = RefinedEnvironments.SortFcn
-                      sharing type RefObject.SortScheme = RefinedEnvironments.SortScheme
-                      sharing type RefObject.TyVar = StatObject.TyVar
-                      sharing type RefObject.TypeFcn = StatObject.TypeFcn
-                      sharing type RefObject.TyName = StatObject.TyName
-                      sharing type RefObject.Type = StatObject.Type
-                      sharing type RefObject.SortVar = RefinedEnvironments.SortVar
-                      sharing type RefObject.Sort = RefinedEnvironments.Sort
                (* Lab needed for the equality attribute. *)
                 structure Lab: LAB
-                  sharing type MapDecEtoR.IG.lab = Lab.lab
                 structure Ident: IDENT
-                  sharing type MapDecEtoR.IG.id = Ident.id
-                  sharing type MapDecEtoR.IG.longid = Ident.longid
                 structure TyVar: TYVAR
-                  sharing type TyVar.SyntaxTyVar = MapDecEtoR.IG.tyvar
-                      and type TyVar.Variance = RefObject.Variance
-                structure TyName: TYNAME
-                  sharing type TyName.TyName  = StatObject.TyName
-                      sharing type TyName.tycon = MapDecEtoR.IG.tycon
-                structure SortName: SORTNAME
-                  sharing type SortName.SortName = RefObject.SortName 
-                      sharing type SortName.TyName  = StatObject.TyName
-                      sharing type SortName.sortcon = RefinedEnvironments.sortcon
-                      sharing type SortName.Variance = TyVar.Variance
                 structure TyCon: TYCON
-                  sharing type TyCon.tycon = MapDecEtoR.IG.tycon
-                      sharing type TyCon.longtycon = MapDecEtoR.IG.longtycon
-                     sharing type RefineErrorInfo.Sort  = RefObject.Sort
-                     sharing type RefineErrorInfo.SortScheme  = RefObject.SortScheme
-                     sharing type RefineErrorInfo.longsortcon = TyCon.longtycon
-                     sharing type RefineErrorInfo.longid = MapDecEtoR.IG.longid
-                     sharing type RefineErrorInfo.Type = StatObject.Type
-                structure Comp: COMP where type Error = RefineErrorInfo.Error
-                     sharing RefInfo.Comp = Comp
-                     sharing RefInfo.REnv = RefinedEnvironments
-                     sharing type RefInfo.ElabInfo.ElabInfo = MapDecEtoR.IG.info
-                     sharing type RefInfo.ElabInfo.TypeInfo.longid = Ident.longid
-                     sharing type RefInfo.ElabInfo.TypeInfo.Type    = StatObject.Type
-                     sharing type RefInfo.ElabInfo.TypeInfo.TyName  = StatObject.TyName
-                     sharing type RefInfo.ElabInfo.TypeInfo.TyVar   = StatObject.TyVar
-                     sharing type RefInfo.ElabInfo.TypeInfo.ExplicitTyVarEnv 
-		                = RefinedEnvironments.ExplicitTyVarEnv
-                     sharing type RefineErrorInfo.SourceInfo = RefInfo.ElabInfo.ParseInfo.SourceInfo
+                structure TyName: TYNAME
+                      where type tycon = TyCon.tycon
+
+                structure SortName: SORTNAME
+                      where type TyName  = TyName.TyName
+                      where type Variance = TyVar.Variance
+                      where type sortcon = TyCon.tycon
+
                 structure FinMap : FINMAP
                 structure SortedFinMap : SORTED_FINMAP
-                  sharing type SortedFinMap.map = RefObject.sortedFinMap
                 structure FinMapEq : FINMAPEQ
                 structure Report: REPORT
-                  sharing type Report.Report = RefinedEnvironments.Report
                 structure PP: PRETTYPRINT
-                  sharing type StatObject.StringTree
+                      where type Report = Report.Report
+
+(*                  sharing type StatObject.StringTree
                                = MapDecEtoR.IG.StringTree
                                = RefInfo.ElabInfo.StringTree
                                = RefObject.StringTree
                                = MapDecEtoR.OG.StringTree
                                = RefinedEnvironments.StringTree
-                               = PP.StringTree
-                      sharing type PP.Report = Report.Report
+                               = PP.StringTree 
+*)
+
+
+
+                structure StatObject: STATOBJECT
+                      where type TyName = TyName.TyName
+                      where type ExplicitTyVar  = TyVar.SyntaxTyVar
+                      where type lab   = Lab.lab
+
+                structure RefObject: REFOBJECT
+                      where type ExplicitTyVar.Variance = TyVar.Variance
+                      where type SortName = SortName.SortName                    
+                      where type scon  = StatObject.scon
+                      where type lab   = Lab.lab
+
+                      where type TyVar = StatObject.TyVar
+                      where type TypeFcn = StatObject.TypeFcn
+                      where type TyName = StatObject.TyName
+                      where type Type = StatObject.Type
+                      where type ('a, 'b) sortedFinMap = ('a, 'b) SortedFinMap.map
+
+
+                structure RefinedEnvironments: REFINED_ENVIRONMENTS
+                      where type TypeFcn = StatObject.TypeFcn
+                      where type TyName = StatObject.TyName
+                      where type Type = StatObject.Type
+
+                      where type SortName = SortName.SortName
+                      where type SortFcn = RefObject.SortFcn
+                      where type SortScheme = RefObject.SortScheme
+                      where type SortVar = RefObject.SortVar
+                      where type Sort = RefObject.Sort
+
+                      where type id = Ident.id
+                      where type longid = Ident.longid
+                      where type tycon = TyCon.tycon
+                      where type longtycon = TyCon.longtycon
+                      where type Report = Report.Report
+
+                structure RefineErrorInfo : REFINE_ERROR_INFO
+                     where type Sort  = RefObject.Sort
+                     where type SortScheme  = RefObject.SortScheme
+                     where type longsortcon = TyCon.longtycon
+                     where type longid = Ident	.longid
+                     where type Type = StatObject.Type
+                     (* where type Error = Comp.Error *)
+
+                structure Comp: COMP 
+	       where type Error = RefineErrorInfo.Error
+
+                structure RefInfo : REF_INFO  
+(*                     where type Comp.Error = RefineErrorInfo.Error *)
+                     where Comp = Comp
+                     where REnv = RefinedEnvironments
+                     where type ElabInfo.TypeInfo.longid = Ident.longid
+                     where type ElabInfo.TypeInfo.Type    = StatObject.Type
+                     where type ElabInfo.TypeInfo.TyName.TyName  = StatObject.TyName
+                     where type ElabInfo.TypeInfo.TyVar   = StatObject.TyVar
+                     where type ElabInfo.TypeInfo.ExplicitTyVarEnv 
+		                = RefinedEnvironments.ExplicitTyVarEnv
+                     where type ElabInfo.ParseInfo.SourceInfo = RefineErrorInfo.SourceInfo
+
+                structure MapDecEtoR: MAP_DEC_INFO 
+                    where type OG.info = RefInfo.RefInfo
+                    where type IG.info = RefInfo.ElabInfo.ElabInfo
+
+                    where type IG.Lab.lab = Lab.lab
+                    where type IG.Ident.id = Ident.id
+                    where type IG.Ident.longid = Ident.longid
+                    where type IG.TyVar.SyntaxTyVar = TyVar.SyntaxTyVar
+                    where type IG.TyCon.tycon = TyCon.tycon
+                    where type IG.TyCon.longtycon = TyCon.longtycon
+                    where type IG.SCon.scon = StatObject.scon
+                    where type IG.StrId.longstrid = RefinedEnvironments.longstrid
+
+(*                    where type OG.TyVar.SyntaxTyVar = RefinedEnvironments.ExplicitTyVar    (* Implied by MAP_DEC_INFO *) *)
+
+                    
+                structure MapDecRtoE: MAP_DEC_INFO 
+                      where IG = MapDecEtoR.OG
+                      where OG = MapDecEtoR.IG
+
                 structure Flags: FLAGS
                 structure Crash: CRASH
                ) : REFDEC =
