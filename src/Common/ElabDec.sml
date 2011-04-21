@@ -1,81 +1,113 @@
 (* Elaborator for Core Language Declarations*)
 
-functor ElabDec(structure ParseInfo : PARSE_INFO
-                structure ElabInfo : ELAB_INFO
-                  sharing ElabInfo.ParseInfo = ParseInfo
-                structure IG : DEC_GRAMMAR
-                  sharing type IG.info = ParseInfo.ParseInfo
-                structure OG : DEC_GRAMMAR
-                  sharing OG.Lab = IG.Lab
-                  sharing OG.SCon = IG.SCon
-                  sharing OG.Ident = IG.Ident
-                  sharing OG.TyVar = IG.TyVar
-                  sharing OG.TyCon = IG.TyCon
-                  sharing OG.StrId = IG.StrId
-                  sharing type OG.info = ElabInfo.ElabInfo
+functor ElabDec(
+               
+               (* These were added to unify things that seemed to need it *)
+                structure Ident : IDENT               
 
-                structure Environments : ENVIRONMENTS
-                  sharing type Environments.longid      = IG.longid
-                  sharing type Environments.longtycon   = IG.longtycon
-                  sharing type Environments.longstrid   = IG.longstrid
-                  sharing type Environments.strid       = IG.StrId.strid
-                  sharing type Environments.tycon       = IG.tycon
-                  sharing type Environments.valbind     = IG.valbind
-                  sharing type Environments.id          = IG.id
-                  sharing type Environments.pat         = IG.pat
-                  sharing type Environments.ExplicitTyVar = IG.tyvar
-                  sharing type Environments.ty          = IG.ty
+               (* These structures were already there *)
+                structure FinMap : FINMAP
+                structure Report: REPORT
+                structure PP: PRETTYPRINT
+                  where type Report = Report.Report
 
                 structure StatObject : STATOBJECT
-(*                  sharing StatObject.TyName = Environments.TyName *)
-                  sharing type StatObject.TyName.tycon = Environments.TyName.tycon
-                  sharing type StatObject.TyName = Environments.TyName 
-                       (* the next one is for SMLNJ 111.0.03 *)
-                  sharing type StatObject.TyName.TyName      = Environments.TyName
-                  sharing type StatObject.TypeScheme   = Environments.TypeScheme
-                  sharing type StatObject.ExplicitTyVar  = IG.tyvar
-                  sharing type StatObject.TypeFcn      = Environments.TypeFcn
-                  sharing type StatObject.realisation  = Environments.realisation
-                  sharing type StatObject.Substitution = Environments.Substitution
-                  sharing type StatObject.Type  = Environments.Type
-                  sharing type StatObject.TyVar = Environments.TyVar
-                  sharing type StatObject.scon  = IG.scon
-                  sharing type StatObject.lab   = IG.lab
-                  sharing type StatObject.level = Environments.level
-                  sharing type ElabInfo.ErrorInfo.Type  = StatObject.Type
-                  sharing type ElabInfo.ErrorInfo.TyVar = StatObject.TyVar
-                  sharing type ElabInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
-                  sharing type ElabInfo.ErrorInfo.TyName = Environments.TyName
-                  sharing type ElabInfo.ErrorInfo.id    = Environments.id
-                  sharing type ElabInfo.ErrorInfo.longid = OG.longid
-                  sharing type ElabInfo.ErrorInfo.longstrid = OG.longstrid
-                  sharing type ElabInfo.ErrorInfo.tycon = OG.tycon
-                  sharing type ElabInfo.ErrorInfo.lab   = OG.lab
-                  sharing type ElabInfo.ErrorInfo.longtycon = OG.longtycon
-                  sharing type ElabInfo.OverloadingInfo.RecType = StatObject.RecType
-                  sharing type ElabInfo.OverloadingInfo.TyVar = StatObject.TyVar
-                  sharing type ElabInfo.TypeInfo.Type    = StatObject.Type
-                  sharing type ElabInfo.TypeInfo.TyEnv  = Environments.TyEnv
-                  sharing type ElabInfo.TypeInfo.TyVar   = StatObject.TyVar
-                  sharing type ElabInfo.TypeInfo.longid = IG.longid 
-                  sharing type ElabInfo.TypeInfo.realisation = StatObject.realisation
-                  sharing type ElabInfo.TypeInfo.strid = Environments.strid
-                  sharing type ElabInfo.TypeInfo.tycon = Environments.tycon
-                  sharing type ElabInfo.TypeInfo.id = Environments.id
-                  sharing type ElabInfo.TypeInfo.TyName = Environments.TyName
-                  sharing type ElabInfo.TypeInfo.ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
+                  where type strid = Ident.strid (* yes? *)
 
-                structure FinMap : FINMAP
+                structure ParseInfo : PARSE_INFO
 
-                structure Report: REPORT
+                structure ElabInfo : ELAB_INFO
+                  where type ParseInfo.ParseInfo = ParseInfo.ParseInfo
+                  where type ParseInfo.SourceInfo = ParseInfo.SourceInfo
+                  where type ErrorInfo.Type  = StatObject.Type
+                  where type ErrorInfo.TyVar = StatObject.TyVar
+                  where type ErrorInfo.TypeScheme = StatObject.TypeScheme
+                  where type OverloadingInfo.RecType = StatObject.RecType
+                  where type OverloadingInfo.TyVar = StatObject.TyVar
+                  where type TypeInfo.Type    = StatObject.Type
+                  where type TypeInfo.TyVar   = StatObject.TyVar
+                  where type TypeInfo.realisation = StatObject.realisation
+                  where type ErrorInfo.lab = StatObject.lab
+                  where type TypeInfo.TyName.TyName = StatObject.TyName.TyName
+                  where type ErrorInfo.TyName = StatObject.TyName.TyName
 
-                structure PP: PRETTYPRINT
-                  sharing type PP.Report = Report.Report
+                  where type TypeInfo.id = Ident.id
+                  where type ErrorInfo.id = Ident.id
+
+                  where type TypeInfo.longid = Ident.longid (* yes? *)
+                  where type ErrorInfo.longid = Ident.longid (* yes? *)
+
+                  where type TypeInfo.strid = Ident.strid (* yes? *)
+                  where type ErrorInfo.strid = Ident.strid (* yes? *)
+                  (* where type id       = ElabInfo.ErrorInfo.id *)
+
+
+                structure IG : DEC_GRAMMAR
+                  where type info = ParseInfo.ParseInfo
+
+                  where type Lab.lab = ElabInfo.ErrorInfo.lab
+                  where type Ident.id = Ident.id
+                  where type Ident.longid = Ident.longid
+                  where type Ident.strid = Ident.strid
+                  where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
+                  where type TyCon.tycon = ElabInfo.ErrorInfo.tycon
+                  where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
+                  where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
+                  where type SCon.scon = StatObject.scon
+
+                structure OG : DEC_GRAMMAR
+                  where type info = ElabInfo.ElabInfo
+
+                  where type Lab.lab = ElabInfo.ErrorInfo.lab
+                  where type Ident.id = Ident.id
+                  where type Ident.longid = Ident.longid
+                  where type Ident.strid = Ident.strid
+                  where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
+                  where type TyCon.tycon = ElabInfo.ErrorInfo.tycon
+                  where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
+                  where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
+                  where type SCon.scon = StatObject.scon
+                  where type ty = IG.ty (* yes? *)
+
+                structure Environments : ENVIRONMENTS
+                  where type longid      = Ident.longid
+                  where type longtycon   = IG.longtycon
+                  where type longstrid   = IG.longstrid
+                  where type strid       = IG.StrId.strid
+                  (* where type strid    = ElabInfo.TypeInfo.strid *)
+                  where type tycon       = IG.tycon
+                  (* where type tycon    = ElabInfo.TypeInfo.tycon *)
+                  where type valbind     = IG.valbind
+                  where type id          = Ident.id
+                  (* where type id       = ElabInfo.ErrorInfo.id *)
+                  where type pat         = IG.pat
+                  where type ExplicitTyVar = IG.tyvar
+                  where type ExplicitTyVarEnv = ElabInfo.TypeInfo.ExplicitTyVarEnv 
+                  where type ty          = IG.ty
+                  (* where type TyName      = ElabInfo.ErrorInfo.TyName *)
+                  (* where type TyName   = ElabInfo.TypeInfo.TyName *)
+                  where type TyName   = StatObject.TyName.TyName
+                  where type TyEnv       = ElabInfo.TypeInfo.TyEnv
+                  where type TypeScheme  = StatObject.TypeScheme
+                  where type Type        = StatObject.Type
+                  where type TyVar       = StatObject.TyVar
+                  where type TypeFcn     = StatObject.TypeFcn
+                  where type realisation = StatObject.realisation
+                  where type Substitution = StatObject.Substitution
+                  where type level       = StatObject.level
+
+(* sharing type StatObject.TyName.tycon = Environments.TyName.tycon *)
+
+                  (* Already commented out *)
+                  (* sharing StatObject.TyName = Environments.TyName *)
+
 
                 structure Flags: FLAGS
                 structure Crash: CRASH
+
                ) : ELABDEC =
   struct
+
 
     structure ListHacks =
       struct
