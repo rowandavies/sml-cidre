@@ -30,6 +30,9 @@ functor ElabDec(
                   where type ErrorInfo.lab = StatObject.lab
                   where type TypeInfo.TyName.TyName = StatObject.TyName.TyName
                   where type ErrorInfo.TyName = StatObject.TyName.TyName
+				  where type ErrorInfo.tycon = StatObject.tycon				  
+				  where type TypeInfo.tycon = StatObject.tycon  (* Probably ELAB_INFO should equate types in its substructures. -RD *)
+				  (* where type ErrorInfo.longtycon = StatObject.longtycon *)
 
                   where type TypeInfo.id = Ident.id
                   where type ErrorInfo.id = Ident.id
@@ -50,7 +53,7 @@ functor ElabDec(
                   where type Ident.longid = Ident.longid
                   where type Ident.strid = Ident.strid
                   where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
-                  where type TyCon.tycon = ElabInfo.ErrorInfo.tycon
+                  where type TyCon.tycon = StatObject.tycon
                   where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
                   where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
                   where type SCon.scon = StatObject.scon
@@ -63,7 +66,7 @@ functor ElabDec(
                   where type Ident.longid = Ident.longid
                   where type Ident.strid = Ident.strid
                   where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
-                  where type TyCon.tycon = ElabInfo.ErrorInfo.tycon
+                  where type TyCon.tycon = StatObject.tycon
                   where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
                   where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
                   where type SCon.scon = StatObject.scon
@@ -75,7 +78,7 @@ functor ElabDec(
                   where type longstrid   = IG.longstrid
                   where type strid       = IG.StrId.strid
                   (* where type strid    = ElabInfo.TypeInfo.strid *)
-                  where type tycon       = IG.tycon
+                  where type tycon       = StatObject.tycon
                   (* where type tycon    = ElabInfo.TypeInfo.tycon *)
                   where type valbind     = IG.valbind
                   where type id          = Ident.id
