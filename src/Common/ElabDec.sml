@@ -46,7 +46,6 @@ functor ElabDec(structure ParseInfo : PARSE_INFO
                   sharing type ElabInfo.ErrorInfo.TyVar = StatObject.TyVar
                   sharing type ElabInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
                   sharing type ElabInfo.ErrorInfo.TyName = Environments.TyName
-                  sharing type ElabInfo.ErrorInfo.StringTree = StatObject.StringTree
                   sharing type ElabInfo.ErrorInfo.id    = Environments.id
                   sharing type ElabInfo.ErrorInfo.longid = OG.longid
                   sharing type ElabInfo.ErrorInfo.longstrid = OG.longstrid
@@ -71,11 +70,6 @@ functor ElabDec(structure ParseInfo : PARSE_INFO
                 structure Report: REPORT
 
                 structure PP: PRETTYPRINT
-                  sharing type StatObject.StringTree
-                               = Environments.StringTree
-                               = IG.StringTree
-                               = OG.StringTree
-                               = PP.StringTree
                   sharing type PP.Report = Report.Report
 
                 structure Flags: FLAGS
@@ -210,7 +204,7 @@ functor ElabDec(structure ParseInfo : PARSE_INFO
     type PreElabDatBind = IG.datbind
     type PostElabDatBind = OG.datbind
 
-    fun pr (msg : string, t : PP.StringTree) : unit =
+    fun pr (msg : string, t : StringTree.t) : unit =
           Report.print (Report.decorate (msg, PP.reportStringTree t))
 
     fun pr_st st = (PP.outputTree(print,st,100); print "\n")
@@ -1391,9 +1385,9 @@ functor ElabDec(structure ParseInfo : PARSE_INFO
             val out_i = okConv i
           in
             if !Flags.DEBUG_ELABDEC then
-              pr ("RECvalbind: ", PP.NODE {start="{", finish="}", indent=0,
+              pr ("RECvalbind: ", StringTree.NODE {start="{", finish="}", indent=0,
                                            children=[VE.layout VE''],
-                                           childsep=PP.NOSEP})
+                                           childsep=StringTree.NOSEP})
             else () ;
             (S' oo S, VE'', OG.RECvalbind (out_i, valbind''))
           end
@@ -1988,11 +1982,11 @@ functor ElabDec(structure ParseInfo : PARSE_INFO
         val _ =
           if !Flags.DEBUG_ELABDEC then
             let 
-              val t = PP.NODE{start="{", finish="}", indent=0,
+              val t = StringTree.NODE{start="{", finish="}", indent=0,
                               children=[VE.layout VE,
                                         Type.layout ty
                                        ],
-                              childsep=PP.RIGHT "; "
+                              childsep=StringTree.RIGHT "; "
                              }
             in
               pr("giving:   ", t)
