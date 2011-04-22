@@ -84,7 +84,10 @@ signature ALL_INFO =
       where type OverloadingInfo.OverloadingInfo = OverloadingInfo.OverloadingInfo
     structure RefineErrorInfo : REFINE_ERROR_INFO
       where type SourceInfo = SourceInfo.SourceInfo
+      where type ErrorInfo = ErrorInfo.RefineErrorInfo.ErrorInfo  (* was structure sharing *)
+
     structure RefInfo : REF_INFO
+      where type ElabInfo.ElabInfo = ElabInfo.ElabInfo
 
 end;
 
@@ -126,186 +129,195 @@ signature BASICS =
       sharing type SortCon.longtycon = TyCon.longtycon
 *)
     structure SortName : SORTNAME
-      (* sharing type SortName.StringTree  = Tools.PrettyPrint.StringTree *)
-      sharing type SortName.sortcon = TyCon.tycon
-      sharing type SortName.TyName  = TyName.TyName
-      sharing type SortName.Variance = TyVar.Variance
-      sharing type SortName.name = Name.name
+      (* where type StringTree  = Tools.PrettyPrint.StringTree *)
+      where type sortcon = TyCon.tycon
+      where type TyName  = TyName.TyName
+      where type Variance = TyVar.Variance
+      where type name = Name.name
 
     structure StatObject : STATOBJECT
-      sharing StatObject.TyName    = TyName
-      sharing type StatObject.ExplicitTyVar = TyVar.SyntaxTyVar
-      sharing type StatObject.strid     = StrId.strid
-      sharing type StatObject.scon      = SCon.scon
-      sharing type StatObject.lab       = Lab.lab
-(*      sharing type StatObject.StringTree = Tools.PrettyPrint.StringTree *)
+      where type TyName    = TyName.TyName (* Was structure sharing. *)
+      where type ExplicitTyVar = TyVar.SyntaxTyVar
+      where type strid     = StrId.strid
+      where type scon      = SCon.scon
+      where type lab       = Lab.lab
+(*      where type StringTree = Tools.PrettyPrint.StringTree *)
 
     structure RefObject : REFOBJECT
-      (* sharing type RefObject.StringTree  = Tools.PrettyPrint.StringTree *)
-      sharing type RefObject.SortName    = SortName.SortName
-      sharing type RefObject.scon        = SCon.scon
-      sharing type RefObject.lab         = Lab.lab
-      sharing type RefObject.TyVar       = StatObject.TyVar
-      sharing type RefObject.TypeFcn     = StatObject.TypeFcn
-      sharing type RefObject.Type        = StatObject.Type
-      sharing type RefObject.TVNames     = StatObject.TVNames
-      sharing type RefObject.TyName      = StatObject.TyName
-      sharing type RefObject.trealisation = StatObject.realisation
-      sharing type RefObject.Variance    = TyVar.Variance
-      sharing type RefObject.sortedFinMap = Tools.SortedFinMap.map
+      (* where type StringTree  = Tools.PrettyPrint.StringTree *)
+      where type SortName    = SortName.SortName
+      where type SortName.Set.Set = SortName.Set.Set
+      where type scon        = SCon.scon
+      where type lab         = Lab.lab
+      where type TyVar       = StatObject.TyVar
+      where type TypeFcn     = StatObject.TypeFcn
+      where type Type        = StatObject.Type
+      where type TVNames     = StatObject.TVNames
+      where type TyName      = TyName.TyName
+      where type trealisation = StatObject.realisation
+      where type ExplicitTyVar.Variance    = TyVar.Variance
+      where type ('a,'b) sortedFinMap = ('a,'b) Tools.SortedFinMap.map
 
+                        (* where type realisation = StatObject.realisation *)
+                        
     structure SigId : SIGID
     structure FunId : FUNID
 
     structure LexBasics: LEX_BASICS
-      sharing type LexBasics.Report = Tools.Report.Report
+      where type Report = Tools.Report.Report
       (* sharing type LexBasics.StringTree = Tools.PrettyPrint.StringTree *)
 
     structure PreElabDecGrammar: DEC_GRAMMAR
-      (* sharing type PreElabDecGrammar.StringTree     = Tools.PrettyPrint.StringTree *)
-      sharing PreElabDecGrammar.Ident = Ident
-      sharing PreElabDecGrammar.StrId = StrId
-      sharing PreElabDecGrammar.TyCon = TyCon
-      sharing PreElabDecGrammar.TyVar = TyVar
-      sharing type PreElabDecGrammar.TyVar.Variance = TyVar.Variance
-      sharing PreElabDecGrammar.Lab = Lab
-      sharing PreElabDecGrammar.SCon = SCon
+      (* where type StringTree     = Tools.PrettyPrint.StringTree *)
+      where type TyVar.Variance = TyVar.Variance
+      where type id = Ident.id
+      where type longid = Ident.longid
+      where type strid = StrId.strid
+      where type tycon = TyCon.tycon
+      where type tyvar = TyVar.SyntaxTyVar
+      where type lab = Lab.lab
+      where type scon = SCon.scon
 
     structure Environments : ENVIRONMENTS
-      sharing Environments.TyName       = StatObject.TyName
-      sharing type Environments.Type         = StatObject.Type
-      sharing type Environments.TyVar        = StatObject.TyVar
-      sharing type Environments.TypeScheme   = StatObject.TypeScheme
-      sharing type Environments.TypeFcn      = StatObject.TypeFcn
-      sharing type Environments.realisation  = StatObject.realisation
-      sharing type Environments.level        = StatObject.level
-      sharing type Environments.id           = Ident.id
-      sharing type Environments.longid       = Ident.longid
-      sharing type Environments.Substitution = StatObject.Substitution
-      sharing type Environments.ty           = PreElabDecGrammar.ty
-      sharing type Environments.longtycon    = TyCon.longtycon
-      sharing type Environments.longstrid    = StrId.longstrid
-      sharing type Environments.ExplicitTyVar  = TyVar.SyntaxTyVar
-      sharing type Environments.strid       = StrId.strid
-      sharing type Environments.valbind = PreElabDecGrammar.valbind
-      sharing type Environments.pat = PreElabDecGrammar.pat
-      sharing Environments.FinMap = Tools.FinMap
+      where type Type         = StatObject.Type
+      where type TyVar        = StatObject.TyVar
+      where type TypeScheme   = StatObject.TypeScheme
+      where type TypeFcn      = StatObject.TypeFcn
+      where type realisation  = StatObject.realisation
+      where type level        = StatObject.level
+      where type id           = Ident.id
+      where type longid       = Ident.longid
+      where type Substitution = StatObject.Substitution
+      where type ty           = PreElabDecGrammar.ty
+      where type longtycon    = TyCon.longtycon
+      where type longstrid    = StrId.longstrid
+      where type ExplicitTyVar  = TyVar.SyntaxTyVar
+      where type strid       = StrId.strid
+      where type valbind = PreElabDecGrammar.valbind
+      where type pat = PreElabDecGrammar.pat
+
+      where type ('a,'b) FinMap.map = ('a,'b) Tools.FinMap.map
+      where type TyName       = StatObject.TyName
 
     structure RefinedEnvironments : REFINED_ENVIRONMENTS
-      sharing type RefinedEnvironments.id = Ident.id
-      sharing type RefinedEnvironments.longid =  Ident.longid
-      sharing type RefinedEnvironments.SortVar = RefObject.SortVar
-      (* sharing type RefinedEnvironments.StringTree *)
+      where type id = Ident.id
+      where type longid =  Ident.longid
+      where type SortVar = RefObject.SortVar
+      (* where type StringTree *)
       (* 	         = Tools.PrettyPrint.StringTree *)
-      sharing type RefinedEnvironments.Sort = RefObject.Sort
-      sharing type RefinedEnvironments.Type = RefObject.Type
-      sharing type RefinedEnvironments.TyName = RefObject.TyName
-      sharing type RefinedEnvironments.SortName = RefObject.SortName
-      sharing type RefinedEnvironments.TypeFcn = RefObject.TypeFcn
-      sharing type RefinedEnvironments.SortFcn = RefObject.SortFcn
-      sharing type RefinedEnvironments.SortScheme = RefObject.SortScheme
-      sharing type RefinedEnvironments.sortcon = TyCon.tycon
-      sharing type RefinedEnvironments.longtycon =  TyCon.longtycon
-      sharing type RefinedEnvironments.ExplicitTyVar  = TyVar.SyntaxTyVar
-      sharing type RefinedEnvironments.ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
-      sharing type RefinedEnvironments.strid       = StrId.strid
-      sharing type RefinedEnvironments.longstrid    = StrId.longstrid
-      sharing type RefinedEnvironments.Report = Tools.Report.Report
+      where type Sort = RefObject.Sort
+      where type Type = RefObject.Type
+      where type TyName = RefObject.TyName
+      where type SortName = RefObject.SortName
+      where type TypeFcn = RefObject.TypeFcn
+      where type SortFcn = RefObject.SortFcn
+      where type SortScheme = RefObject.SortScheme
+      where type tycon = TyCon.tycon
+      where type longtycon =  TyCon.longtycon
+      where type ExplicitTyVar  = TyVar.SyntaxTyVar
+      where type ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
+      where type strid       = StrId.strid
+      where type longstrid    = StrId.longstrid
+      where type Report = Tools.Report.Report
 
     structure ModuleStatObject : MODULE_STATOBJECT
-      sharing ModuleStatObject.TyName = TyName
-      sharing type ModuleStatObject.Env = Environments.Env
-      sharing type ModuleStatObject.rEnv = RefinedEnvironments.Env
-      sharing type ModuleStatObject.rT = RefinedEnvironments.TyNameEnv
-      sharing type ModuleStatObject.realisation = StatObject.realisation
-      sharing type ModuleStatObject.strid = StrId.strid
-      sharing type ModuleStatObject.longstrid = StrId.longstrid
-      sharing type ModuleStatObject.longtycon = TyCon.longtycon
-      sharing type ModuleStatObject.Type = StatObject.Type
-      sharing type ModuleStatObject.TypeScheme = StatObject.TypeScheme
-      sharing type ModuleStatObject.TypeFcn = StatObject.TypeFcn
-      sharing type ModuleStatObject.TyVar = StatObject.TyVar
-      sharing type ModuleStatObject.id = Ident.id
+      where type Env = Environments.Env
+      where type rEnv = RefinedEnvironments.Env
+      where type rT = RefinedEnvironments.TyNameEnv
+      where type realisation = StatObject.realisation
+      where type strid = StrId.strid
+      where type longstrid = StrId.longstrid
+      where type longtycon = TyCon.longtycon
+      where type Type = StatObject.Type
+      where type TypeScheme = StatObject.TypeScheme
+      where type TypeFcn = StatObject.TypeFcn
+      where type TyVar = StatObject.TyVar
+      where type id = Ident.id
+      where type TyName = TyName.TyName
 
     structure ModuleEnvironments : MODULE_ENVIRONMENTS
-      sharing ModuleEnvironments.TyName = TyName
-      sharing type ModuleEnvironments.realisation = StatObject.realisation
-      sharing type ModuleEnvironments.longstrid = StrId.longstrid
-      sharing type ModuleEnvironments.longtycon = TyCon.longtycon
-      sharing type ModuleEnvironments.Context = Environments.Context
-      sharing type ModuleEnvironments.FunSig = ModuleStatObject.FunSig
-      sharing type ModuleEnvironments.TyStr = Environments.TyStr
-      sharing type ModuleEnvironments.TyVar = StatObject.TyVar
-      sharing type ModuleEnvironments.id = Ident.id
-      sharing type ModuleEnvironments.longid = Ident.longid
-      sharing type ModuleEnvironments.strid = StrId.strid
-      sharing type ModuleEnvironments.sigid = SigId.sigid
-      sharing type ModuleEnvironments.funid = FunId.funid
-      sharing type ModuleEnvironments.Env = Environments.Env
-      sharing type ModuleEnvironments.Sig = ModuleStatObject.Sig
-      sharing ModuleEnvironments.rEnv = RefinedEnvironments
-      sharing type ModuleEnvironments.rEnv.Variance = SortName.Variance (* Try this...  *)
+      where type realisation = StatObject.realisation
+      where type longstrid = StrId.longstrid
+      where type longtycon = TyCon.longtycon
+      where type Context = Environments.Context
+      where type FunSig = ModuleStatObject.FunSig
+      where type TyStr = Environments.TyStr
+      where type TyVar = StatObject.TyVar
+      where type id = Ident.id
+      where type longid = Ident.longid
+      where type strid = StrId.strid
+      where type sigid = SigId.sigid
+      where type funid = FunId.funid
+      where type Env = Environments.Env
+      where type Sig = ModuleStatObject.Sig
+      where type rEnv.Variance = SortName.Variance (* Try this...  *)
+      where type TyName.TyName = TyName.TyName
+
+
+(*      sharing ModuleEnvironments.rEnv = RefinedEnvironments    Argh - expand this?? *)
 
     structure OpacityEnv : OPACITY_ENV
-      sharing OpacityEnv.TyName = TyName
-      sharing type OpacityEnv.funid = FunId.funid
+      where type funid = FunId.funid
       (* sharing type OpacityEnv.StringTree = Tools.PrettyPrint.StringTree *)
+      where type TyName.TyName = TyName.TyName
 
     structure AllInfo : ALL_INFO
-      sharing type AllInfo.TypeInfo.Type = StatObject.Type
-      sharing type AllInfo.TypeInfo.TyVar = StatObject.TyVar
-      sharing type AllInfo.TypeInfo.TyEnv = Environments.TyEnv
-      sharing type AllInfo.TypeInfo.longid = Ident.longid
-      sharing type AllInfo.TypeInfo.realisation = StatObject.realisation
-      sharing type AllInfo.TypeInfo.Env = Environments.Env
-      sharing type AllInfo.TypeInfo.strid = StrId.strid
-      sharing type AllInfo.TypeInfo.tycon = TyCon.tycon
-      sharing type AllInfo.TypeInfo.id = Ident.id
-      sharing AllInfo.TypeInfo.TyName = StatObject.TyName
-      sharing type AllInfo.TypeInfo.Basis = ModuleEnvironments.Basis
-      sharing type AllInfo.ElabInfo.TypeInfo.ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
-      sharing type AllInfo.ErrorInfo.Type = StatObject.Type
-      sharing type AllInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
-      sharing type AllInfo.ErrorInfo.TyVar = StatObject.TyVar
-      sharing type AllInfo.ErrorInfo.TyName = TyName.TyName
-      (* sharing type AllInfo.ErrorInfo.StringTree = Tools.PrettyPrint.StringTree *)
-      sharing type AllInfo.ErrorInfo.TypeFcn = StatObject.TypeFcn
-      sharing type AllInfo.ErrorInfo.lab = Lab.lab
-      sharing type AllInfo.ErrorInfo.tycon = TyCon.tycon
-      sharing type AllInfo.ErrorInfo.longid = Ident.longid
-      sharing type AllInfo.ErrorInfo.longtycon = TyCon.longtycon
-      sharing type AllInfo.ErrorInfo.strid = StrId.strid
-      sharing type AllInfo.ErrorInfo.longstrid = StrId.longstrid
-      sharing type AllInfo.ErrorInfo.sigid = SigId.sigid
-      sharing type AllInfo.ErrorInfo.funid = FunId.funid
-      sharing type AllInfo.ErrorInfo.id = Ident.id
-      sharing type AllInfo.ErrorInfo.SigMatchError = ModuleStatObject.SigMatchError
-      sharing AllInfo.ErrorInfo.RefineErrorInfo = AllInfo.RefineErrorInfo
-     
+      where type TypeInfo.Type = StatObject.Type
+      where type TypeInfo.TyVar = StatObject.TyVar
+      where type TypeInfo.TyEnv = Environments.TyEnv
+      where type TypeInfo.longid = Ident.longid
+      where type TypeInfo.realisation = StatObject.realisation
+      where type TypeInfo.Env = Environments.Env
+      where type TypeInfo.strid = StrId.strid
+      where type TypeInfo.tycon = TyCon.tycon
+      where type TypeInfo.id = Ident.id
+      where type TypeInfo.TyName.TyName = StatObject.TyName
+      where type TypeInfo.Basis = ModuleEnvironments.Basis
+      where type ElabInfo.TypeInfo.ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
+      where type ErrorInfo.Type = StatObject.Type
+      where type ErrorInfo.TypeScheme = StatObject.TypeScheme
+      where type ErrorInfo.TyVar = StatObject.TyVar
+      where type ErrorInfo.TyName = TyName.TyName
+      (* where type ErrorInfo.StringTree = Tools.PrettyPrint.StringTree *)
+      where type ErrorInfo.TypeFcn = StatObject.TypeFcn
+      where type ErrorInfo.lab = Lab.lab
+      where type ErrorInfo.tycon = TyCon.tycon
+      where type ErrorInfo.longid = Ident.longid
+      where type ErrorInfo.longtycon = TyCon.longtycon
+      where type ErrorInfo.strid = StrId.strid
+      where type ErrorInfo.longstrid = StrId.longstrid
+      where type ErrorInfo.sigid = SigId.sigid
+      where type ErrorInfo.funid = FunId.funid
+      where type ErrorInfo.id = Ident.id
+      where type ErrorInfo.SigMatchError = ModuleStatObject.SigMatchError
 
-      sharing type AllInfo.SourceInfo.pos = LexBasics.pos
-      sharing type AllInfo.SourceInfo.Report = Tools.Report.Report
-      (* sharing type AllInfo.ElabInfo.StringTree = Tools.PrettyPrint.StringTree *)
-      sharing type AllInfo.OverloadingInfo.RecType = StatObject.RecType
-      sharing type AllInfo.OverloadingInfo.TyVar = StatObject.TyVar
-      (* sharing type AllInfo.OverloadingInfo.StringTree = Tools.PrettyPrint.StringTree *)
-      sharing type AllInfo.ElabInfo.ParseInfo = PreElabDecGrammar.info
-      sharing type AllInfo.ElabInfo.ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
+      where type SourceInfo.pos = LexBasics.pos
+      where type SourceInfo.Report = Tools.Report.Report
+      (* where type ElabInfo.StringTree = Tools.PrettyPrint.StringTree *)
+      where type OverloadingInfo.RecType = StatObject.RecType
+      where type OverloadingInfo.TyVar = StatObject.TyVar
+      (* where type OverloadingInfo.StringTree = Tools.PrettyPrint.StringTree *)
+      where type ParseInfo.ParseInfo = PreElabDecGrammar.info (* See ALL_INFO *)
+      where type ParseInfo.SourceInfo.Report = Tools.Report.Report
+      where type ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
+      where type ParseInfo.SourceInfo.pos = LexBasics.pos
+      where type ElabInfo.ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
 
-      sharing type AllInfo.RefineErrorInfo.Sort = RefObject.Sort
-      sharing type AllInfo.RefineErrorInfo.Type = StatObject.Type
-      sharing type AllInfo.RefineErrorInfo.SortScheme = RefObject.SortScheme
-      sharing type AllInfo.RefineErrorInfo.longid = Ident.longid
-      sharing type AllInfo.RefineErrorInfo.longsortcon = TyCon.longtycon
-(*      sharing type AllInfo.RefineErrorInfo.Error = Comp.Error *)
+      where type RefineErrorInfo.Sort = RefObject.Sort
+      where type RefineErrorInfo.Type = StatObject.Type
+      where type RefineErrorInfo.SortScheme = RefObject.SortScheme
+      where type RefineErrorInfo.longid = Ident.longid
+      where type RefineErrorInfo.longsortcon = TyCon.longtycon
+(*      where type RefineErrorInfo.Error = Comp.Error *)
 
-
+(*  Argh.  These may be tedious.
       sharing AllInfo.RefInfo.REnv = RefinedEnvironments
       sharing AllInfo.RefInfo.RefObject = RefObject
       sharing AllInfo.RefInfo.ElabInfo = AllInfo.ElabInfo
-
-    structure Comp : COMP  where type Error = AllInfo.SourceInfo.SourceInfo * AllInfo.RefineErrorInfo.ErrorInfo
-      sharing AllInfo.RefInfo.Comp = Comp
+*)
+    structure Comp : COMP  
+      where type Error = AllInfo.SourceInfo.SourceInfo * AllInfo.RefineErrorInfo.ErrorInfo
+      where type 'a Redo = 'a AllInfo.RefInfo.Comp.Redo
 
 
   end;
@@ -466,7 +478,7 @@ functor Basics(structure Tools: TOOLS): BASICS =
 		     structure RefObject = RefObject
 		     structure PP = Tools.PrettyPrint
 		     structure SortedFinMap = Tools.SortedFinMap
-		     structure FinMap = Tools.FinMap
+		     (* structure FinMap = Tools.FinMap *)
 		     structure FinMapEq = Tools.FinMapEq
 		     structure Flags = Tools.Flags
 		     structure Timestamp = Tools.Timestamp
@@ -587,20 +599,20 @@ signature TOPDEC_PARSING =
   sig
     structure Basics: BASICS
 
-    structure PreElabDecGrammar: DEC_GRAMMAR
-      sharing PreElabDecGrammar = Basics.PreElabDecGrammar
+    (* structure PreElabDecGrammar: DEC_GRAMMAR *)
+      (* sharing PreElabDecGrammar = Basics.PreElabDecGrammar *)
 
     structure PreElabTopdecGrammar: TOPDEC_GRAMMAR
-      sharing PreElabTopdecGrammar.DecGrammar = PreElabDecGrammar
-      sharing PreElabTopdecGrammar.SigId = Basics.SigId
-      sharing PreElabTopdecGrammar.FunId = Basics.FunId
+      where type dec = Basics.PreElabDecGrammar.dec
+      where type sigid = Basics.SigId.sigid
+      where type funid = Basics.FunId.funid
 
-    structure InfixBasis: INFIX_BASIS
-      sharing InfixBasis = Basics.InfixBasis
+    (* structure InfixBasis: INFIX_BASIS *)
+    (*   sharing InfixBasis = Basics.InfixBasis *)
 
     structure Parse: PARSE
-      sharing type Parse.topdec = PreElabTopdecGrammar.topdec
-      sharing type Parse.InfixBasis = InfixBasis.Basis
+      where type topdec = PreElabTopdecGrammar.topdec
+      where type InfixBasis = Basics.InfixBasis.Basis
   end;
 
 
@@ -611,21 +623,17 @@ functor TopdecParsing(structure Basics: BASICS) (* : TOPDEC_PARSING *) =
     structure Tools = Basics.Tools
     structure AllInfo = Basics.AllInfo
 
-    structure PreElabDecGrammar = Basics.PreElabDecGrammar
-
     structure PreElabTopdecGrammar : TOPDEC_GRAMMAR = TopdecGrammar
-      (structure DecGrammar = PreElabDecGrammar
+      (structure DecGrammar = Basics.PreElabDecGrammar
        structure SigId = Basics.SigId
        structure FunId = Basics.FunId
        structure PrettyPrint = Tools.PrettyPrint)
-
-    structure InfixBasis = Basics.InfixBasis
 
     structure Parse = Parse
       (structure TopdecGrammar = PreElabTopdecGrammar
        structure LexBasics = Basics.LexBasics
        structure ParseInfo = AllInfo.ParseInfo
-       structure InfixBasis = InfixBasis
+       structure InfixBasis = Basics.InfixBasis
        structure Report = Tools.Report
        structure PrettyPrint = Tools.PrettyPrint
        structure FinMap = Tools.FinMap
@@ -643,25 +651,25 @@ signature ELABORATION =
     structure ElabTopdec : ELABTOPDEC
 
     structure PostElabDecGrammar : DEC_GRAMMAR
-      sharing type PostElabDecGrammar.lab = Basics.Lab.lab
-      sharing type PostElabDecGrammar.scon = Basics.SCon.scon
-      sharing type PostElabDecGrammar.tycon = Basics.TyCon.tycon
-      sharing type PostElabDecGrammar.longtycon = Basics.TyCon.longtycon
-      sharing type PostElabDecGrammar.tyvar = Basics.TyVar.SyntaxTyVar
-      sharing type PostElabDecGrammar.TyVar.Variance = Basics.TyVar.Variance
-      sharing type PostElabDecGrammar.id = Basics.Ident.id
-      sharing type PostElabDecGrammar.longid = Basics.Ident.longid = Basics.ModuleEnvironments.longid
-      sharing type PostElabDecGrammar.info
+      where type lab = Basics.Lab.lab
+      where type scon = Basics.SCon.scon
+      where type tycon = Basics.TyCon.tycon
+      where type longtycon = Basics.TyCon.longtycon
+      where type tyvar = Basics.TyVar.SyntaxTyVar
+      where type TyVar.Variance = Basics.TyVar.Variance
+      where type id = Basics.Ident.id
+      where type longid = Basics.Ident.longid
+      where type info
 		   = Basics.AllInfo.ElabInfo.ElabInfo
-      (* sharing type PostElabDecGrammar.StringTree *)
+      (* where type StringTree *)
       (* 	           = Basics.Tools.PrettyPrint.StringTree *)
 
     structure PostElabTopdecGrammar : TOPDEC_GRAMMAR
-      sharing PostElabTopdecGrammar.DecGrammar = PostElabDecGrammar
-      sharing PostElabTopdecGrammar.StrId = Basics.StrId
-      sharing PostElabTopdecGrammar.SigId = Basics.SigId
-      sharing PostElabTopdecGrammar.FunId = Basics.FunId
-      sharing type PostElabTopdecGrammar.topdec = ElabTopdec.PostElabTopdec
+      where type dec = PostElabDecGrammar.dec
+      where type strid = Basics.StrId.strid
+      where type sigid = Basics.SigId.sigid
+      where type funid = Basics.FunId.funid
+      where type topdec = ElabTopdec.PostElabTopdec
 
     structure RefDecGrammar : DEC_GRAMMAR where type info = Basics.AllInfo.RefInfo.RefInfo
 (*
@@ -680,6 +688,9 @@ functor Elaboration(structure TopdecParsing : TOPDEC_PARSING): ELABORATION =
     structure Basics     = TopdecParsing.Basics
 
     local
+      structure InfixBasis = Basics.InfixBasis
+      structure PreElabDecGrammar = Basics.PreElabDecGrammar
+
       structure Tools      = Basics.Tools
       structure AllInfo    = Basics.AllInfo
       structure ElabInfo   = AllInfo.ElabInfo
@@ -689,7 +700,7 @@ functor Elaboration(structure TopdecParsing : TOPDEC_PARSING): ELABORATION =
 	DecGrammar(structure GrammarInfo =
 		     struct
 		       type GrammarInfo = ElabInfo.ElabInfo
-		       val bogus_info = ElabInfo.from_ParseInfo TopdecParsing.PreElabDecGrammar.bogus_info
+		       val bogus_info = ElabInfo.from_ParseInfo PreElabDecGrammar.bogus_info
 		     end
 		   structure Lab         = Basics.Lab
 		   structure SCon        = Basics.SCon

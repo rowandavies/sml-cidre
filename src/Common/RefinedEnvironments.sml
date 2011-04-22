@@ -31,7 +31,7 @@ functor RefinedEnvironments
                         where type TyName = TyName.TyName
                         where type Type = StatObject.Type
                         where type lab = StatObject.lab
-                        where type realisation = StatObject.realisation
+                        where type trealisation = StatObject.realisation
                         where type SortName.Set.Set = SortName.Set.Set
                         (* sharing RefObject.SortName = SortName *)
                      structure PP: PRETTYPRINT
