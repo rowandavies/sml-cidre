@@ -344,13 +344,13 @@ functor OrderSet(structure Order : ORDERING
 	appl s
       end
 
-    type StringTree = PP.StringTree
+    type StringTree = StringTree.t
 
     fun layoutSet {start, sep, finish} layoutItem s =
-      PP.NODE {start=start,
+      StringTree.NODE {start=start,
 	       finish=finish,
 	       indent=3,
-	       childsep=PP.RIGHT sep,
+	       childsep=StringTree.RIGHT sep,
 	       children=listmap layoutItem (list s)}
   end
 

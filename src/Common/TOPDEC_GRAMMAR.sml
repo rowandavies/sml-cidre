@@ -3,32 +3,39 @@
 signature TOPDEC_GRAMMAR =
   sig
     (* Core declarations. *)
-
-    structure DecGrammar : DEC_GRAMMAR
-    type dec = DecGrammar.dec
-
-    (* Various kinds of module identifiers. *)
-
-    structure FunId : FUNID
-    structure SigId : SIGID
-    type strid = DecGrammar.StrId.strid
-    type longstrid = DecGrammar.StrId.longstrid 
-    type funid = FunId.funid
-    type sigid = SigId.sigid
-
+    eqtype strid
+    type longstrid 
+    
     (* Objects from the core syntax (needed for specs). *)
 
-    type id = DecGrammar.id
-    type longid = DecGrammar.longid
-    type tyvar = DecGrammar.tyvar
-    type ty = DecGrammar.ty
-    type tycon = DecGrammar.tycon
-    type longtycon = DecGrammar.longtycon
+    eqtype id
+    type longid
+    eqtype tyvar
+    type ty
+    eqtype tycon
+    type longtycon  
+    type info  (* info place-holder. *)
+    type dec
+		
+    structure DecGrammar : DEC_GRAMMAR
+		where type strid = strid
+		where type longstrid = longstrid
+		where type id = id
+		where type longid = longid
+		where type tyvar = tyvar
+		where type ty = ty
+		where type tycon = tycon
+		where type longtycon = longtycon
+		where type info = info
+		where type dec = dec
 
-    (* info place-holder. *)
+    (* Various kinds of module identifiers. *)
+    type funid
+    type sigid
+    structure FunId : FUNID  where type funid = funid
+    structure SigId : SIGID  where type sigid = sigid
 
-    type info      sharing type info = DecGrammar.info
-
+	
     datatype 'a WithInfo = WITH_INFO of info * 'a
       sharing type WithInfo = DecGrammar.WithInfo
 

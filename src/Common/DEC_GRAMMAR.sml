@@ -5,23 +5,33 @@
 
 signature DEC_GRAMMAR =
 sig
-  structure Lab   : LAB   (* labels *)
-  structure SCon  : SCON  (* special constants *)                            
-  structure Ident : IDENT (* identifiers - variables or constructors *)      
-  structure TyVar : TYVAR (* type variables *)                               
-  structure TyCon : TYCON (* type constructors *)     
-     where type strid = Ident.strid                       
-  structure StrId : STRID (* structure identifiers *)
-     where type strid = Ident.strid
+  type scon
+  type lab
+  eqtype id
+  type longid
+  eqtype tyvar
+  eqtype tycon
+  type longtycon
+  eqtype strid
+  type longstrid
 
-  type scon = SCon.scon
-  type lab = Lab.lab
-  type id = Ident.id
-  type longid = Ident.longid
-  type tyvar = TyVar.SyntaxTyVar (*very confusing*)
-  type tycon = TyCon.tycon
-  type longtycon = TyCon.longtycon
-  type longstrid = StrId.longstrid
+  structure Lab   : LAB   (* labels *)
+      where type lab = lab
+  structure SCon  : SCON  (* special constants *)                            
+      where type scon = scon
+  structure Ident : IDENT (* identifiers - variables or constructors *) 
+      where type id = id
+      where type longid = longid
+	  where type strid = strid
+  structure TyVar : TYVAR (* type variables *)  
+      where type SyntaxTyVar = tyvar (*very confusing*)  
+  structure TyCon : TYCON (* type constructors *)     
+     where type strid = Ident.strid           
+     where type tycon = tycon
+     where type longtycon = longtycon	 
+  structure StrId : STRID (* structure identifiers *)
+     where type strid = strid
+	 where type longstrid = longstrid
 
   type info       (* info about the position in the source text, errors etc *)
   val bogus_info : info

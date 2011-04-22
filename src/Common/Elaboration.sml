@@ -8,11 +8,11 @@ signature TOOLS =
     structure IntFinMap : MONO_FINMAP where type dom = int
 
     structure PrettyPrint: PRETTYPRINT
-      sharing type FinMap.StringTree
+     (* sharing type FinMap.StringTree
 	           = FinMapEq.StringTree
 		   = SortedFinMap.StringTree
 		   = PrettyPrint.StringTree
-	           = IntFinMap.StringTree
+	           = IntFinMap.StringTree *)
 
     structure Flags: FLAGS
             
@@ -72,18 +72,18 @@ signature ALL_INFO =
     structure SourceInfo      : SOURCE_INFO
     structure DFInfo          : DF_INFO
     structure ParseInfo       : PARSE_INFO
-      sharing ParseInfo.SourceInfo = SourceInfo
-      sharing ParseInfo.DFInfo = DFInfo
+      where type SourceInfo = SourceInfo.SourceInfo
+      where type DFInfo = DFInfo.DFInfo
     structure ErrorInfo       : ERROR_INFO
     structure TypeInfo        : TYPE_INFO
     structure OverloadingInfo : OVERLOADING_INFO
     structure ElabInfo : ELAB_INFO
-      sharing ElabInfo.ParseInfo = ParseInfo
-      sharing ElabInfo.ErrorInfo = ErrorInfo
-      sharing ElabInfo.TypeInfo = TypeInfo
-      sharing ElabInfo.OverloadingInfo = OverloadingInfo
+      where type ParseInfo.ParseInfo = ParseInfo.ParseInfo
+      where type ErrorInfo.ErrorInfo = ErrorInfo.ErrorInfo
+      where type TypeInfo.TypeInfo = TypeInfo.TypeInfo
+      where type OverloadingInfo.OverloadingInfo = OverloadingInfo.OverloadingInfo
     structure RefineErrorInfo : REFINE_ERROR_INFO
-      sharing type RefineErrorInfo.SourceInfo = SourceInfo.SourceInfo
+      where type SourceInfo = SourceInfo.SourceInfo
     structure RefInfo : REF_INFO
 
 end;
@@ -96,12 +96,12 @@ signature BASICS =
     structure StrId : STRID
 
     structure Ident : IDENT
-      sharing type Ident.strid = StrId.strid
+      where type strid = StrId.strid
 
     structure InfixBasis : INFIX_BASIS
-      sharing type InfixBasis.id = Ident.id
-      sharing type InfixBasis.Report = Tools.Report.Report
-      sharing type InfixBasis.StringTree = Tools.PrettyPrint.StringTree
+      where type id = Ident.id
+      where type Report = Tools.Report.Report
+      (* sharing type InfixBasis.StringTree = Tools.PrettyPrint.StringTree *)
 
     structure SCon : SCON
 
@@ -109,14 +109,14 @@ signature BASICS =
     structure TyVar : TYVAR
 
     structure TyCon : TYCON
-      sharing type TyCon.strid = StrId.strid
+      where type strid = StrId.strid
 
     structure Name : NAME
 
     structure TyName : TYNAME
-      sharing type TyName.tycon = TyCon.tycon
-      sharing type TyName.name = Name.name
-      sharing type TyName.StringTree = Tools.PrettyPrint.StringTree
+      where type tycon = TyCon.tycon
+      where type name = Name.name
+      (* sharing type TyName.StringTree = Tools.PrettyPrint.StringTree *)
 
 (*    structure SortVar : SORTVAR *)
 
@@ -126,7 +126,7 @@ signature BASICS =
       sharing type SortCon.longtycon = TyCon.longtycon
 *)
     structure SortName : SORTNAME
-      sharing type SortName.StringTree  = Tools.PrettyPrint.StringTree
+      (* sharing type SortName.StringTree  = Tools.PrettyPrint.StringTree *)
       sharing type SortName.sortcon = TyCon.tycon
       sharing type SortName.TyName  = TyName.TyName
       sharing type SortName.Variance = TyVar.Variance
@@ -141,7 +141,7 @@ signature BASICS =
 (*      sharing type StatObject.StringTree = Tools.PrettyPrint.StringTree *)
 
     structure RefObject : REFOBJECT
-      sharing type RefObject.StringTree  = Tools.PrettyPrint.StringTree
+      (* sharing type RefObject.StringTree  = Tools.PrettyPrint.StringTree *)
       sharing type RefObject.SortName    = SortName.SortName
       sharing type RefObject.scon        = SCon.scon
       sharing type RefObject.lab         = Lab.lab
@@ -159,10 +159,10 @@ signature BASICS =
 
     structure LexBasics: LEX_BASICS
       sharing type LexBasics.Report = Tools.Report.Report
-      sharing type LexBasics.StringTree = Tools.PrettyPrint.StringTree
+      (* sharing type LexBasics.StringTree = Tools.PrettyPrint.StringTree *)
 
     structure PreElabDecGrammar: DEC_GRAMMAR
-      sharing type PreElabDecGrammar.StringTree     = Tools.PrettyPrint.StringTree
+      (* sharing type PreElabDecGrammar.StringTree     = Tools.PrettyPrint.StringTree *)
       sharing PreElabDecGrammar.Ident = Ident
       sharing PreElabDecGrammar.StrId = StrId
       sharing PreElabDecGrammar.TyCon = TyCon
@@ -195,8 +195,8 @@ signature BASICS =
       sharing type RefinedEnvironments.id = Ident.id
       sharing type RefinedEnvironments.longid =  Ident.longid
       sharing type RefinedEnvironments.SortVar = RefObject.SortVar
-      sharing type RefinedEnvironments.StringTree
-	         = Tools.PrettyPrint.StringTree
+      (* sharing type RefinedEnvironments.StringTree *)
+      (* 	         = Tools.PrettyPrint.StringTree *)
       sharing type RefinedEnvironments.Sort = RefObject.Sort
       sharing type RefinedEnvironments.Type = RefObject.Type
       sharing type RefinedEnvironments.TyName = RefObject.TyName
@@ -249,7 +249,7 @@ signature BASICS =
     structure OpacityEnv : OPACITY_ENV
       sharing OpacityEnv.TyName = TyName
       sharing type OpacityEnv.funid = FunId.funid
-      sharing type OpacityEnv.StringTree = Tools.PrettyPrint.StringTree
+      (* sharing type OpacityEnv.StringTree = Tools.PrettyPrint.StringTree *)
 
     structure AllInfo : ALL_INFO
       sharing type AllInfo.TypeInfo.Type = StatObject.Type
@@ -268,7 +268,7 @@ signature BASICS =
       sharing type AllInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
       sharing type AllInfo.ErrorInfo.TyVar = StatObject.TyVar
       sharing type AllInfo.ErrorInfo.TyName = TyName.TyName
-      sharing type AllInfo.ErrorInfo.StringTree = Tools.PrettyPrint.StringTree
+      (* sharing type AllInfo.ErrorInfo.StringTree = Tools.PrettyPrint.StringTree *)
       sharing type AllInfo.ErrorInfo.TypeFcn = StatObject.TypeFcn
       sharing type AllInfo.ErrorInfo.lab = Lab.lab
       sharing type AllInfo.ErrorInfo.tycon = TyCon.tycon
@@ -285,10 +285,10 @@ signature BASICS =
 
       sharing type AllInfo.SourceInfo.pos = LexBasics.pos
       sharing type AllInfo.SourceInfo.Report = Tools.Report.Report
-      sharing type AllInfo.ElabInfo.StringTree = Tools.PrettyPrint.StringTree
+      (* sharing type AllInfo.ElabInfo.StringTree = Tools.PrettyPrint.StringTree *)
       sharing type AllInfo.OverloadingInfo.RecType = StatObject.RecType
       sharing type AllInfo.OverloadingInfo.TyVar = StatObject.TyVar
-      sharing type AllInfo.OverloadingInfo.StringTree = Tools.PrettyPrint.StringTree
+      (* sharing type AllInfo.OverloadingInfo.StringTree = Tools.PrettyPrint.StringTree *)
       sharing type AllInfo.ElabInfo.ParseInfo = PreElabDecGrammar.info
       sharing type AllInfo.ElabInfo.ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
 
@@ -653,8 +653,8 @@ signature ELABORATION =
       sharing type PostElabDecGrammar.longid = Basics.Ident.longid = Basics.ModuleEnvironments.longid
       sharing type PostElabDecGrammar.info
 		   = Basics.AllInfo.ElabInfo.ElabInfo
-      sharing type PostElabDecGrammar.StringTree
-	           = Basics.Tools.PrettyPrint.StringTree
+      (* sharing type PostElabDecGrammar.StringTree *)
+      (* 	           = Basics.Tools.PrettyPrint.StringTree *)
 
     structure PostElabTopdecGrammar : TOPDEC_GRAMMAR
       sharing PostElabTopdecGrammar.DecGrammar = PostElabDecGrammar

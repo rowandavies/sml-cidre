@@ -4,6 +4,7 @@ functor ElabInfo (structure ParseInfo : PARSE_INFO
 		    where type RefineErrorInfo.Report = ParseInfo.SourceInfo.Report
             where type RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
 		  structure TypeInfo : TYPE_INFO
+			where type tycon = ErrorInfo.tycon
 		  structure OverloadingInfo : OVERLOADING_INFO
 		  structure PrettyPrint : PRETTYPRINT
 		  structure Crash : CRASH

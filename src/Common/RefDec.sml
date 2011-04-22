@@ -100,14 +100,14 @@ functor RefDec(
                     where type OG.info = RefInfo.RefInfo
                     where type IG.info = RefInfo.ElabInfo.ElabInfo
 
-                    where type IG.Lab.lab = Lab.lab
-                    where type IG.Ident.id = Ident.id
-                    where type IG.Ident.longid = Ident.longid
-                    where type IG.TyVar.SyntaxTyVar = TyVar.SyntaxTyVar
-                    where type IG.TyCon.tycon = TyCon.tycon
-                    where type IG.TyCon.longtycon = TyCon.longtycon
-                    where type IG.SCon.scon = StatObject.scon
-                    where type IG.StrId.longstrid = RefinedEnvironments.longstrid
+                    where type IG.lab = Lab.lab
+                    where type IG.id = Ident.id
+                    where type IG.longid = Ident.longid
+                    where type IG.tyvar = TyVar.SyntaxTyVar
+                    where type IG.tycon = TyCon.tycon
+                    where type IG.longtycon = TyCon.longtycon
+                    where type IG.scon = StatObject.scon
+                    where type IG.longstrid = RefinedEnvironments.longstrid
 
 
 (*                    where type IG.TyVar.SyntaxTyVar = RefinedEnvironments.ExplicitTyVar    (* Implied by MAP_DEC_INFO *)

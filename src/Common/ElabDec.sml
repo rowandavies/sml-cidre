@@ -31,7 +31,7 @@ functor ElabDec(
                   where type TypeInfo.TyName.TyName = StatObject.TyName.TyName
                   where type ErrorInfo.TyName = StatObject.TyName.TyName
 				  where type ErrorInfo.tycon = StatObject.tycon				  
-				  where type TypeInfo.tycon = StatObject.tycon  (* Probably ELAB_INFO should equate types in its substructures. -RD *)
+				  (*where type TypeInfo.tycon = StatObject.tycon  (* Probably ELAB_INFO should equate types in its substructures. -RD *) *)
 				  (* where type ErrorInfo.longtycon = StatObject.longtycon *)
 
                   where type TypeInfo.id = Ident.id
@@ -48,28 +48,28 @@ functor ElabDec(
                 structure IG : DEC_GRAMMAR
                   where type info = ParseInfo.ParseInfo
 
-                  where type Lab.lab = ElabInfo.ErrorInfo.lab
-                  where type Ident.id = Ident.id
-                  where type Ident.longid = Ident.longid
-                  where type Ident.strid = Ident.strid
-                  where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
-                  where type TyCon.tycon = StatObject.tycon
-                  where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
-                  where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
-                  where type SCon.scon = StatObject.scon
+                  where type lab = ElabInfo.ErrorInfo.lab
+                  where type id = Ident.id
+                  where type longid = Ident.longid
+                  where type strid = Ident.strid
+                  where type longstrid = ElabInfo.ErrorInfo.longstrid
+                  where type tycon = StatObject.tycon
+                  where type longtycon = ElabInfo.ErrorInfo.longtycon
+                  where type tyvar = StatObject.ExplicitTyVar
+                  where type scon = StatObject.scon
 
                 structure OG : DEC_GRAMMAR
                   where type info = ElabInfo.ElabInfo
 
-                  where type Lab.lab = ElabInfo.ErrorInfo.lab
-                  where type Ident.id = Ident.id
-                  where type Ident.longid = Ident.longid
-                  where type Ident.strid = Ident.strid
-                  where type StrId.longstrid = ElabInfo.ErrorInfo.longstrid
-                  where type TyCon.tycon = StatObject.tycon
-                  where type TyCon.longtycon = ElabInfo.ErrorInfo.longtycon
-                  where type TyVar.SyntaxTyVar = StatObject.ExplicitTyVar
-                  where type SCon.scon = StatObject.scon
+                  where type lab = ElabInfo.ErrorInfo.lab
+                  where type id = Ident.id
+                  where type longid = Ident.longid
+                  where type strid = Ident.strid
+                  where type longstrid = ElabInfo.ErrorInfo.longstrid
+                  where type tycon = StatObject.tycon
+                  where type longtycon = ElabInfo.ErrorInfo.longtycon
+                  where type tyvar = StatObject.ExplicitTyVar
+                  where type scon = StatObject.scon
                   where type ty = IG.ty (* yes? *)
 
                 structure Environments : ENVIRONMENTS

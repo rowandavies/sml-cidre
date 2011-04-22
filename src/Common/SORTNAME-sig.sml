@@ -29,7 +29,7 @@ signature SORTNAME =
     val sortName_WORD8   : SortName
     val sortName_WORD_TABLE : SortName
 
-    type sortcon
+    eqtype sortcon
 
     val arity    : SortName -> int
     and conjuncts: SortName -> sortcon list

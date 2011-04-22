@@ -30,6 +30,7 @@ struct
    and tycon  = TyCon.tycon  (* type constructors *)
    and longtycon = TyCon.longtycon  (* long type constructors *)
    and longstrid = StrId.longstrid  (* structure identifiers *)
+   and strid = StrId.strid
 
   type info = GrammarInfo.GrammarInfo
   val bogus_info = GrammarInfo.bogus_info

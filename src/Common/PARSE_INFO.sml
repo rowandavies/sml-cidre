@@ -25,11 +25,15 @@ signature PARSE_INFO =
     (*The composite info types, pre-elab:*)
     type ParseInfo
 
+    type SourceInfo
+    type DFInfo
+
     (*The constituent info types (imported from other modules):*)
     structure SourceInfo : SOURCE_INFO
+        where type SourceInfo = SourceInfo
+
     structure DFInfo : DF_INFO
-    type SourceInfo  sharing type SourceInfo = SourceInfo.SourceInfo
-    type DFInfo      sharing type DFInfo = DFInfo.DFInfo
+        where type DFInfo = DFInfo
 
     val from_SourceInfo : SourceInfo -> ParseInfo
     val to_SourceInfo   : ParseInfo -> SourceInfo
