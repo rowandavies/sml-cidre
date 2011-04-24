@@ -2,11 +2,11 @@
 
 (* A library for "computations" with failure and "redoable computations".  *)
 
-functor Comp(type Error) :> COMP where type Error (* in COMP *) 
-                                          = Error (* functor parameter *)
+functor Comp(structure S : sig type Error end) : COMP where type Error (* in COMP *) 
+                                          = S.Error (* functor parameter *)
 = struct
 
-  type Error = Error
+  type Error = S.Error
 
   exception Fail (* Raised when not reporting errors. *)
 

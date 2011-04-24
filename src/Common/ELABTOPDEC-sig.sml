@@ -11,6 +11,6 @@ signature ELABTOPDEC =
 
     val elab_topdec: prjid * StaticBasis * PreElabTopdec -> StaticBasis * PostElabTopdec
 
-    type StringTree
-    val layoutStaticBasis: StaticBasis -> StringTree
+    (* type StringTree *)
+    val layoutStaticBasis: StaticBasis -> StringTree.t
   end;

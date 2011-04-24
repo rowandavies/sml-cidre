@@ -30,7 +30,7 @@ functor RefineCheck() (* : sig include PARSE_ELAB
 				     structure SigId = Basics.SigId
 				     structure StrId = Basics.StrId
 				     structure Ident = Basics.Ident
-				     structure InfixBasis = TopdecParsing.InfixBasis
+				     structure InfixBasis = TopdecParsing.Basics.InfixBasis
 				     structure StatObject = Basics.StatObject
 				     structure Environments = Basics.Environments
 				     structure ModuleStatObject = Basics.ModuleStatObject
@@ -50,7 +50,7 @@ functor RefineCheck() (* : sig include PARSE_ELAB
        structure PostElabTopdecGrammar = Elaboration.PostElabTopdecGrammar
        structure ErrorTraverse = ErrorTraverse
        structure RefineErrorInfo = AllInfo.RefineErrorInfo
-       structure InfixBasis = TopdecParsing.InfixBasis
+       structure InfixBasis = TopdecParsing.Basics.InfixBasis
        structure TopLevelReport = TopLevelReport
        structure BasicIO = Tools.BasicIO
        structure Report = Tools.Report

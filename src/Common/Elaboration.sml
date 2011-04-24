@@ -77,17 +77,25 @@ signature ALL_INFO =
     structure ErrorInfo       : ERROR_INFO
     structure TypeInfo        : TYPE_INFO
     structure OverloadingInfo : OVERLOADING_INFO
-    structure ElabInfo : ELAB_INFO
-      where type ParseInfo.ParseInfo = ParseInfo.ParseInfo
-      where type ErrorInfo.ErrorInfo = ErrorInfo.ErrorInfo
-      where type TypeInfo.TypeInfo = TypeInfo.TypeInfo
-      where type OverloadingInfo.OverloadingInfo = OverloadingInfo.OverloadingInfo
+
     structure RefineErrorInfo : REFINE_ERROR_INFO
       where type SourceInfo = SourceInfo.SourceInfo
       where type ErrorInfo = ErrorInfo.RefineErrorInfo.ErrorInfo  (* was structure sharing *)
 
+    structure ElabInfo : ELAB_INFO
+      where type ParseInfo.ParseInfo = ParseInfo.ParseInfo
+      where type ParseInfo.SourceInfo = ParseInfo.SourceInfo
+      where type ErrorInfo.ErrorInfo = ErrorInfo.ErrorInfo
+      where type TypeInfo.TypeInfo = TypeInfo.TypeInfo
+      where type OverloadingInfo.OverloadingInfo = OverloadingInfo.OverloadingInfo
+      (* where type ErrorInfo.RefineErrorInfo.SourceInfo = ErrorInfo.RefineErrorInfo.SourceInfo *)
+      where type ErrorInfo.RefineErrorInfo.ErrorInfo = ErrorInfo.RefineErrorInfo.ErrorInfo
+
+
     structure RefInfo : REF_INFO
       where type ElabInfo.ElabInfo = ElabInfo.ElabInfo
+      where type ElabInfo.ParseInfo.SourceInfo = RefineErrorInfo.SourceInfo
+      where type Comp.Error = ElabInfo.ErrorInfo.RefineErrorInfo.Error
 
 end;
 
@@ -141,6 +149,7 @@ signature BASICS =
       where type strid     = StrId.strid
       where type scon      = SCon.scon
       where type lab       = Lab.lab
+      where type tycon = TyCon.tycon
 (*      where type StringTree = Tools.PrettyPrint.StringTree *)
 
     structure RefObject : REFOBJECT
@@ -173,10 +182,13 @@ signature BASICS =
       where type id = Ident.id
       where type longid = Ident.longid
       where type strid = StrId.strid
+      where type longstrid = StrId.longstrid
       where type tycon = TyCon.tycon
       where type tyvar = TyVar.SyntaxTyVar
       where type lab = Lab.lab
       where type scon = SCon.scon
+      where type longtycon = TyCon.longtycon
+
 
     structure Environments : ENVIRONMENTS
       where type Type         = StatObject.Type
@@ -189,15 +201,18 @@ signature BASICS =
       where type longid       = Ident.longid
       where type Substitution = StatObject.Substitution
       where type ty           = PreElabDecGrammar.ty
+      where type tycon    = TyCon.tycon
       where type longtycon    = TyCon.longtycon
       where type longstrid    = StrId.longstrid
       where type ExplicitTyVar  = TyVar.SyntaxTyVar
       where type strid       = StrId.strid
       where type valbind = PreElabDecGrammar.valbind
       where type pat = PreElabDecGrammar.pat
-
+     
       where type ('a,'b) FinMap.map = ('a,'b) Tools.FinMap.map
-      where type TyName       = StatObject.TyName
+      where type TyName       = TyName.TyName
+      where type TyName.Set.Set = StatObject.TyName.Set.Set
+
 
     structure RefinedEnvironments : REFINED_ENVIRONMENTS
       where type id = Ident.id
@@ -206,10 +221,10 @@ signature BASICS =
       (* where type StringTree *)
       (* 	         = Tools.PrettyPrint.StringTree *)
       where type Sort = RefObject.Sort
-      where type Type = RefObject.Type
-      where type TyName = RefObject.TyName
-      where type SortName = RefObject.SortName
-      where type TypeFcn = RefObject.TypeFcn
+      where type Type = StatObject.Type
+      where type TyName = TyName.TyName
+      where type SortName = SortName.SortName
+      where type TypeFcn = StatObject.TypeFcn
       where type SortFcn = RefObject.SortFcn
       where type SortScheme = RefObject.SortScheme
       where type tycon = TyCon.tycon
@@ -219,6 +234,7 @@ signature BASICS =
       where type strid       = StrId.strid
       where type longstrid    = StrId.longstrid
       where type Report = Tools.Report.Report
+      (* where type Context = Environments.Context *)
 
     structure ModuleStatObject : MODULE_STATOBJECT
       where type Env = Environments.Env
@@ -234,10 +250,12 @@ signature BASICS =
       where type TyVar = StatObject.TyVar
       where type id = Ident.id
       where type TyName = TyName.TyName
+      where type TyName.Set.Set = StatObject.TyName.Set.Set
 
     structure ModuleEnvironments : MODULE_ENVIRONMENTS
       where type realisation = StatObject.realisation
       where type longstrid = StrId.longstrid
+      where type tycon = TyCon.tycon
       where type longtycon = TyCon.longtycon
       where type Context = Environments.Context
       where type FunSig = ModuleStatObject.FunSig
@@ -250,8 +268,26 @@ signature BASICS =
       where type funid = FunId.funid
       where type Env = Environments.Env
       where type Sig = ModuleStatObject.Sig
-      where type rEnv.Variance = SortName.Variance (* Try this...  *)
       where type TyName.TyName = TyName.TyName
+
+      where type rEnv.Variance = SortName.Variance (* Try this...  *)
+      where type rEnv.strid = StrId.strid
+      where type rEnv.SortName = SortName.SortName
+      where type rEnv.tycon = TyCon.tycon
+
+       where type rEnv.Env = ModuleStatObject.rEnv
+       where type rEnv.TyNameEnv = ModuleStatObject.rT
+       where type rEnv.ExplicitTyVar = StatObject.ExplicitTyVar
+       where type rEnv.id = Ident.id
+       where type rEnv.TyName = StatObject.TyName
+       where type rEnv.longtycon = TyCon.longtycon
+       where type rEnv.SortFcn = RefObject.SortFcn
+       where type rEnv.Sort = RefObject.Sort
+       where type rEnv.SortVar = RefObject.SortVar
+       where type rEnv.SortScheme = RefObject.SortScheme
+
+       where type rEnv.Context = RefinedEnvironments.Context
+
 
 
 (*      sharing ModuleEnvironments.rEnv = RefinedEnvironments    Argh - expand this?? *)
@@ -271,7 +307,7 @@ signature BASICS =
       where type TypeInfo.strid = StrId.strid
       where type TypeInfo.tycon = TyCon.tycon
       where type TypeInfo.id = Ident.id
-      where type TypeInfo.TyName.TyName = StatObject.TyName
+      where type TypeInfo.TyName.TyName = TyName.TyName
       where type TypeInfo.Basis = ModuleEnvironments.Basis
       where type ElabInfo.TypeInfo.ExplicitTyVarEnv = Environments.ExplicitTyVarEnv
       where type ErrorInfo.Type = StatObject.Type
@@ -301,24 +337,76 @@ signature BASICS =
       where type ParseInfo.SourceInfo.Report = Tools.Report.Report
       where type ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
       where type ParseInfo.SourceInfo.pos = LexBasics.pos
+
+      (* Removing copies of structures that are also in ElabInfo would simplify this - RD 24apr11 *)
+      where type ElabInfo.OverloadingInfo.RecType = StatObject.RecType
+      where type ElabInfo.OverloadingInfo.TyVar = StatObject.TyVar
+
       where type ElabInfo.ParseInfo.DFInfo.InfixBasis = InfixBasis.Basis
+      where type ElabInfo.TypeInfo.TyName.TyName = TyName.TyName
+      where type ElabInfo.ErrorInfo.TyName = TyName.TyName
+      where type ElabInfo.ErrorInfo.TyVar = StatObject.TyVar
+      where type ElabInfo.TypeInfo.TyVar = StatObject.TyVar
+      where type ElabInfo.ErrorInfo.Type = StatObject.Type
+      where type ElabInfo.TypeInfo.Type = StatObject.Type
+      where type ElabInfo.ErrorInfo.TypeScheme = StatObject.TypeScheme
+      where type ElabInfo.TypeInfo.id = Ident.id
+      where type ElabInfo.ErrorInfo.id = Ident.id
+      where type ElabInfo.ErrorInfo.lab = StatObject.lab
+      where type ElabInfo.ErrorInfo.tycon = TyCon.tycon				  
+
+      where type ElabInfo.ErrorInfo.longstrid = StrId.longstrid
+
+      where type ElabInfo.TypeInfo.longid = Ident.longid (* yes? *)
+      where type ElabInfo.ErrorInfo.longid = Ident.longid (* yes? *)
+      where type ElabInfo.TypeInfo.strid = Ident.strid (* yes? *)
+      where type ElabInfo.ErrorInfo.strid = Ident.strid (* yes? *)
+
+      where type ElabInfo.TypeInfo.realisation = StatObject.realisation
+      where type ElabInfo.ErrorInfo.longtycon = TyCon.longtycon
+      where type ElabInfo.TypeInfo.TyEnv = Environments.TyEnv
+      where type ElabInfo.ErrorInfo.TypeFcn = StatObject.TypeFcn
+      where type ElabInfo.ErrorInfo.sigid = SigId.sigid
+      where type ElabInfo.ErrorInfo.RefineErrorInfo.Report = Tools.Report.Report
+      where type ElabInfo.ErrorInfo.funid = FunId.funid
+      where type ElabInfo.ErrorInfo.SigMatchError = ModuleStatObject.SigMatchError
+
+
+      where type ElabInfo.TypeInfo.TyName.Set.Set = StatObject.TyName.Set.Set
+      where type ElabInfo.TypeInfo.Env = Environments.Env
+      where type ElabInfo.TypeInfo.Basis = ModuleEnvironments.Basis
+
 
       where type RefineErrorInfo.Sort = RefObject.Sort
       where type RefineErrorInfo.Type = StatObject.Type
       where type RefineErrorInfo.SortScheme = RefObject.SortScheme
       where type RefineErrorInfo.longid = Ident.longid
       where type RefineErrorInfo.longsortcon = TyCon.longtycon
+
 (*      where type RefineErrorInfo.Error = Comp.Error *)
 
-(*  Argh.  These may be tedious.
+(*  Argh.  These may be tedious - so "lazily" add them (below), including copying from RefDec.sml, etc.
       sharing AllInfo.RefInfo.REnv = RefinedEnvironments
       sharing AllInfo.RefInfo.RefObject = RefObject
       sharing AllInfo.RefInfo.ElabInfo = AllInfo.ElabInfo
 *)
-    structure Comp : COMP  
-      where type Error = AllInfo.SourceInfo.SourceInfo * AllInfo.RefineErrorInfo.ErrorInfo
-      where type 'a Redo = 'a AllInfo.RefInfo.Comp.Redo
 
+      where type RefInfo.REnv.VarEnv = RefinedEnvironments.VarEnv
+      where type RefInfo.REnv.TyNameEnv = RefinedEnvironments.TyNameEnv
+      where type RefInfo.REnv.Env = RefinedEnvironments.Env
+      where type RefInfo.REnv.Sort = RefObject.Sort 
+
+      where type RefInfo.ElabInfo.TypeInfo.TyName.TyName = TyName.TyName
+      where type RefInfo.ElabInfo.TypeInfo.longid = Ident.longid
+      where type RefInfo.ElabInfo.TypeInfo.Type    = StatObject.Type
+      where type RefInfo.ElabInfo.TypeInfo.TyVar   = StatObject.TyVar
+      where type RefInfo.ElabInfo.TypeInfo.ExplicitTyVarEnv = RefinedEnvironments.ExplicitTyVarEnv
+                     
+
+    structure Comp : COMP  
+      where type Error = AllInfo.ElabInfo.ErrorInfo.RefineErrorInfo.Error (* AllInfo.SourceInfo.SourceInfo * AllInfo.RefineErrorInfo.ErrorInfo *)
+      where type 'a Redo = 'a AllInfo.RefInfo.Comp.Redo
+      where type 'a Memo = 'a AllInfo.RefInfo.Comp.Memo
 
   end;
 
@@ -540,7 +628,7 @@ functor Basics(structure Tools: TOOLS): BASICS =
                           structure SourceInfo = SourceInfo
                          )
 
-    structure Comp = Comp(type Error = RefineErrorInfo.Error) (* Computations *)
+    structure Comp = Comp(structure S = struct type Error = RefineErrorInfo.Error end) (* Computations *)
 
     structure AllInfo =
       struct
@@ -606,6 +694,20 @@ signature TOPDEC_PARSING =
       where type dec = Basics.PreElabDecGrammar.dec
       where type sigid = Basics.SigId.sigid
       where type funid = Basics.FunId.funid
+      where type ty = Basics.PreElabDecGrammar.ty
+
+     where type tyvar = Basics.StatObject.ExplicitTyVar
+     where type id = Basics.AllInfo.ElabInfo.ErrorInfo.id
+(*     where type funid = ElabInfo.ErrorInfo.funid *)
+     where type longtycon = Basics.AllInfo.ElabInfo.ErrorInfo.longtycon
+     where type strid = Basics.StrId.strid
+     where type longstrid = Basics.StrId.longstrid 
+     where type info = Basics.AllInfo.ParseInfo.ParseInfo
+     where type tycon = Basics.SortName.sortcon
+     where type DecGrammar.TyVar.Variance = Basics.SortName.Variance
+     where type longid = Basics.Ident.longid
+     where type DecGrammar.datbind = Basics.PreElabDecGrammar.datbind
+
 
     (* structure InfixBasis: INFIX_BASIS *)
     (*   sharing InfixBasis = Basics.InfixBasis *)
@@ -623,7 +725,9 @@ functor TopdecParsing(structure Basics: BASICS) (* : TOPDEC_PARSING *) =
     structure Tools = Basics.Tools
     structure AllInfo = Basics.AllInfo
 
-    structure PreElabTopdecGrammar : TOPDEC_GRAMMAR = TopdecGrammar
+    structure PreElabTopdecGrammar : TOPDEC_GRAMMAR
+                                           (* where type DecGrammar.datbind = Basics.PreElabDecGrammar.datbind *)
+       = TopdecGrammar
       (structure DecGrammar = Basics.PreElabDecGrammar
        structure SigId = Basics.SigId
        structure FunId = Basics.FunId
@@ -650,7 +754,28 @@ signature ELABORATION =
 	    
     structure ElabTopdec : ELABTOPDEC
 
-    structure PostElabDecGrammar : DEC_GRAMMAR
+(*     structure PostElabDecGrammar : DEC_GRAMMAR *)
+
+    structure PostElabTopdecGrammar : TOPDEC_GRAMMAR
+(*      where type dec = PostElabDecGrammar.dec *)
+      where type strid = Basics.StrId.strid
+      where type sigid = Basics.SigId.sigid
+      where type funid = Basics.FunId.funid
+      where type topdec = ElabTopdec.PostElabTopdec
+
+      where type DecGrammar.lab = Basics.Lab.lab
+      where type DecGrammar.scon = Basics.SCon.scon
+      where type tycon = Basics.TyCon.tycon
+      where type longtycon = Basics.TyCon.longtycon
+
+      where type tyvar = Basics.TyVar.SyntaxTyVar
+      where type DecGrammar.TyVar.Variance = Basics.TyVar.Variance
+      where type id = Basics.Ident.id
+      where type longid = Basics.Ident.longid
+      where type info = Basics.AllInfo.ElabInfo.ElabInfo
+      (* where type ty = Basics.PreElabDecGrammar.ty *)
+
+    structure RefDecGrammar : DEC_GRAMMAR 
       where type lab = Basics.Lab.lab
       where type scon = Basics.SCon.scon
       where type tycon = Basics.TyCon.tycon
@@ -659,19 +784,10 @@ signature ELABORATION =
       where type TyVar.Variance = Basics.TyVar.Variance
       where type id = Basics.Ident.id
       where type longid = Basics.Ident.longid
-      where type info
-		   = Basics.AllInfo.ElabInfo.ElabInfo
-      (* where type StringTree *)
-      (* 	           = Basics.Tools.PrettyPrint.StringTree *)
+      where type info = Basics.AllInfo.RefInfo.RefInfo
+      (* where type ty = Basics.PreElabDecGrammar.ty *)
 
-    structure PostElabTopdecGrammar : TOPDEC_GRAMMAR
-      where type dec = PostElabDecGrammar.dec
-      where type strid = Basics.StrId.strid
-      where type sigid = Basics.SigId.sigid
-      where type funid = Basics.FunId.funid
-      where type topdec = ElabTopdec.PostElabTopdec
 
-    structure RefDecGrammar : DEC_GRAMMAR where type info = Basics.AllInfo.RefInfo.RefInfo
 (*
 	  sharing type RefDecGrammar.info
 		   = Basics.AllInfo.RefInfo.RefInfo *)
@@ -680,6 +796,7 @@ signature ELABORATION =
 	  sharing type RefTopdecGrammar.info
 	    	   = Basics.AllInfo.RefInfo.RefInfo  *)
   end;
+
 
 
 
@@ -743,9 +860,11 @@ functor Elaboration(structure TopdecParsing : TOPDEC_PARSING): ELABORATION =
 					structure OG = RefDecGrammar)
 
       structure MapDecRtoE = MapDecInfo(structure IG = RefDecGrammar
-					structure OG = PostElabDecGrammar)
+					structure OG = PostElabDecGrammar);
 
-      structure RefDec =
+     
+      structure RefDec (* : REFDEC where type Comp.Error = AllInfo.ErrorInfo.RefineErrorInfo.Error *)
+               =
                      RefDec( structure IG = PostElabDecGrammar
                              structure RG = RefDecGrammar
                              structure RefInfo = AllInfo.RefInfo
@@ -770,6 +889,22 @@ functor Elaboration(structure TopdecParsing : TOPDEC_PARSING): ELABORATION =
                              structure Crash = Tools.Crash
                              structure Comp = Basics.Comp
                             )
+
+      structure ElabDec (* : ELABDEC where type PreElabDatBind = TopdecParsing.PreElabTopdecGrammar.DecGrammar.datbind *)  =
+		     ElabDec ((*structure ParseInfo = AllInfo.ParseInfo*)
+                              structure TyCon = Basics.TyCon									
+			      structure ElabInfo = AllInfo.ElabInfo
+			      structure IG = TopdecParsing.Basics.PreElabDecGrammar
+			      structure OG = PostElabDecGrammar
+			      structure Environments = Basics.Environments
+			      structure Ident = Basics.Ident
+			      structure Lab = Basics.Lab
+			      structure StatObject = Basics.StatObject
+			      structure FinMap = Tools.FinMap
+			      structure Report = Tools.Report
+			      structure PP = Tools.PrettyPrint
+			      structure Flags = Tools.Flags
+			      structure Crash = Tools.Crash)
       
       structure ElabTopdec =
 	ElabTopdec(structure PrettyPrint = Tools.PrettyPrint
@@ -781,20 +916,7 @@ functor Elaboration(structure TopdecParsing : TOPDEC_PARSING): ELABORATION =
 		   structure StatObject = Basics.StatObject
                    structure SortName = Basics.SortName
 		   structure ModuleStatObject = Basics.ModuleStatObject
-		   structure ElabDec =
-		     ElabDec (structure ParseInfo = AllInfo.ParseInfo
-			      structure ElabInfo = AllInfo.ElabInfo
-			      structure IG = TopdecParsing.PreElabDecGrammar
-			      structure OG = PostElabDecGrammar
-			      structure Environments = Basics.Environments
-			      structure Ident = Basics.Ident
-			      structure Lab = Basics.Lab
-			      structure StatObject = Basics.StatObject
-			      structure FinMap = Tools.FinMap
-			      structure Report = Tools.Report
-			      structure PP = Tools.PrettyPrint
-			      structure Flags = Tools.Flags
-			      structure Crash = Tools.Crash)
+		   structure ElabDec = ElabDec
                    structure RefDec = RefDec
 		   structure StrId = Basics.StrId
 		   structure SigId = Basics.SigId

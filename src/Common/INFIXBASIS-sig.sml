@@ -17,6 +17,6 @@ signature INFIX_BASIS =
     type Report
     val reportBasis: Basis -> Report
 
-    type StringTree
-    val layoutBasis: Basis -> StringTree
+    (* type StringTree *)
+    val layoutBasis: Basis -> StringTree.t
   end;

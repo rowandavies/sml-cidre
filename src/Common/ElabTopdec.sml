@@ -48,9 +48,10 @@ functor ElabTopdec
      where type ErrorInfo.strid = StrId.strid
      where type ErrorInfo.sigid = SigId.sigid
      where type ErrorInfo.longstrid = StrId.longstrid
+     where type ErrorInfo.tycon = SortName.sortcon
+
      where type TypeInfo.realisation = StatObject.realisation
      where type TypeInfo.strid = StrId.strid
-     where type ErrorInfo.tycon = SortName.sortcon
      where type TypeInfo.TyName.Set.Set = StatObject.TyName.Set.Set
      (* where type ErrorInfo.RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo *)
                   
@@ -74,7 +75,7 @@ functor ElabTopdec
        where type strid = IG.strid
        where type sigid = SigId.sigid
        where type longstrid = StrId.longstrid
-       where type longtycon = IG.longtycon
+       where type longtycon = ElabInfo.ErrorInfo.longtycon
        where type longid = IG.longid   
     (*           where type DecGrammar.longid = IG.longid *)
         (*   where type tyvar = StatObject.ExplicitTyVar
@@ -97,7 +98,7 @@ functor ElabTopdec
        where type strid = IG.strid
        where type tycon = SortName.sortcon
        where type ExplicitTyVar = StatObject.ExplicitTyVar
-       where type longtycon = IG.longtycon
+       where type longtycon = ElabInfo.ErrorInfo.longtycon
        where type longstrid = IG.longstrid
        where type ty = IG.ty
        where type Env = ElabInfo.TypeInfo.Env
@@ -124,7 +125,7 @@ functor ElabTopdec
        where type strid = IG.strid
        where type tycon = IG.tycon
        where type longstrid = IG.longstrid
-       where type longtycon = IG.longtycon
+       where type longtycon = ElabInfo.ErrorInfo.longtycon
        where type sigid = IG.sigid
        where type funid = IG.funid
        where type Basis = ElabInfo.TypeInfo.Basis
@@ -135,7 +136,7 @@ functor ElabTopdec
        where type rEnv.SortName = SortName.SortName
        where type rEnv.TyName = StatObject.TyName
        where type rEnv.tycon = IG.tycon
-       where type rEnv.longtycon = IG.longtycon
+       where type rEnv.longtycon = ElabInfo.ErrorInfo.longtycon
        where type rEnv.SortFcn = RefObject.SortFcn
        where type rEnv.Sort = RefObject.Sort
        where type rEnv.Variance = SortName.Variance

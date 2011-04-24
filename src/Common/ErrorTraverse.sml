@@ -4,11 +4,10 @@
 
 functor ErrorTraverse (structure TopdecGrammar : TOPDEC_GRAMMAR
 		       structure ElabInfo : ELAB_INFO
-			 sharing type TopdecGrammar.info = ElabInfo.ElabInfo
+			 where type ElabInfo = TopdecGrammar.info
 		       structure Report : REPORT
-		         sharing type ElabInfo.ErrorInfo.Report = Report.Report
+		         where type Report = ElabInfo.ErrorInfo.Report
 		       structure PrettyPrint : PRETTYPRINT
-		       sharing type PrettyPrint.StringTree = ElabInfo.StringTree
 		       structure Crash : CRASH
 			 ) : ERROR_TRAVERSE =
   struct

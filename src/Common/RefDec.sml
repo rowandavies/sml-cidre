@@ -80,8 +80,11 @@ functor RefDec(
                      where type Error = RefineErrorInfo.Error
 
                 structure RefInfo : REF_INFO  
-(*                     where type Comp.Error = RefineErrorInfo.Error *)
-                     where Comp = Comp
+                     where type Comp.Error = RefineErrorInfo.Error
+                     where type 'a Comp.Redo = 'a Comp.Redo
+                     where type 'a Comp.Memo = 'a Comp.Memo
+
+                     (* where Comp = Comp *)
 
                      where type REnv.VarEnv = RefinedEnvironments.VarEnv
                      where type REnv.TyNameEnv = RefinedEnvironments.TyNameEnv
