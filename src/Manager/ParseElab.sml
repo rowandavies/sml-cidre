@@ -39,11 +39,6 @@ functor ParseElab(structure Parse: PARSE
 
 		  structure PP: PRETTYPRINT
 		    sharing type PP.Report = Report.Report
-		    sharing type InfixBasis.StringTree
-					= PreElabTopdecGrammar.StringTree
-					= PostElabTopdecGrammar.StringTree
-					= ElabTopdec.StringTree
-					= PP.StringTree
 
 		  structure Flags: FLAGS
 		  structure Crash: CRASH

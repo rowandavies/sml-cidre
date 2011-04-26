@@ -23,13 +23,18 @@ signature ELAB_INFO =
     type ElabInfo
 
     (*the constituent info types (imported from other modules):*)
+    structure TypeInfo : TYPE_INFO
+     
+    structure OverloadingInfo : OVERLOADING_INFO
+        where type TyVar = TypeInfo.TyVar
+
     structure ParseInfo : PARSE_INFO
     structure ErrorInfo : ERROR_INFO 
         where type RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
-    structure TypeInfo : TYPE_INFO
-        where type tycon = ErrorInfo.tycon
-     
-    structure OverloadingInfo : OVERLOADING_INFO
+        where type TyVar = TypeInfo.TyVar
+        where type tycon = TypeInfo.tycon
+
+
     type ParseInfo = ParseInfo.ParseInfo
     type ErrorInfo = ErrorInfo.ErrorInfo
     type TypeInfo = TypeInfo.TypeInfo

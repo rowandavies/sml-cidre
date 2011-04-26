@@ -5,7 +5,7 @@ functor TopLevelReport(structure FunId: FUNID
 		       structure SigId: SIGID
 		       structure StrId: STRID
 		       structure Ident: IDENT
-                         sharing type Ident.strid = StrId.strid
+                         where type strid = StrId.strid
 
 		       structure InfixBasis: INFIX_BASIS
 
@@ -40,15 +40,27 @@ functor TopLevelReport(structure FunId: FUNID
 
 
 		       structure ModuleEnvironments: MODULE_ENVIRONMENTS
+                         where type rEnv.SortScheme = RefObject.SortScheme
+                         where type longid = Ident.longid
+                         where type rContext = RefinedEnvironments.Context
+                         where type rTyNameEnv = RefinedEnvironments.TyNameEnv
+                         where type rEnv = RefinedEnvironments.Env
+                         where type rEnv.SortName = RefObject.SortName
+                         where type rEnv.Type = RefObject.Type
+                         where type rEnv.Sort = RefObject.Sort
+                         where type rEnv.SortFcn = RefObject.SortFcn
+                         where type rEnv.Report = RefinedEnvironments.Report
+                         where type tycon = RefinedEnvironments.tycon
 			 sharing type ModuleEnvironments.sigid = SigId.sigid
 			 sharing type ModuleEnvironments.funid = FunId.funid
+			 sharing type ModuleEnvironments.strid = StrId.strid 
 			 sharing type ModuleEnvironments.Sig
 				      = ModuleStatObject.Sig
 			 sharing type ModuleEnvironments.FunSig
 				      = ModuleStatObject.FunSig
 			 sharing type ModuleEnvironments.Env
  			              = Environments.Env
-                         sharing ModuleEnvironments.rEnv = RefinedEnvironments
+(*                         sharing ModuleEnvironments.rEnv = RefinedEnvironments *)
 
 		       structure Report: REPORT
 			 sharing type InfixBasis.Report

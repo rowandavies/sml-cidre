@@ -7,54 +7,59 @@ functor ModuleEnvironments(
        structure Ident  : IDENT
 
 structure StatObject : STATOBJECT 
-where type tycon = TyCon.tycon
+  where type tycon = TyCon.tycon
 (*            sharing type StatObject.TyName.tycon = TyCon.tycon *)
 
 structure Environments : ENVIRONMENTS 
-where type TyName = StatObject.TyName
-where type TyName.Set.Set = StatObject.TyName.Set.Set
-where type longstrid = StrId.longstrid
-where type strid      = TyCon.strid
-where type tycon      = TyCon.tycon
-where type longtycon      = TyCon.longtycon
-where type TypeScheme = StatObject.TypeScheme
-where type TyVar = StatObject.TyVar
-where type Type = StatObject.Type
-where type realisation = StatObject.realisation
-where type id = Ident.id
-where type longid = Ident.longid
-where type TypeFcn = StatObject.TypeFcn
+  where type TyName = StatObject.TyName
+  where type TyName.Set.Set = StatObject.TyName.Set.Set
+  where type longstrid = StrId.longstrid
+  where type strid      = TyCon.strid
+  where type tycon      = TyCon.tycon
+  where type longtycon      = TyCon.longtycon
+  where type TypeScheme = StatObject.TypeScheme
+  where type TyVar = StatObject.TyVar
+  where type Type = StatObject.Type
+  where type realisation = StatObject.realisation
+  where type id = Ident.id
+  where type longid = Ident.longid
+  where type TypeFcn = StatObject.TypeFcn
 
 structure RefObject : REFOBJECT
 
 structure RefinedEnvironments : REFINED_ENVIRONMENTS
-where type id = Ident.id
-where type SortVar = RefObject.SortVar
-where type SortName    = RefObject.SortName
-where type strid = StrId.strid
-where type longstrid = StrId.longstrid
-(*            sharing type RefinedEnvironments.longtycon = TyCon.longtycon *)
+  where type id = Ident.id
+  where type longid = Ident.longid
+  where type SortVar = RefObject.SortVar
+  where type SortName    = RefObject.SortName
+  where type strid = StrId.strid
+  where type longstrid = StrId.longstrid
+  where type tycon = TyCon.tycon
+  where type TyName = StatObject.TyName
+  where type longtycon = TyCon.longtycon
+
 
 structure ModuleStatObject : MODULE_STATOBJECT
-where type TyName = StatObject.TyName
-where type TyName.Set.Set = StatObject.TyName.Set.Set
-where type id = Environments.id
-where type Env = Environments.Env
-where type realisation = StatObject.realisation
-where type TyVar = StatObject.TyVar
+  where type TyName = StatObject.TyName
+  where type TyName.Set.Set = StatObject.TyName.Set.Set
+  where type id = Environments.id
+  where type Env = Environments.Env
+  where type realisation = StatObject.realisation
+  where type TyVar = StatObject.TyVar
+  where type tycon = TyCon.tycon
 
 structure PP : PRETTYPRINT
 
 structure Report: REPORT
-where type Report = PP.Report
+  where type Report = PP.Report
 
 structure Flags : FLAGS
 
 structure FinMap : FINMAP
-where type Report = Report.Report
+  where type Report = Report.Report
 
 structure FinMapEq : FINMAPEQ
-where type Report = Report.Report
+  where type Report = Report.Report
 
 structure Crash : CRASH
           ) : MODULE_ENVIRONMENTS =
@@ -106,7 +111,7 @@ structure Crash : CRASH
     type funid             = FunId.funid
     type longstrid         = StrId.longstrid
     type longtycon         = TyCon.longtycon
-    type tycon             = TyCon.tycon
+    type tycon             = StatObject.tycon
     type id                = Ident.id
     type longid            = Ident.longid
     type strid             = StrId.strid

@@ -9,7 +9,7 @@ functor Parse (structure TopdecGrammar : TOPDEC_GRAMMAR
 	       sharing type ParseInfo.SourceInfo.pos = LexBasics.pos
 	       sharing type TopdecGrammar.info = ParseInfo.ParseInfo
 	       structure InfixBasis : INFIX_BASIS
-               sharing type InfixBasis.id = TopdecGrammar.DecGrammar.Ident.id
+               sharing type InfixBasis.id = TopdecGrammar.id
 	       sharing type InfixBasis.Basis = ParseInfo.DFInfo.InfixBasis
                structure Report: REPORT
                sharing type LexBasics.Report

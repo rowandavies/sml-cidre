@@ -11,21 +11,19 @@ signature MODULE_ENVIRONMENTS =
     type FunEnv 
     type SigEnv 
 
-    structure rEnv : REFINED_ENVIRONMENTS 
-    eqtype tycon
-    structure TyName : TYNAME where type tycon = tycon
 
     (*types from other modules:*)
-    type TyName = TyName.TyName
+    eqtype tycon
+    type TyName
     type TyVar
     type TyStr
     type Env
-    type rEnv = rEnv.Env
+    type rEnv
     type Sig
     type FunSig
     type Context
-    type rContext = rEnv.Context
-    type rTyNameEnv = rEnv.TyNameEnv
+    type rContext
+    type rTyNameEnv
     type realisation
     eqtype id
     type longid
@@ -35,6 +33,23 @@ signature MODULE_ENVIRONMENTS =
     type sigid
     type funid
     type Report
+
+    structure TyName : TYNAME
+                          where type TyName = TyName 
+                            and type tycon = tycon
+
+    structure rEnv : REFINED_ENVIRONMENTS 
+                            where type Env = rEnv
+                            where type Context = rContext
+                            where type TyNameEnv = rTyNameEnv
+                            where type tycon = tycon
+                            where type longtycon = longtycon
+                            where type strid = strid
+                            where type id = id
+                            where type TyName = TyName
+                            where type longid = longid
+
+
 
 (*    structure TyName : TYNAME 
                           where type TyName = TyName 

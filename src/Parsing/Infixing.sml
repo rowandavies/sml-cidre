@@ -4,7 +4,7 @@ functor Infixing(structure Report: REPORT
                    where type Report = Report.Report
                  structure GrammarUtils: GRAMMAR_UTILS
                    where type Report = Report.Report
-                   where type TopdecGrammar.DecGrammar.Ident.id = InfixBasis.id
+                   where type TopdecGrammar.id = InfixBasis.id
 
                  structure ParseInfo : PARSE_INFO
                    where type ParseInfo = GrammarUtils.TopdecGrammar.info

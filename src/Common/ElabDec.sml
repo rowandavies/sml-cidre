@@ -16,40 +16,28 @@ functor ElabDec(
                   where type strid = Ident.strid (* yes? *)
                   where type tycon = TyCon.tycon
 
-                (* structure ParseInfo : PARSE_INFO *)
-
                 structure ElabInfo : ELAB_INFO
-                  (* where type ParseInfo.ParseInfo = ParseInfo.ParseInfo *)
-                  (* where type ParseInfo.SourceInfo = ParseInfo.SourceInfo *)
-                  where type ErrorInfo.Type  = StatObject.Type
-                  where type ErrorInfo.TyVar = StatObject.TyVar
-                  where type ErrorInfo.TypeScheme = StatObject.TypeScheme
                   where type OverloadingInfo.RecType = StatObject.RecType
-                  where type OverloadingInfo.TyVar = StatObject.TyVar
-                  where type TypeInfo.Type    = StatObject.Type
-                  where type TypeInfo.TyVar   = StatObject.TyVar
-                  where type TypeInfo.realisation = StatObject.realisation
-                  where type ErrorInfo.lab = StatObject.lab
-                  where type TypeInfo.TyName.TyName = StatObject.TyName
-                  where type ErrorInfo.TyName = StatObject.TyName
-                  where type ErrorInfo.tycon = TyCon.tycon				  
-                  (*where type TypeInfo.tycon = TyCon.tycon  (* Probably ELAB_INFO should equate types in its substructures. -RD *) *)
-                  (* where type ErrorInfo.longtycon = StatObject.longtycon *)
-
-                  where type TypeInfo.id = Ident.id
-                  where type ErrorInfo.id = Ident.id
-
-                  where type TypeInfo.longid = Ident.longid (* yes? *)
+ 
                   where type ErrorInfo.longid = Ident.longid (* yes? *)
-
-                  where type TypeInfo.strid = Ident.strid (* yes? *)
+                  where type ErrorInfo.id = Ident.id
                   where type ErrorInfo.strid = Ident.strid (* yes? *)
-                  (* where type id       = ElabInfo.ErrorInfo.id *)
                   where type ErrorInfo.longtycon = TyCon.longtycon
-
-					       
-
-
+                  where type ErrorInfo.TyName = StatObject.TyName
+                  where type ErrorInfo.lab = StatObject.lab
+                  where type ErrorInfo.Type  = StatObject.Type
+                  where type ErrorInfo.TypeScheme = StatObject.TypeScheme
+ 
+                  where type TypeInfo.id = Ident.id
+                  where type TypeInfo.longid = Ident.longid (* yes? *)
+                  where type TypeInfo.strid = Ident.strid (* yes? *)
+                  where type TypeInfo.Type    = StatObject.Type
+                  where type TypeInfo.realisation = StatObject.realisation
+                  where type TypeInfo.TyName.TyName = StatObject.TyName
+                  where type TypeInfo.TyVar = StatObject.TyVar
+                  where type TypeInfo.tycon = TyCon.tycon				  
+                  
+ 					       
                 structure IG : DEC_GRAMMAR
                   where type info = ElabInfo.ParseInfo.ParseInfo
 
@@ -82,18 +70,13 @@ functor ElabDec(
                   where type longtycon   = TyCon.longtycon
                   where type longstrid   = ElabInfo.ErrorInfo.longstrid
                   where type strid       = IG.StrId.strid
-                  (* where type strid    = ElabInfo.TypeInfo.strid *)
                   where type tycon       = TyCon.tycon
-                  (* where type tycon    = ElabInfo.TypeInfo.tycon *)
                   where type valbind     = IG.valbind
                   where type id          = Ident.id
-                  (* where type id       = ElabInfo.ErrorInfo.id *)
                   where type pat         = IG.pat
                   where type ExplicitTyVar = IG.tyvar
                   where type ExplicitTyVarEnv = ElabInfo.TypeInfo.ExplicitTyVarEnv 
                   where type ty          = IG.ty
-                  (* where type TyName      = ElabInfo.ErrorInfo.TyName *)
-                  (* where type TyName   = ElabInfo.TypeInfo.TyName *)
                   where type TyName   = StatObject.TyName
                   where type TyEnv       = ElabInfo.TypeInfo.TyEnv
                   where type TypeScheme  = StatObject.TypeScheme
@@ -103,8 +86,6 @@ functor ElabDec(
                   where type realisation = StatObject.realisation
                   where type Substitution = StatObject.Substitution
                   where type level       = StatObject.level
-
-(* sharing type StatObject.TyName.tycon = Environments.TyName.tycon *)
 
                   (* Already commented out *)
                   (* sharing StatObject.TyName = Environments.TyName *)

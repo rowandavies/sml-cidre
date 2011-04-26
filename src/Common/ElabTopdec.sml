@@ -34,27 +34,22 @@ functor ElabTopdec
    structure ElabInfo : ELAB_INFO 
      where type ParseInfo.ParseInfo = ParseInfo.ParseInfo
      where type ParseInfo.SourceInfo = ParseInfo.SourceInfo
-     (*where type TypeInfo.TyName.TyName = StatObject.TyName *)
-     (*where type TypeInfo.TyName = StatObject.TyName *)
-(*         where type TypeInfo.TyName = StatObject.TyName *)
-     (*where type ErrorInfo.TyName.Set.Set = StatObject.TyName.Set.Set *)
 
+     where type TypeInfo.realisation = StatObject.realisation
+     where type TypeInfo.strid = StrId.strid
+     where type TypeInfo.TyName.Set.Set = StatObject.TyName.Set.Set
+     where type TypeInfo.TyVar = StatObject.TyVar
+     where type TypeInfo.tycon = SortName.sortcon
+                  
      where type ErrorInfo.RefineErrorInfo.Report = Report.Report 
      where type ErrorInfo.TyName = StatObject.TyName
-     where type ErrorInfo.TyVar = StatObject.TyVar
      where type ErrorInfo.TypeFcn = StatObject.TypeFcn
      where type ErrorInfo.Type = StatObject.Type
      where type ErrorInfo.TypeScheme = StatObject.TypeScheme
      where type ErrorInfo.strid = StrId.strid
      where type ErrorInfo.sigid = SigId.sigid
      where type ErrorInfo.longstrid = StrId.longstrid
-     where type ErrorInfo.tycon = SortName.sortcon
 
-     where type TypeInfo.realisation = StatObject.realisation
-     where type TypeInfo.strid = StrId.strid
-     where type TypeInfo.TyName.Set.Set = StatObject.TyName.Set.Set
-     (* where type ErrorInfo.RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo *)
-                  
          
    structure IG : TOPDEC_GRAMMAR
      where type tyvar = StatObject.ExplicitTyVar
@@ -112,7 +107,7 @@ functor ElabTopdec
        where type SigMatchError = ElabInfo.ErrorInfo.SigMatchError
    
    structure ModuleEnvironments : MODULE_ENVIRONMENTS
-       where type TyName.TyName = StatObject.TyName
+       where type TyName = StatObject.TyName
  (*      where type TyName.Set.Set = StatObject.TyName.Set.Set *)
        where type TyVar = StatObject.TyVar
        where type TyStr = Environments.TyStr
@@ -129,18 +124,22 @@ functor ElabTopdec
        where type sigid = IG.sigid
        where type funid = IG.funid
        where type Basis = ElabInfo.TypeInfo.Basis
-       where type rEnv.Env = ModuleStatObject.rEnv
-       where type rEnv.TyNameEnv = ModuleStatObject.rT
+
+       where type rEnv = ModuleStatObject.rEnv
+       where type rTyNameEnv = ModuleStatObject.rT
+
+       (* where type rEnv.tycon = IG.tycon *)
+       (* where type rEnv.longtycon = ElabInfo.ErrorInfo.longtycon *)
+       (* where type rEnv.id = IG.id *)
+       (* where type rEnv.strid = StrId.strid *)
+
+
        where type rEnv.ExplicitTyVar = StatObject.ExplicitTyVar
-       where type rEnv.id = IG.id
+
        where type rEnv.SortName = SortName.SortName
-       where type rEnv.TyName = StatObject.TyName
-       where type rEnv.tycon = IG.tycon
-       where type rEnv.longtycon = ElabInfo.ErrorInfo.longtycon
        where type rEnv.SortFcn = RefObject.SortFcn
        where type rEnv.Sort = RefObject.Sort
        where type rEnv.Variance = SortName.Variance
-       where type rEnv.strid = StrId.strid
        where type rEnv.SortVar = RefObject.SortVar
        where type rEnv.SortScheme = RefObject.SortScheme
 

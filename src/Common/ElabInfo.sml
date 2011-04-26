@@ -1,11 +1,13 @@
 
 functor ElabInfo (structure ParseInfo : PARSE_INFO
-		  structure ErrorInfo : ERROR_INFO
-		    where type RefineErrorInfo.Report = ParseInfo.SourceInfo.Report
-            where type RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
-		  structure TypeInfo : TYPE_INFO
-			where type tycon = ErrorInfo.tycon
+                  structure TypeInfo : TYPE_INFO
 		  structure OverloadingInfo : OVERLOADING_INFO
+                        where type TyVar = TypeInfo.TyVar
+		  structure ErrorInfo : ERROR_INFO
+                        where type RefineErrorInfo.Report = ParseInfo.SourceInfo.Report
+                        where type RefineErrorInfo.SourceInfo = ParseInfo.SourceInfo
+                        where type TyVar = TypeInfo.TyVar
+			where type tycon = TypeInfo.tycon
 		  structure PrettyPrint : PRETTYPRINT
 		  structure Crash : CRASH
 		    ) : ELAB_INFO =
