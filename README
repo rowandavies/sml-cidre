@@ -6,7 +6,7 @@ SML CIDRE (Checker for Intersection and Datasort Refinements)
 Author: Rowan Davies (rowan@cs.cmu.edu)
 (Built using the ML Kit: see the file COPYING.)
 
-Version: 0.99b (pre-public release, code name "Ready-for-bottling")
+Version: 0.99c (works with recent SML/NJ)
 Date: December 9, 2004
 
 
@@ -27,6 +27,8 @@ confusion, particularly when browsing the source code.
 To run this version of SML CIDRE, you will need SML/NJ version 110.0.7.  Other
 versions are unlikely to work, due to the way sharing specifications are used
 in the ML Kit version 3.  (This is likely to be resolved in future versions.)
+
+UPDATE: The sharing specifications have been fixed
 
 
 Obtaining SML/NJ 110.0.7
