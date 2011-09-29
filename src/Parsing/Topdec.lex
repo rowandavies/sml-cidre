@@ -67,8 +67,8 @@
 	);
 %arg	(arg: UserDeclarations.arg);
 
-WhiteSpace	   = [\ \t]+;
-VWhiteSpace	   = [\ \t\n\012]+;
+WhiteSpace	   = [\ \t\r]+;
+VWhiteSpace	   = [\ \t\r\n\012]+;
 UC		   = [A-Z];
 LC		   = [a-z];
 Letter		   = {UC} | {LC};
