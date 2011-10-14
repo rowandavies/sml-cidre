@@ -7,7 +7,7 @@ signature MODULE_ENVIRONMENTS =
 (*    structure rEnv : REFINED_ENVIRONMENTS *)
 
     (*types provided by this module:*)
-    type Basis  
+    type Basis 
     type FunEnv 
     type SigEnv 
 
@@ -128,6 +128,8 @@ signature MODULE_ENVIRONMENTS =
 	val plus_rT           : Basis * rTyNameEnv  -> Basis
 	val from_rE           : rEnv -> Basis
         val from_rE_rT        : rEnv * rTyNameEnv -> Basis
+        val to_rT             : Basis -> rTyNameEnv
+        val no_rT             : Basis -> Basis
 	val to_rE             : Basis -> rEnv
 	val lookup_rstrid     : Basis -> strid -> rEnv option
 	val lookup_rlongstrid : Basis -> longstrid -> rEnv option

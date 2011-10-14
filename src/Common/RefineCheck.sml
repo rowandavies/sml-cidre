@@ -71,7 +71,7 @@ structure RefineCheck = RefineCheck ()
 
 (* The structure R is available at top level.  This is handy for debugging. *)
 
-structure R = RefineCheck ()
+structure R = RefineCheck
 
 
 

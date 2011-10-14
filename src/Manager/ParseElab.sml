@@ -181,7 +181,8 @@ functor ParseElab(structure Parse: PARSE
 			   of SOME topdec => (elab (prjid, infB2, elabB, topdec) 
  		                              handle E => (Timing.timing_end "Elab" ; raise E) )
 			    | NONE => empty_success
-          val _ = Timing.timing_end "Time for Elaboration and Sort Checking"
+          val _ = Timing.timing_end_brief prjid
+                  (* "Time for Elaboration and Sort Checking: " ^ prjid *)
 	  val _ = chat "[elaboration end...]\n"
       in elab_res
       end handle Parse report => (chat "[parsing end...]\n"; 
@@ -223,7 +224,7 @@ functor ParseElab(structure Parse: PARSE
   fun refine_stdin () : unit = refine ("<STDIN>", Parse.sourceFromStdIn (), true)
   fun refine_file (filename) : unit = 
         (TextIO.output (TextIO.stdErr, "Sort Checking file: " ^ filename ^ "\n");
-         refine (filename, Parse.sourceFromFile filename, true) )
+         refine (filename, Parse.sourceFromFile filename, !report_file_sig) )
   fun refine_file_report flag filename = let val keep = !report_file_sig  in
                                            report_file_sig := flag;
 				  	   refine_file filename;
@@ -231,7 +232,7 @@ functor ParseElab(structure Parse: PARSE
 				         end
   fun refine_basisfile (filename) : unit = refine (filename, Parse.sourceFromFile filename, false)
 
-  val basisDir = "../basisstubs/current/"
+  val basisDir = "../../basisstubs/current/"
 
   val basisFiles = 
     ["GENERAL-sig.sml", "General.sml", "OPTION-sig.sml", "Option.sml", "LIST-sig.sml", "List.sml",
@@ -243,9 +244,12 @@ functor ParseElab(structure Parse: PARSE
      "Byte.sml", "Int.sml",
      "INTEGER.sml", "MATH-sig.sml", "Math.sml", "REAL-sig.sml", "Real.sml", "IO-sig.sml", "TEXT_IO.sml",
      "TextIO.sml", "BIN_IO.sml", "BinIO.sml", "TIME-sig.sml", "Time.sml", "OS_PATH.sml", "Path.sml",
-     "OS_FILE_SYS.sml", "FileSys.sml", "OS_PROCESS.sml", "Process.sml", "OS-sig.sml",
+     "OS_FILE_SYS.sml", "FileSys.sml", "OS_PROCESS.sml", "Process.sml", "OS_IO.sml", "OS-sig.sml",
      "COMMAND_LINE.sml", "CommandLine.sml", "DATE-sig.sml", "Date.sml", "TIMER-sig.sml", "Timer.sml",
-     "RANDOM-sig.sml", "Random.sml", "SML90-sig.sml"]
+     "RANDOM-sig.sml", "Random.sml", "SML90-sig.sml", "BIT_FLAGS.sml", "BitFlags.sml", 
+      "MONO_ARRAY_SLICE.sml", "MONO_VECTOR_SLICE.sml", "ByteSlice.sml", "io/prim-io.sig", "io/bin-prim-io.sml",
+      "io/text-prim-io.sml",
+      "POSIX.sml"]
 
   val _ = if !Flags.load_prelude then 
             List.app (fn filename => refine_basisfile (basisDir ^ filename))

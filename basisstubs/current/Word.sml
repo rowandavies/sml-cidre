@@ -46,6 +46,8 @@ type word = word
   val toInt   : word -> int = fn _ => raise Match
   val toIntX  : word -> int		(* with sign extension *) = fn _ => raise Match
   val fromInt : int -> word = fn _ => raise Match
+
+  val ~ : word -> word = fn _ => raise Match    
 end; (*signature WORD*)
 
 (* [word] is the type of n-bit words, or n-bit unsigned integers.
@@ -141,3 +143,4 @@ end; (*signature WORD*)
    [toLargeWordX w] returns w.
    [fromLargeWord w] returns w.
 *)
+

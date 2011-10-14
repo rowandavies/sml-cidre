@@ -282,7 +282,7 @@ functor ElabTopdec
     fun B_plus_E_rT_rE (B, E, rT, rE) = B.plus_rE (B.plus_rT (B.plus_E(B,E), rT), rE)
     fun B_from_E_rT_rE (E, rT, rE) = B.plus_rE (B.plus_rT (B.from_E E, rT), rE)
 
-    val rT0 = rEnv.emptyT  (* Abbreviations, perhaps using "0" is a bit confusing.  *)
+    val rT0 = rEnv.emptyT  (* Abbreviations.  Perhaps using "0" is a bit confusing.  *)
     val rE0 = rEnv.emptyE
     val rTE0 = rEnv.emptyTE
     val rRE0 = rEnv.emptyRE
@@ -795,7 +795,7 @@ functor ElabTopdec
             val (T2, E2, rT2, rE2, out_strdec2) = elab_strdec (B_plus_E_rT_rE (B, E1, rT1, rE1),
                                                                strdec2)
           in
-            (T1 @ T2, E2, rT1 @@ rT2, rE2, OG.LOCALstrdec (okConv i, out_strdec1, out_strdec2))
+            (T1 @ T2, E2, rT1@@rT2, rE2, OG.LOCALstrdec (okConv i, out_strdec1, out_strdec2))
           end
 
         (* Empty declaration *)                             (*rule 59*)
@@ -923,9 +923,12 @@ functor ElabTopdec
                                         val phi_E = Realisation.on_Env phi E
 
                                       val rC = rEnv.C_plus_T (B.to_rC B, rT)
-                                      val SOME rTystr = rEnv.Lookup_tyname (rC, t)
-                                      val rR = rEnv.R_of_TyStr rTystr
                                   in
+                                    case rEnv.Lookup_tyname (rC, t) of NONE =>
+                                             fail (ErrorInfo.WHERE_TYPE_NOT_WELLFORMED (longtycon, t, tau), out_ty)
+                                    | SOME rTystr =>
+                                    case rEnv.R_of_TyStr rTystr of rR =>
+
                                     if length (rEnv.Rdom rR) > 1 then 
                                       fail (ErrorInfo.WHERE_TYPE_MULTIPLE_REFINEMENTS (longtycon, t), out_ty)
                                     else if TyName.equality t andalso not (TypeFcn.admits_equality theta') then

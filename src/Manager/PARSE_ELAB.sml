@@ -18,4 +18,8 @@ signature PARSE_ELAB =
     val refine_string : string -> unit
     val refine_stdin : unit -> unit
     val refine_file : string -> unit
+
+    val currentInfB : InfixBasis ref
+    val currentElabB : ElabBasis ref
+
   end

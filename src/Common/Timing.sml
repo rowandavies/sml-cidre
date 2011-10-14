@@ -3,6 +3,7 @@ signature TIMING =
   sig 
     val timing_begin   : unit -> unit 
     val timing_end     : string -> unit
+    val timing_end_brief     : string -> unit
     val timing_end_res : (string * 'a) -> 'a
     val new_file       : string -> unit
     val get_timings    : unit -> (string *
@@ -132,6 +133,33 @@ functor Timing(structure Flags: FLAGS
 		  padL (Time.toString Time.zeroTime),padL (Time.toString wallclock)] ))
        end;
        chat("\n"))
+
+    fun timing_end_brief (name) = 
+      (let 
+	 val _ = timingNow := false
+	 val {sys=system, usr=non_gc} = Timer.checkCPUTimer (!t)
+	 val wallclock = Timer.checkRealTimer (!rt)
+
+	 val padL = StringCvt.padLeft #" " 15 
+	   
+	 val time_elem = {name = name,
+			  non_gc = non_gc,
+			  system = system,
+			  gc = Time.zeroTime,
+			  wallclock = wallclock}
+
+	 val _ = maybe_export_timings time_elem
+
+	 val _ = timings :=
+	   (case (!timings) 
+	      of [] => [("Unknown", [time_elem])]
+	       | ((file,timings)::rest) =>
+		(file,insert_time_elem timings time_elem)::rest)
+       in
+	 chat
+	 (concat([name," checked in ", (Time.toString wallclock), "s\n"] ))
+       end)
+
       
     fun timing_end_res (name, x) = (timing_end name; x)
       

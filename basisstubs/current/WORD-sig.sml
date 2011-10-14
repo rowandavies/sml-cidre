@@ -45,6 +45,9 @@ signature WORD = sig  (*requires StringCvt*)
   val toInt   : word -> int
   val toIntX  : word -> int		(* with sign extension *)
   val fromInt : int -> word
+
+  val ~ : word -> word
+    
 end; (*signature WORD*)
 
 structure Word8 : WORD = Word
@@ -52,6 +55,8 @@ structure Word : WORD = Word
 structure Word32 : WORD = Word
 structure Word31 : WORD = Word
 structure LargeWord : WORD = Word
+structure SysWord : WORD = Word
+
 
 (* [word] is the type of n-bit words, or n-bit unsigned integers.
 

@@ -357,6 +357,8 @@ signature REFINED_ENVIRONMENTS =
 
     and E_of_C     : Context -> Env
     and T_of_C     : Context -> TyNameEnv
+    and C_no_T :   Context -> Context
+
 (*    and onC    : Substitution * Context  -> Context *)
     and E_in_C : Env -> Context
     and conjSortNameC : Context -> SortName * SortName -> SortName

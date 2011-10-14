@@ -4,7 +4,7 @@ functor Flags (structure Crash : CRASH
 	       structure Report : REPORT) : FLAGS =
   struct
 
-    val change_to_force_recompilation = ()
+    val change_to_force_recompilation = 1
 
     structure NewList = List
     structure ListPair = Edlib.ListPair

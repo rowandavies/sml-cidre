@@ -321,8 +321,10 @@ functor LexBasics(structure BasicIO: BASIC_IO
 			 // highlightAll (fromL + 1, toL)
 		       end
 	  in
-	    Report.line (file ^ ", line " ^ Int.toString line1
-			 ^ ", column " ^ Int.toString column1 ^ ":")
+	    Report.line (OS.FileSys.getDir() ^ "/" ^ file ^ ":" ^ Int.toString line1
+			 ^ "." ^ Int.toString column1 ^ "-" 
+                         ^ Int.toString line2
+			 ^ "." ^ Int.toString column2 ^ " Error: " )
 	    // (if line1 = line2 then
 		  highlight (theLine1, column1, column2-column1)
 		else

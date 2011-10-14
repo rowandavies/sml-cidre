@@ -1425,6 +1425,9 @@ structure SortNameMap =
     fun C_plus_T (CONTEXT {T, E, U}, T'): Context =
       CONTEXT {T = T_plus_T(T,T'), E = E, U = U}
 
+    fun C_no_T (CONTEXT {T, E, U}): Context =
+      CONTEXT {T = emptyT, E = E, U = U}
+
     fun T_of_C (CONTEXT {T, ...}) = T
 
     fun E_in_C E =

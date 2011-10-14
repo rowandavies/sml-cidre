@@ -33,6 +33,8 @@ type int = int
   val scan : StringCvt.radix -> (char, 'a) StringCvt.reader -> 'a -> (int * 'a) option  = fn _ => raise Match
 end; (*signature INTEGER*)
 
+structure Position = Int
+
 (* 
    [precision] is SOME n, where n is the number of significant bits in an
    integer.  In Moscow ML n is 31 in 32-bit architectures and 63 in 64-bit

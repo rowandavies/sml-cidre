@@ -271,6 +271,8 @@ structure Crash : CRASH
       fun from_rE_rT (rE, rT) = BASIS {F = F.empty, G = G.empty, E = E.empty, 
                                        rC = rEnv.C_plus_T (rEnv.E_in_C rE, rT)}
       fun to_rE (BASIS {rC, ...}) = rEnv.E_of_C rC
+      fun to_rT (BASIS {rC, ...}) = rEnv.T_of_C rC
+      fun no_rT (BASIS {F, G, E, rC}) = BASIS {F=F, G=G, E=E, rC=rEnv.C_no_T rC}
       fun lookup_rstrid B strid = rEnv.lookupE_strid (to_rE B, strid)
       fun lookup_rlongstrid B lstrid : rEnv option = 
           rEnv.Lookup_lstrid (rEnv.C_in_B (to_rC B), lstrid)

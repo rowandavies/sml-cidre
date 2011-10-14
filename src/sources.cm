@@ -1,6 +1,6 @@
 Group 
 
-structure R
+structure R (* Cidre *)
 
 is
 
@@ -27,3 +27,10 @@ Common/Elaboration.sml
 (* Common/Execution.sml *)
 (* Common/KitCompiler.sml *)
 Common/RefineCheck.sml
+
+(* Cidre/cidre.cm *)
+
+(*$smlnj/compiler/current.cm
+$smlnj/cm.cm
+
+CMIntegration/CMIntegration.sml *)

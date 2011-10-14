@@ -1,0 +1,10 @@
+local 
+  (* $(SML_LIB)/basis/basis.mlb
+  ../../../basis/kitlib.mlb *)
+in
+  BINARYMAP-sig.sml
+  BinaryMap.sml
+
+  CONFIGURATION-sig.sml Configuration.sml
+  ENVIRONMENT-sig.sml Environment.sml
+end

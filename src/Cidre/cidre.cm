@@ -1,0 +1,23 @@
+Group 
+is
+  $/basis.cm
+
+  BINARYMAP-sig.sml
+  Binarymap.sml
+
+  ENVIRONMENT-sig.sml
+  Environment.sml
+  CONFIGURATION-sig.sml
+  Configuration.sml
+  MLB_FILESYS.sml
+  MlbFileSys.sml
+  MlbUtil.sml
+  MLB_PROJECT.sml  
+  MlbProject.sml
+
+  ../sources.cm
+
+(*   ../Common/RefineCheck.sml *)
+
+  InfixLib.sml
+  Cidre.sml

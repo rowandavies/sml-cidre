@@ -18,7 +18,7 @@ signature TEXT_IO = sig
 *)
   val input1       : instream -> elem option
   val inputN       : instream * int -> vector
-  val inputLine    : instream -> string
+  val inputLine    : instream -> string option (* option was missing? - Rowan 12oct11 *)
   val endOfStream  : instream -> bool
   val lookahead    : instream -> elem option
 
