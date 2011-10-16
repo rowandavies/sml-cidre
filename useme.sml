@@ -7,7 +7,7 @@ in
       case Compiler.version of {system, version_id=major::minor::_,...} =>
       (print (system ^ " " ^ Int.toString major ^ "." ^ Int.toString minor ^ "\n" ^
              "with SML-CIDRE 0.99d\n\n");
-       "CIDRED")
+       "a piece of")
   else 
 (print "CIDRE exported!\n";
 

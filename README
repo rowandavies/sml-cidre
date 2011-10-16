@@ -32,24 +32,18 @@ version of SML/NJ after 110.0.7 (from 2000) should be suitable, and
 recent SML CIDRE development has used version 110.73, so that
 definitely works.
 
-Change to the src subdirectory of this directory, start SML/NJ, and make the
-system using the compilation manager, as follows.  (If you have previously
-built the system, the compilation manager will load the system rather than
-rebuilding it.)
+- cd to the directory containing this file.
+- type:  sml useme.sml
+- Exit from SML/NJ (via ^D or ^Z)
+- You can now run sml-cidre via ./bin/sml-cidre (you may want it on your path).
 
-  # cd ./src                       
-  # sml
-  Standard ML of New Jersey, Version 110.73
-  - CM.make();
+To sort check an SML program, create an MLB file for it - use cm2mlb
+from MLton if you only have a CM file.
 
-Then, to refinement-type check a file containing SML code with annotations, use
-"R.refine_file", as in the following.
+Then:
 
-  - R.refine_file "../test-examples/large-examples/red-black.sml";
+     Cidre.check "filename.mlb";
 
-To check a file without reporting signatures, use a command like the following.
-
-  - R.refine_file_report false "../test-examples/large-examples/red-black.sml";
 
 
 Syntax for refinement annotations
