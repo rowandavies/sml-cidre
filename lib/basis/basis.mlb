@@ -1,6 +1,7 @@
 
 
-(* For now these are always included in the initial basis for Cidre *)
+(* For now these are always included in the initial basis for Cidre
+   so this file is just a placeholder.   *)
 
 (*
 ../../basisstubs/current/GENERAL-sig.sml

@@ -44,7 +44,7 @@
 ;; sml-font-lock-all (sml-mode 3.3) so that it is called whenever SML
 ;; code needs to be fontified.
 (if (boundp 'sml-font-lock-keywords)
-    ;; sml-mode 3.9.5	 
+    ;; sml-mode 3.9.5 (and later?)	 
     (setq sml-font-lock-keywords (append (delete '(sml-refinement-comments-and-strings)
 						 sml-font-lock-keywords) 
 					 '((sml-refinement-comments-and-strings))))
@@ -70,7 +70,7 @@
 	      (setq font-lock-keywords sml-font-lock-all))))
      (and sml-font-lock-auto-on (turn-on-font-lock)) ))
 
-(defface font-lock-refinement-keyword-face   '((t (:foreground "seagreen")))
+(defface font-lock-refinement-keyword-face   '((t (:foreground "DarkGoldenrod")))
   "Font Lock mode face used for keywords in refinement comments."
   :group 'font-lock-highlighting-faces)
 
