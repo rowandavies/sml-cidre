@@ -1,5 +1,8 @@
 (*General.sml*)
 
+  (* See the top-level at: http://www.standardml.org/Basis/top-level-chapter.html
+     and the General structure: http://www.standardml.org/Basis/general.html *)
+
 infix  7  * / div mod
 infix  6  + - ^
 infixr 5  :: @
@@ -9,46 +12,13 @@ infix  0  before
 
 structure General : GENERAL = 
   struct (*[ assumesig GENERAL ]*)
-(*    type unit = unit
-    type exn = exn
-    type 'a ref = 'a ref
-
-    exception Bind = Bind
-    exception Match = Match
-    exception Subscript
-    exception Size
-    exception Overflow = Overflow
-    exception Domain
-    exception Div = Div
-    exception Chr
-    exception Fail of string 
-  
-    fun exnName (e: exn) : string = prim("exnName", "exnNameProfiling", e)   (* exomorphic by copying *)
-    fun exnMessage (e: exn) : string = exnName e 
-
-    datatype 'a option = NONE | SOME of 'a
-    exception Option
-    fun getOpt (NONE, a) = a
-      | getOpt (SOME a, b) = a
-    fun isSome NONE = false
-      | isSome _ = true
-    fun valOf (SOME a) = a
-      | valOf _ = raise Option
-
-    datatype order = LESS | EQUAL | GREATER
-
-    fun !(x: 'a ref): 'a = prim ("!", "!", x) 
-    fun (x: 'a ref) := (y: 'a): unit = prim (":=", ":=", (x, y)) 
-    fun (f o g) x = f(g x)
-    fun a before () = a
-    fun ignore (a) = ()
-*)
   end (*structure General*)
 
 open General
 
 
-(* Top-level identifiers; Some are here - some are introduced later *)
+(* Top-level identifiers; Some are here - some are introduced later depending on *)
+(* which were required by other structures in the ML Kit.  (Revisit 18oct11) *)
 fun op = (x: ''a, y: ''a): bool = prim ("=", "=", (x, y))
 
 fun not true = false
@@ -70,6 +40,5 @@ in fun explode s =
 		       else h (j-1) (sub_unsafe (s, j) :: res)
      in h (size s - 1) []
      end
-
 
 end

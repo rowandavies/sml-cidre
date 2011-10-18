@@ -26,12 +26,12 @@ signature MODULE_ENVIRONMENTS =
     type rTyNameEnv
     type realisation
     eqtype id
-    type longid
-    type strid (* = rEnv.strid *)
-    type longstrid (* = rEnv.longstrid *)
-    type longtycon (* = rEnv.longtycon *)
-    type sigid
-    type funid
+    eqtype longid
+    eqtype strid (* = rEnv.strid *)
+    eqtype longstrid (* = rEnv.longstrid *)
+    eqtype longtycon (* = rEnv.longtycon *)
+    eqtype sigid
+    eqtype funid
     type Report
 
     structure TyName : TYNAME

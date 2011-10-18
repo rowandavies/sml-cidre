@@ -28,8 +28,8 @@ signature MODULE_STATOBJECT =
 
     eqtype id
     type strid
-    type longstrid
-    type longtycon
+    eqtype longstrid
+    eqtype longtycon
 
     datatype SigMatchError =
       MISSINGSTR  of longstrid

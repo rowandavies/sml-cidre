@@ -1,0 +1,28 @@
+Array2 X
+ArraySlice X
+GeneralSock X
+IEEEReal X
+ImperativeIO X
+INetSock     X
+IntInf X
+MONO_ARRAY2 X
+NetHostDB X
+NetProtDB X
+NetServDB X
+PrimIO functor X
+Socket X
+StreamIO X
+Text       ???
+TEXT_STREAM_IO signature X
+Unix X
+UnixSock X
+VectorSlice (?) X
+Windows X
+
+General   (close enough, revisit)
+
+PackReal C ???????
+PackWord C ???????
+
+Path, FileSys - remove from top level (?)
+

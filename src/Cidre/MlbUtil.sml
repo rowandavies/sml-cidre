@@ -14,7 +14,7 @@ structure MlbUtil :>
 	    
 	fun quot s = "'" ^ s ^ "'"
 
-	fun warn (s : string) = print ("\nWarning: " ^ s ^ ".\n\n")
+	fun warn (s : string) = print ("Warning: " ^ s ^ ".\n")
 	    
 	local
 	    fun err s = print ("\nError: " ^ s ^ ".\n\n"); 

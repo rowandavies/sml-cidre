@@ -72,7 +72,7 @@ functor RefDec(
                      where type Sort  = RefObject.Sort
                      where type SortScheme  = RefObject.SortScheme
                      where type longsortcon = TyCon.longtycon
-                     where type longid = Ident	.longid
+                     where type longid = Ident.longid
                      where type Type = StatObject.Type
                      (* where type Error = Comp.Error *)
 
@@ -119,8 +119,15 @@ functor RefDec(
 *)
                     
                 structure MapDecRtoE: MAP_DEC_INFO 
-                      where IG = MapDecEtoR.OG
-                      where OG = MapDecEtoR.IG
+                      where type IG.dec = MapDecEtoR.OG.dec
+                      where type OG.dec = MapDecEtoR.IG.dec
+                      where type IG.longstrid = MapDecEtoR.OG.longstrid
+                      (* where type OG.longstrid = MapDecEtoR.IG.longstrid *)
+                      where type IG.info = MapDecEtoR.OG.info
+                      where type OG.info = MapDecEtoR.IG.info
+                  
+
+
 
                 structure Flags: FLAGS
                 structure Crash: CRASH

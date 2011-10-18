@@ -1,5 +1,5 @@
 structure Substring:SUBSTRING =
-struct(*[ assumesig SUBSTRING ]*)
+struct(*[ assumesig SUBSTRING  where type substring=substring and type string=string and type char=char ]*)
     structure String : STRING = String
 type substring = unit
     val base : substring -> (String.string * int * int)  = fn _ => raise Match

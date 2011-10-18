@@ -7,7 +7,7 @@ signature REFINED_ENVIRONMENTS =
     type SortName 
     eqtype tycon
     type TyName
-    type Variance 
+    eqtype Variance 
     structure SortName : SORTNAME 
        where type SortName = SortName
        where type TyName = TyName
@@ -159,7 +159,7 @@ signature REFINED_ENVIRONMENTS =
     Structure identifier
     ********)
 
-    type strid and longstrid
+    eqtype strid and longstrid
 
     val lookupE_strid : Env * strid -> Env option
 

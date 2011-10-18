@@ -4,16 +4,16 @@ signature TOPDEC_GRAMMAR =
   sig
     (* Core declarations. *)
     eqtype strid
-    type longstrid 
+    eqtype longstrid 
     
     (* Objects from the core syntax (needed for specs). *)
 
     eqtype id
-    type longid
+    eqtype longid
     eqtype tyvar
     type ty
     eqtype tycon
-    type longtycon  
+    eqtype longtycon  
     type info  (* info place-holder. *)
     type dec
 		
@@ -30,8 +30,8 @@ signature TOPDEC_GRAMMAR =
 		where type dec = dec
 
     (* Various kinds of module identifiers. *)
-    type funid
-    type sigid
+    eqtype funid
+    eqtype sigid
     structure FunId : FUNID  where type funid = funid
     structure SigId : SIGID  where type sigid = sigid
 

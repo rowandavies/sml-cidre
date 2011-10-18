@@ -5,15 +5,15 @@
 
 signature DEC_GRAMMAR =
 sig
-  type scon
-  type lab
+  eqtype scon
+  eqtype lab
   eqtype id
-  type longid
+  eqtype longid
   eqtype tyvar
   eqtype tycon
-  type longtycon
+  eqtype longtycon
   eqtype strid
-  type longstrid
+  eqtype longstrid
 
   structure Lab   : LAB   (* labels *)
       where type lab = lab

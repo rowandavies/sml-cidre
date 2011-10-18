@@ -4,7 +4,7 @@ signature OS_IO =
     val hash : iodesc -> word
     val compare : iodesc * iodesc -> order
     eqtype iodesc_kind
-(*    val kind : iodesc -> iodesc_kind *)
+    val kind : iodesc -> iodesc_kind
     structure Kind : sig
       val file    : iodesc_kind
       val dir     : iodesc_kind
@@ -14,7 +14,7 @@ signature OS_IO =
       val socket  : iodesc_kind
       val device  : iodesc_kind
     end
-(*    eqtype poll_desc
+    eqtype poll_desc
     type poll_info
     val pollDesc : iodesc -> poll_desc option
     val pollToIODesc : poll_desc -> iodesc
@@ -26,5 +26,5 @@ signature OS_IO =
     val isIn  : poll_info -> bool
     val isOut : poll_info -> bool
     val isPri : poll_info -> bool
-    val infoToPollDesc : poll_info -> poll_desc *)
+    val infoToPollDesc : poll_info -> poll_desc
   end

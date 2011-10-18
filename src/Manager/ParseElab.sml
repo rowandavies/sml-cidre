@@ -237,19 +237,32 @@ functor ParseElab(structure Parse: PARSE
   val basisFiles = 
     ["GENERAL-sig.sml", "General.sml", "OPTION-sig.sml", "Option.sml", "LIST-sig.sml", "List.sml",
      "LIST_PAIR.sml", "ListPair.sml", "LIST_SORT.sml", "ListSort.sml", "VECTOR-sig.sml", "Vector.sml",
-     "ARRAY-sig.sml", "Array.sml", "MONO_VECTOR.sml", "MONO_ARRAY.sml", "MonoVector.sml",
-     "MonoArray.sml", "ByteVector.sml", "ByteArray.sml", "STRING_CVT.sml", "StringCvt.sml",
+     "ARRAY-sig.sml", "Array.sml", "STRING_CVT.sml", "StringCvt.sml", "Word.sml", "WORD-sig.sml", 
+     "MONO_VECTOR.sml", "MONO_ARRAY.sml", "MonoVector.sml",
+     "MonoArray.sml", "ByteVector.sml", "ByteArray.sml", 
      "STR_BASE.sml", "StrBase.sml", "CHAR-sig.sml", "STRING-sig.sml", "SUBSTRING-sig.sml", "Substring.sml",
-     "BOOL-sig.sml", "Bool.sml", "Word.sml", "WORD-sig.sml", "CharVector.sml", "BYTE-sig.sml", 
+     "BOOL-sig.sml", "Bool.sml",  (* "CharVector.sml",*) "BYTE-sig.sml", 
      "Byte.sml", "Int.sml",
      "INTEGER.sml", "MATH-sig.sml", "Math.sml", "REAL-sig.sml", "Real.sml", "IO-sig.sml", "TEXT_IO.sml",
-     "TextIO.sml", "BIN_IO.sml", "BinIO.sml", "TIME-sig.sml", "Time.sml", "OS_PATH.sml", "Path.sml",
-     "OS_FILE_SYS.sml", "FileSys.sml", "OS_PROCESS.sml", "Process.sml", "OS_IO.sml", "OS-sig.sml",
+     "TextIO.sml", "BIN_IO.sml", "BinIO.sml", "TIME-sig.sml", "Time.sml", "OS_PATH.sml", (* "Path.sml", *)
+     "OS_FILE_SYS.sml", (*"FileSys.sml",*) "OS_PROCESS.sml", (*"Process.sml",*) "OS_IO.sml", "OS-sig.sml",
      "COMMAND_LINE.sml", "CommandLine.sml", "DATE-sig.sml", "Date.sml", "TIMER-sig.sml", "Timer.sml",
      "RANDOM-sig.sml", "Random.sml", "SML90-sig.sml", "BIT_FLAGS.sml", "BitFlags.sml", 
-      "MONO_ARRAY_SLICE.sml", "MONO_VECTOR_SLICE.sml", "ByteSlice.sml", "io/prim-io.sig", "io/bin-prim-io.sml",
-      "io/text-prim-io.sml",
-      "POSIX.sml"]
+      "MONO_ARRAY_SLICE.sml", "MONO_VECTOR_SLICE.sml", "ByteSlice.sml"] @
+     (map (fn s => "from-mlton/" ^ s)
+      ["IEEE-real.sig", "IEEE-real.sml", "array2.sig", "array2.sml", "vector-slice.sig", "array-slice.sig", 
+      "int-inf.sig", "int-inf.sml", "mono-array2.sig", "mono-array2.fun", (*"pack-real.sig", "pack-real.sml",
+      "pack-word.sig", "pack-word.sml",*) "text.sig", "text.sml", "unix.sig", "unix.sml", 
+      "io/prim-io.sig", "io/bin-prim-io.sml", "io/text-prim-io.sml", "io/prim-io.fun", 
+      "io/stream-io.sig", "io/stream-io.fun", "io/imperative-io.sig", "io/imperative-io.fun", 
+      "io/text-stream-io.sig",
+      "net/net-host-db.sig", "net/net-host-db.sml", "net/net-prot-db.sig", "net/net-prot-db.sml", 
+      "net/net-serv-db.sig", "net/net-serv-db.sml", "net/socket.sig", "net/socket.sml", 
+      "net/inet-sock.sig", "net/inet-sock.sml", 
+      "net/unix-sock.sig", "net/unix-sock.sml",
+      "net/generic-sock.sig", "net/generic-sock.sml" ]) @
+     ["POSIX.sml"]
+   
 
   val _ = if !Flags.load_prelude then 
             List.app (fn filename => refine_basisfile (basisDir ^ filename))

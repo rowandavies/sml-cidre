@@ -1,6 +1,9 @@
-Group 
+Group
 is
   $/basis.cm
+
+  $smlnj/cm.cm
+
 
   BINARYMAP-sig.sml
   Binarymap.sml
@@ -16,6 +19,8 @@ is
   MlbProject.sml
 
   ../sources.cm
+
+  ../cm2mlb/cm2mlb.cm
 
 (*   ../Common/RefineCheck.sml *)
 

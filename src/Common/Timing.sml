@@ -107,7 +107,7 @@ functor Timing(structure Flags: FLAGS
       (chat("\n");
        let 
 	 val _ = timingNow := false
-	 val {sys=system, usr=non_gc} = Timer.checkCPUTimer (!t)
+	 val {sys=system, usr=non_gc, ...} = Timer.checkCPUTimer (!t)
 	 val wallclock = Timer.checkRealTimer (!rt)
 
 	 val padL = StringCvt.padLeft #" " 15 
@@ -137,7 +137,7 @@ functor Timing(structure Flags: FLAGS
     fun timing_end_brief (name) = 
       (let 
 	 val _ = timingNow := false
-	 val {sys=system, usr=non_gc} = Timer.checkCPUTimer (!t)
+	 val {sys=system, usr=non_gc, ...} = Timer.checkCPUTimer (!t)
 	 val wallclock = Timer.checkRealTimer (!rt)
 
 	 val padL = StringCvt.padLeft #" " 15 

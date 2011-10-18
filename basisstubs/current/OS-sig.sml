@@ -22,8 +22,8 @@ signature OS =
    of the strings are operating system dependent.  
 *)
 structure OS:OS =
-struct(*[ assumesig OS ]*)
-type syserror = unit
+  struct(*[ assumesig OS ]*)
+    type syserror = unit
 
     exception SysErr of string * syserror option
 

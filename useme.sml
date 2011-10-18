@@ -1,12 +1,14 @@
 
 let val cidreDir = OS.FileSys.getDir()
 in 
-  OS.FileSys.chDir "src/Cidre";
-  CM.make "cidre.cm";
+  OS.FileSys.chDir "src/cm2mlb";
+  CM.make "cm2mlb.cm";
+  (* OS.FileSys.chDir "src/Cidre"; *)
+  CM.make "../Cidre/cidre.cm";
   if (SMLofNJ.exportML "../../bin/.heap/sml-cidre") then 
       case Compiler.version of {system, version_id=major::minor::_,...} =>
       (print (system ^ " " ^ Int.toString major ^ "." ^ Int.toString minor ^ "\n" ^
-             "with SML-CIDRE 0.99d\n\n");
+             "with SML-CIDRE 0.999\n\nQuickstart:   Cidre.make \"filenm.cm\";\n\n");
        "a piece of")
   else 
 (print "CIDRE exported!\n";

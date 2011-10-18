@@ -1,5 +1,5 @@
 
-structure Environment = Environment(fun program_name ()="Cidre");
+structure Environment = Environment(fun program_name ()="cidre");
 structure MlbProject = MlbProject(Environment);
 
 structure Cidre = struct
@@ -154,6 +154,7 @@ structure Cidre = struct
 							(!Flags.log)
      fun print_result_report report = (Report.print' report (!Flags.log);
 					    Flags.report_warnings ())
+     val warned = ref false
 
      fun checkBdec (rT, MB, BC) (SEQbdec(bdec1, bdec2)) = 
            let val (rT1, MB1,BC1) = checkBdec (rT, MB,BC) bdec1
@@ -185,7 +186,7 @@ structure Cidre = struct
            (case ParseElab.parse_elab {infB=infB0, elabB=B.plus_rT(B0,rT0), prjid=atbdec, file=atbdec}
               of SUCCESS {report, infB, elabB, topdec} => 
                    (if print_flag then print_result_report report 
-                                  else (Flags.report_warnings(); Flags.reset_warnings());
+                                  else (Flags.report_warnings(); Flags.reset_warnings();warned:=true);
                     ( B.to_rT elabB, (infB, BE.empty, B.no_rT elabB), BC0 ) )
                | FAILURE (report, error_codes) =>
                    (Flags.report_warnings();  (* Print warnings even if there are errors.  *)
@@ -194,15 +195,28 @@ structure Cidre = struct
             )
        | checkBdec (rT,MB,BC) (MLBFILEbdec(path,NONE)) =
           let (* val _ = print (MlbFileSys.getCurrentDir() ^ " path = " ^ path ^ "\n" ) *)
-
+              val _ = print ("CIDRE: MLB " ^ path ^" \n")
               val {cd_old,file=mlbfile} = MlbFileSys.change_dir (OS.FileSys.fullPath path)
+                  handle OS.SysErr _ => 
+                       case OS.Path.splitBaseExt path of {base,ext} => 
+                            MlbFileSys.change_dir (OS.FileSys.fullPath (base ^ ".cm"))
+                            handle OS.SysErr _ => raise Failed (Report.line ("Path not found: " ^ path))
               val pathAbs = OS.FileSys.fullPath mlbfile
+              (* val {dir,file} = case OS.Path.splitDirFile path *)
+              (*    handle OS.SysErr (errstr, _) => (cd_old(); raise Failed (Report.line ("File not found: " ^ path))) *)
               (* val _ = print (pathAbs ^ "\n") *)
+                    (* handle _ => CM2MLB.mlbString (base ^ ".cm") *)
+                    (*             handle _ => raise Failed (Report.line ("File not found: " ^ path)) *)
+
               val res = 
             (case BC.lookup BC pathAbs of SOME MB1 => (rEnv.emptyT, MB1, BC)  (* typenames are already in rT *)
-                | NONE => let val bdec = MlbProject.parse mlbfile
+                | NONE => let val {base,ext}= OS.Path.splitBaseExt pathAbs
+                              val (base,contents) = case OS.Path.splitBaseExt pathAbs 
+                                               of {base, ext=SOME "cm"} => (base,CM2MLB.mlbString pathAbs)
+                                                | {base,...} => (base,MlbFileSys.fromFile pathAbs)
+                              val bdec = MlbProject.parseContents(base ^ ".mlb", contents)
                               val (rT1, MB1, BC1) = checkBdec (rT,MB.initial,BC) bdec
-                          in  ( rT1, MB1, BC.plus (BC1, BC.singleton (path,MB1)) )
+                          in  ( rT1, MB1, BC.plus (BC1, BC.singleton (pathAbs,MB1)) )
                           end)  handle ex => (cd_old(); raise ex)
               val _ = cd_old()
           in res
@@ -252,18 +266,60 @@ structure Cidre = struct
      | checkBexp (rT, MB, BC) (LONGBIDbexp longbid) =
           (case BE.lookup_long MB (Bid.explode longbid) of NONE => raise Failed (Report.line "Longbid not found")
               | SOME MB1 => (rEnv.emptyT, MB1, BC) )
-   in 
-     fun check mlbFileNm = 
-
-         let val _ = Flags.reset_warnings ()
-             (* val bdec = MlbProject.parse mlbFileNm *)
-             (* val _ =  Report.print (PP.reportStringTree (rEnv.layoutTE ((fn (_, TE, _, _, _) => TE) (rEnv.unEnv (B.to_rE B.initial))))) *)
-             val _ = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) (MLBFILEbdec(mlbFileNm,NONE))
+   in
+     val // = Report.//
+     infix //
+     fun reportErr report = Report.print (Report.line "\nCIDRE: basis construction error: " 
+                                                   // Report.indent (4, report) // Report.line "")
+     fun checkContents (mlbFileNm,contents) = 
+         let val _ = Report.print (Report.line "")
+             val _ = Flags.reset_warnings ()
+             val _ = warned:=false;
+             val bdec = MlbProject.parseContents (mlbFileNm, contents)
+             val _ = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) bdec
           in
-             print "Cidre: finished checking, all OK.\n"
-          end handle Failed report => Report.print report
-   end
+             print "\nCidre: finished checking.\n";
+             not (!warned)
+          end handle Failed report => (reportErr report; false)
 
-            
+     fun checkcm cmfilenm = 
+         let fun doit base = checkContents (base^".mlb", CM2MLB.mlbString cmfilenm) in 
+             case OS.Path.splitBaseExt cmfilenm 
+               of {base, ext=SOME "cm"} => doit base
+                | {base, ext=SOME "CM"} => doit base
+                | _ =>(print ("\nCIDRE: error: "^cmfilenm^" does not have the extension .cm\n"); 
+                       false)
+         end
+
+     fun checkmlb mlbFileNm = 
+         let val _ = Flags.reset_warnings ()
+             val _ = warned:=false;
+             val _ = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) (MLBFILEbdec(mlbFileNm,NONE))
+             (* The (rT, MB, BC) are discarded. *)
+          in
+             print "\nCIDRE: finished checking.\n";
+             not (!warned)
+          end handle Failed report => (reportErr report; false)
+     end
+
+     fun check filenm = 
+             case OS.Path.splitBaseExt filenm 
+               of {base, ext=SOME "mlb"} => checkmlb filenm
+                | {base, ext=SOME "cm"} => checkcm filenm
+                | {base, ext=SOME "MLB"} => checkmlb filenm
+                | {base, ext=SOME "CM"} => checkcm filenm
+                | {base, ext=SOME "sml"} => (R.refine_file filenm; false)
+                | {base, ext=SOME "sig"} => (R.refine_file filenm; false)
+                | {base, ext=SOME "fun"} => (R.refine_file filenm; false)
+                | _ => (print ("\nCIDRE: error: "^filenm^" does not have one of the extensions: mlb cm sml sig fun\n");
+                        false)
+
+     fun to_cm filenm = case OS.Path.splitBaseExt filenm of {base, ext=_} => base ^ ".cm"
+
+     fun make filenm = 
+         if check filenm then CM.make (to_cm filenm)
+         else false
+
 end
-           
+                  
+ 

@@ -1,5 +1,9 @@
 (* OS.FileSys -- SML Basis Library *)
 
+
+(* Remove this?  OS-sig.sml already creates OS *)
+
+(*
 structure FileSys:OS_FILE_SYS =
 struct(*[ assumesig OS_FILE_SYS ]*)
 type dirstream = unit
@@ -35,6 +39,9 @@ type file_id = unit
     val hash      : file_id -> word = fn _ => raise Match
     val compare   : file_id * file_id -> order = fn _ => raise Match
   end
+
+*)
+
 
 (* These functions operate on the file system.  They raise OS.SysErr
    in case of errors.

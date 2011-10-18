@@ -80,7 +80,7 @@ functor Environment(val program_name : unit -> string) :> ENVIRONMENT =
                 val files = [system,user]
               in List.app (fn x => (case x
                                     of NONE => ()
-                                     | SOME x' => (readfile x')
+                                     | SOME x' => (print x'; readfile x')
                                                 handle FileNotFound => ()
                                                      | ParseErr s => 
                                                          raise ParseErr ("In file: " ^ x' ^ " " ^ s)

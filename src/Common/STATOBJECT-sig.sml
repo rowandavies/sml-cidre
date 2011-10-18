@@ -25,7 +25,7 @@ signature STATOBJECT =
        where type TyName = TyName 
        where type tycon = tycon
     eqtype lab 
-    type scon
+    eqtype scon
     type strid
 
 

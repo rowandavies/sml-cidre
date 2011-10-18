@@ -13,7 +13,9 @@ signature SORTNAME =
     type TyName
 
     type SortName
-    type Variance
+    eqtype Variance
+    (* datatype Variance = COVARIANT | CONTRAVARIANT | IGNORED | MIXED *)
+
 
     (* Pervasive sort names (Definition p. 74) *)
 

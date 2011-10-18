@@ -1,5 +1,8 @@
 (*STRING.sml*)
 
+
+(*Not used *)
+(*
 structure String = struct
 (*  structure Char = Char *)
   val maxSize : int  = 0
@@ -31,6 +34,7 @@ structure String = struct
 end
 
 fun substring x = String.substring x
+*)
 
 (* the type [string] is the type of string of characters.
 

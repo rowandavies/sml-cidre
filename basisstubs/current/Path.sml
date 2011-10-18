@@ -1,5 +1,7 @@
 (*OS_PATH.sml*)
 
+(* Not used currently *)
+
 structure Path:OS_PATH = struct(*[ assumesig OS_PATH ]*)
   exception Path
 

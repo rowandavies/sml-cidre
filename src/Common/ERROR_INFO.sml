@@ -10,10 +10,10 @@ signature ERROR_INFO =         (* ErrorInfo is part of the ElabInfo.  See ELAB_I
     eqtype lab
     eqtype tycon
     type longid
-    type longtycon 
+    eqtype longtycon 
     type sigid
     type strid
-    type longstrid 
+    eqtype longstrid 
     eqtype funid
     type SigMatchError
 

@@ -27,9 +27,10 @@ signature STRING = sig
   val fromCString : string -> string option 
   val toCString : string -> string 
 *)
-  type string = string
-  structure Char : CHAR
+    eqtype string
+    eqtype char
 
+    (* structure Char : CHAR *)
 
     val maxSize : int
     val size : string -> int
@@ -56,16 +57,15 @@ signature STRING = sig
     val >  : string * string -> bool
     val >= : string * string -> bool
     val toString : string -> string
-(*    val scan       : (char, 'a) StringCvt.reader -> (string, 'a) StringCvt.reader *)
+    val scan       : (char, 'a) StringCvt.reader -> (string, 'a) StringCvt.reader
     val fromString : string -> string option
     val toCString : string -> string
     val fromCString : string -> string option 
 end
 
-structure String : STRING = struct (*[ assumesig STRING ]*)
-  open String
-end
+structure String = struct (*[ assumesig STRING where type char=char and type string=string ]*) end
 
+fun substring x = String.substring x
 
 (* the type [string] is the type of string of characters.
 

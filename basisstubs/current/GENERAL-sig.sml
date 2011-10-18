@@ -1,33 +1,18 @@
 (*GENERAL.sml*)
 
 signature GENERAL = sig
-  type unit = unit
-  type exn = exn
-  type 'a ref = 'a ref
 
-  (* Added these based on the web page for the Standard Basis.
-     It would be good to find a place to download an up to date
-     set of signatures. - Rowan *)
-  (* Also, these would be better in a signature like "TOPLEVEL-NOTGENERAL". *)
+  (* The spec doesn't include this first part (down to "unit"), but for now...  *)
+  type 'a ref = 'a ref  
   eqtype 'a array
   eqtype 'a vector
   type substring
 
-  exception Bind
-  exception Match
-  exception Subscript
-  exception Size
-  exception Overflow
-  exception Domain
-  exception Div
-  exception Chr
-  exception Fail of string 
-
-  val exnName : exn -> string 
-  val exnMessage : exn -> string 
+  val substring : string * int * int -> string
 
 (* now in OPTION signature: (mads 13 March 1998) 
    well, the specs should still be here (Martin-08/07/1998) 
+   I don't want to get into it, it works as is, revisit it later  (rowan 18oct11)
 *)
 
   datatype 'a option = NONE | SOME of 'a 
@@ -36,13 +21,37 @@ signature GENERAL = sig
   val isSome : 'a option -> bool 
   val valOf : 'a option -> 'a 
 
+
+  (* The rest is the SML Basis spec for GENERAL exactly, except where noted. *)
+  (* See the top-level at: http://www.standardml.org/Basis/top-level-chapter.html
+     and the General structure: http://www.standardml.org/Basis/general.html *)
+
+  type unit = unit  (* The Basis spec says "eqtype unit", but here unit is manually in the top-level *)
+  type exn = exn
+
+  exception Bind
+  exception Match
+
+  exception Chr
+  exception Div
+  exception Domain
+  exception Fail of string 
+
+  exception Overflow
+  exception Size
+  exception Span       (* Added 18oct11 - Rowan *)
+  exception Subscript
+
+  val exnName : exn -> string 
+  val exnMessage : exn -> string 
+
+
   datatype order = LESS | EQUAL | GREATER
   val ! : 'a ref -> 'a 
   val := : ('a ref * 'a) -> unit 
   val o : (('b -> 'c) * ('a -> 'b)) -> 'a -> 'c 
   val before : ('a * unit) -> 'a 
   val ignore : 'a -> unit 
-  val substring : string * int * int -> string
 
 end; (*signature GENERAL*)
 

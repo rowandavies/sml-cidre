@@ -220,8 +220,9 @@ functor MlbProject (Env : ENVIRONMENT) :> MLB_PROJECT =
             [] => error ("while parsing basis file " ^ quot mlbfile ^ " : " ^ msg ^ "(reached end of file)")
           | s::_ => error ("while parsing basis file " ^ quot mlbfile ^ " : " ^ msg ^ "(reached " ^ quot s ^ ")")
 
+        fun fileOf path = #file (OS.Path.splitDirFile path)
         fun parse_warn1 mlbfile (msg, rest) =
-            warn (concat ["while parsing basis file ", quot mlbfile, " : ", msg,
+            warn (concat [quot (fileOf mlbfile), " : ", msg,
                           case rest of [] => "(reached end of file)"
                                      | s::_ => "(reached " ^ quot s ^ ")"])
 
@@ -427,13 +428,13 @@ functor MlbProject (Env : ENVIRONMENT) :> MLB_PROJECT =
 	fun fromFile' (filename:string) : string option =
 	    SOME(MlbFileSys.fromFile filename) handle _ => NONE
 
-	fun parse (mlbfile: string) : MS.bdec =
+	fun parseContents (mlbfile: string, contents:string) : MS.bdec =
 	    if not (has_ext(mlbfile, "mlb")) then 
 		error ("The basis file " ^ quot mlbfile ^ " does not have extension 'mlb'")	    
 	    else
 		let (* val _ = print ("currently at " ^ OS.FileSys.getDir() ^ "\n") *)
 		    val ss = (lex mlbfile o drop_comments mlbfile o
-                              explode o MlbFileSys.fromFile) mlbfile
+                              explode) contents
 		    (* val _ = print_ss ss *)
 		in  case parse_bdec_opt mlbfile ss of
 		    SOME (bdec,nil) => bdec
@@ -441,6 +442,8 @@ functor MlbProject (Env : ENVIRONMENT) :> MLB_PROJECT =
 		  | NONE => MS.EMPTYbdec
 		end
 	    handle IO.Io {name=io_s,cause,...} => error ("The basis file " ^ quot mlbfile ^ " cannot be opened")
+
+	fun parse (mlbfile: string) : MS.bdec = parseContents (mlbfile, MlbFileSys.fromFile mlbfile)
 
 
 	(* Support for writing dependency information to disk in .d-files. *)

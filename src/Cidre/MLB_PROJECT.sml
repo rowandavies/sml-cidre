@@ -38,6 +38,8 @@ signature MLB_PROJECT =
 	(* scriptpath p is optional in MLBFILEbdec; only useful in the context of
 	 * SMLserver as SCRIPTSbdec. *)
 
+	val parseContents : string * string -> MS.bdec 
+
 	val parse : string -> MS.bdec 
 	(* [parse mlbfile] parses a basis file mlbfile. Prints an 
 	 * error message and raises Fail on error. *)

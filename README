@@ -3,10 +3,10 @@
 SML CIDRE (Checker for Intersection and Datasort Refinements)
 =============================================================
 
-Author: Rowan Davies (rowan@cs.cmu.edu)
+Author: Rowan Davies (rowan@csse.uwa.edu.au)
 (Built using the ML Kit: see the file COPYING.)
 
-Version: 0.99d (supports MLB files, and the standard basis is more complete)
+Version: 0.9999 (supports CM&MLB files, and the standard basis is pretty complete)
 Date: 2011 October 15
 
 
@@ -35,15 +35,30 @@ definitely works.
 - cd to the directory containing this file.
 - type:  sml useme.sml
 - Exit from SML/NJ (via ^D or ^Z)
-- You can now run sml-cidre via ./bin/sml-cidre (you may want it on your path).
+- You can now run sml-cidre via:   ./bin/sml-cidre 
 
-To sort check an SML program, create an MLB file for it - use cm2mlb
-from MLton if you only have a CM file.
+sml-cidre includes all of SML/NJ, so use it in place of the normal "sml",
+and maybe put it on your path or point emacs at it.
 
-Then:
+The simplest way to sort check and make an SML program from sml-cidre is:
 
-     Cidre.check "filename.mlb";
+     Cidre.make "filepath.cm";     [Replace filepath.cm with the actual path]
 
+This will sort check the SML files in an appropriate order, and if
+there are no errors or pattern coverage warnings it automatically
+calls CM.make to compile the program.
+
+If you want to sort check without compiling, use Cidre.check instead.
+Both commands will also accept the name of an MLB file instead of a CM
+file.  This allows more control over exactly how the files are sort
+checked.  Note that CM files are actually translated to default MLB files
+"on-the-fly".  (See src/Cidre/Cidre.sml.)
+
+Emacs mode
+---------
+
+An extension of the emacs sml-mode is included that highlights sort
+annotations differently to comments.  It seems to work with sml-mode 4.1.
 
 
 Syntax for refinement annotations

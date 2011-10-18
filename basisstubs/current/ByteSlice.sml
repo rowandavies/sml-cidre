@@ -25,7 +25,8 @@ functor ByteSliceV (type table
 		   val maxLen : int) =
 struct
 
-    (*[ assumesig MONO_VECTOR_SLICE where type vector=vector and type elem=elem ]*)
+    (*[ assumesig MONO_VECTOR_SLICE where type vector=vector and type elem=elem
+    ]*)
 
 (*
     type vector = vector
@@ -36,7 +37,7 @@ struct
 *)
 end
 
-structure CharVectorSlice : MONO_VECTOR_SLICE = 
+structure CharVectorSlice : MONO_VECTOR_SLICE =
     ByteSliceV(type table  = CharVector.vector
 	      type array  = CharArray.array
 	      type vector = CharVector.vector
@@ -50,16 +51,31 @@ structure Word8VectorSlice : MONO_VECTOR_SLICE =
 	      type elem   = word8
 	      val maxLen  = Word8Vector.maxLen)
 
-structure CharArraySlice : MONO_ARRAY_SLICE = 
+structure CharArraySlice : MONO_ARRAY_SLICE = struct
+    (*[ assumesig MONO_ARRAY_SLICE 
+          where type vector = CharVector.vector
+          where type vector_slice = CharVectorSlice.slice
+          where type array = CharArray.array
+          where type elem = char ]*)
+end
+(*
     ByteSlice(type table  = CharArray.array
 	      type array  = CharArray.array
 	      type vector = CharVector.vector
 	      type elem   = char
 	      val maxLen  = CharArray.maxLen)
+*)
 
-structure Word8ArraySlice : MONO_ARRAY_SLICE = 
-    ByteSlice(type table  = Word8Array.array
+structure Word8ArraySlice : MONO_ARRAY_SLICE =  struct
+    (*[ assumesig MONO_ARRAY_SLICE
+          where type vector = Word8Vector.vector
+          where type vector_slice = Word8VectorSlice.slice
+          where type array = Word8Array.array
+          where type elem = Word8.word   ]*)
+end
+
+(*    ByteSlice(type table  = Word8Array.array
 	      type array  = Word8Array.array
 	      type vector = Word8Vector.vector
 	      type elem   = word8
-	      val maxLen  = Word8Array.maxLen)
+	      val maxLen  = Word8Array.maxLen) *)

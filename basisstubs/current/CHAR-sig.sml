@@ -1,6 +1,9 @@
 (*CHAR.sml*)
 
 signature CHAR = sig
+    eqtype char
+    eqtype string
+
    val minChar : char 
    val maxChar : char 
    val maxOrd : int 
@@ -34,13 +37,16 @@ signature CHAR = sig
    val toString : char -> string 
    val fromCString : string -> char option 
    val toCString : char -> string 
-   type char = char
 end; (*signature CHAR*)
 
-structure Char : CHAR = struct (*[ assumesig CHAR ]*) end
+structure Char : CHAR = struct (*[ assumesig CHAR where type char=char and type string=string ]*) end
 
 val chr = Char.chr
 val ord = Char.ord
+
+(*structure WideChar : CHAR = struct (*[ assumesig CHAR where type string=WideString.string ]*) end
+*)
+
 (* 
    [char] is the type of characters.  
 
