@@ -1,0 +1,1 @@
+structure IntInf = Int
