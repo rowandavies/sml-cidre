@@ -37,13 +37,14 @@ open List
 fun null _ = raise Match
 
 (*[ val hd: 'a conslist -> 'a ]*)
-fun hd _ = raise Match
+fun hd (x :: xs) = x
 
 (*[ val tl: 'a conslist -> 'a list ]*)
-fun tl _ = raise Match
+fun tl (x :: xs) = xs
 
 (*[ val last: 'a conslist -> 'a ]*)
-fun last _ = raise Match
+fun last [ x ] = raise Empty
+  | last (x :: y :: xs) = last (y :: xs)
 
 (*[ val map: ('a -> 'b) -> 'a conslist -> 'b conslist
            & ('a -> 'b) -> 'a list -> 'b list ]*)
@@ -52,16 +53,19 @@ fun map f [] = []
 
 (*[ val getItem: 'a conslist -> ('a * 'a list) some
                & 'a list -> ('a * 'a list) option ]*)
-fun getItem _ = raise Match
-
-(*[ val rev: 'a conslist -> 'a conslist
-           & 'a list -> 'a list ]*)
-fun rev _ = raise Match
+fun getItem [] = NONE
+  | getItem (x :: xs) = SOME (x, xs)
 
 (*[ val revAppend: 'a list * 'a conslist -> 'a conslist 
                  & 'a conslist * 'a list -> 'a conslist
                  & 'a list * 'a list -> 'a list ]*)
-fun revAppend _ = raise Match   
+fun revAppend ([], ys) = ys 
+  | revAppend (x :: xs, ys) = revAppend (xs, x :: ys)
+
+(*[ val rev: 'a conslist -> 'a conslist
+           & 'a list -> 'a list ]*)
+fun rev xs = revAppend (xs, [])
+
 
 end
 
