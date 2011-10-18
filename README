@@ -6,8 +6,8 @@ SML CIDRE (Checker for Intersection and Datasort Refinements)
 Author: Rowan Davies (rowan@csse.uwa.edu.au)
 (Built using the ML Kit: see the file COPYING.)
 
-Version: 0.9999 (supports CM&MLB files, and the standard basis is pretty complete)
-Date: 2011 October 15
+Version: 0.99999 (supports CM&MLB files, and the standard basis is pretty complete)
+Date: 2011 October 18
 
 
 Introduction

@@ -8,7 +8,7 @@ in
   if (SMLofNJ.exportML "../../bin/.heap/sml-cidre") then 
       case Compiler.version of {system, version_id=major::minor::_,...} =>
       (print (system ^ " " ^ Int.toString major ^ "." ^ Int.toString minor ^ "\n" ^
-             "with SML-CIDRE 0.999\n\nQuickstart:   Cidre.make \"filenm.cm\";\n\n");
+             "with SML-CIDRE 0.99999\n\nQuickstart:   Cidre.make \"filenm.cm\";\n\n");
        "a piece of")
   else 
 (print "CIDRE exported!\n";
