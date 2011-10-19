@@ -1446,7 +1446,7 @@ in
           (pr_indent (("ref_pat: START " ^ Int.toString (sizePS patsort) ));
            largestPS := sizePS patsort)
       else (); *)
-(*      Env.debug_push (fn () => "\n****ref_pat"
+      (*Env.debug_push (fn () => "\n****ref_pat"
                                :: lines_pp (RG.layoutPat pat)); *)
       case ref_pat0(C, pat, patsort) errflag of res =>
       ( (* Env.debug_pop (fn () => []);  *)

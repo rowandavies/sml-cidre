@@ -100,8 +100,8 @@ functor RefinedEnvironments
     fun nspaces 0 = ""
       | nspaces n = " " ^ (nspaces (n-1))
 
-    fun add_indent n =  (* if !Flags.DEBUG_REFOBJECTS then*) (debug_indent := !debug_indent + n)
-                        (*else () *)
+    fun add_indent n =  if !Flags.DEBUG_REFOBJECTS then (debug_indent := !debug_indent + n)
+                        else ()
 
     fun out_debug_maybe_indent indent flag str = 
        if !flag 
@@ -111,7 +111,7 @@ functor RefinedEnvironments
     fun out_debug_maybe flag str = 
        out_debug_maybe_indent (!debug_indent) flag str
 
-    fun out_debug str = () (* out_debug_maybe Flags.DEBUG_REFOBJECTS str *)
+    fun out_debug str = out_debug_maybe Flags.DEBUG_REFOBJECTS str (* () *)
 
     val timer = Timer.totalRealTimer ()
     fun time_ms () = Int.fromLarge (Time.toMilliseconds (Timer.checkRealTimer timer))
@@ -120,7 +120,7 @@ functor RefinedEnvironments
     val debug_subsortname = ref true (*ref false *)
     val debug_count = ref 0
     fun inc_debug_count () = debug_count := !debug_count + 1
-    fun debug_print_is_on () = false (* true *)
+    fun debug_print_is_on () = (*false*) (*true*)  !Flags.DEBUG_REFOBJECTS
 	(* !debug_indent < 10 andalso *) (* !debug_subsortname andalso*)
                                (* !debug_count mod 5000 < 2 *)
                                (*let val now = time_ms () in
@@ -144,10 +144,10 @@ functor RefinedEnvironments
 
 
     (* When set to true, the optimizer should remove essentially all the cost of the debugging code. *)
-    val debug_fns_do_nothing = true (* false *)
+    val debug_fns_do_nothing = (* true *)  false
     
-    fun debug_push_maybe print_now strs = if debug_fns_do_nothing then ()
-					  else
+    fun debug_push_maybe print_now strs = 
+        if debug_fns_do_nothing then ()  else
 	let 
             val indent = !debug_indent
             val _ = debug_stack := (indent, time_ms(), false, strs) :: !debug_stack
@@ -2434,7 +2434,7 @@ structure SortNameMap =
 *)
   
     fun on_RL conjSN phi (REFLATTICE m) =
-          let  val () = debug_push_must
+          let  val () = debug_push
                             (fn () => "on_RL:top: phi = " :: debug_layout (layout phi)
                                               @ debug_layout (layoutRL (REFLATTICE m)))
                val onSN = on_SortName' conjSN phi
