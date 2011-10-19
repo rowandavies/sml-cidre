@@ -1534,9 +1534,9 @@ in
     and ref_match (C, match as RG.MATCH(i1, RG.MRULE(i2, pat, exp), match_opt), ps1, gsrt) errflag
            : PatSort Result =
       let
-        (*val () = Env.debug_push (fn () => ("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
+        val () = Env.debug_push (fn () => ("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
                                            :: ("patsort = " ^ pr_PatSort ps1)
-                                           :: lines_pp (RG.layoutMatch match)) *)
+                                           :: lines_pp (RG.layoutMatch match))
         val _ = assert (fn () => 
 			   case patSort_to_Sorts (C, ps1) 
 			    of [] => NONE
@@ -1569,8 +1569,8 @@ in
 			     | srt1::srts => 
 			       (map (fn srt2 => assert (compatSorts "ref_match:END" srt1 srt2)) srts; 
 			        NONE) )
-(*        val () = Env.debug_pop (fn () => ("ref_match: sort = " ^ RO.pr_Sort gsrt)
-                                               :: lines_pp (RG.layoutMatch match)) *)
+        val () = Env.debug_pop (fn () => ("ref_match: sort = " ^ RO.pr_Sort gsrt)
+                                               :: lines_pp (RG.layoutMatch match))
 
       in
         (endPatsort, errs3 @ warns2 @ errs2 @ errs1)

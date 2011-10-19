@@ -137,13 +137,13 @@ functor LexUtils(structure LexBasics: LEX_BASICS
 	fun keyword tok = (shifting("KEY(" ^ text ^ ")"); tok(p1, p2))
       in
         (* SML/NJ 1.05 compiler bug maps "datasort" to DATATYPE (!) *)
-	if text = "datasort" then keyword DATASORT else
+	if text = "datasort" then keyword DATASORT else  (* for CIDRE *)
         case text
 	  of "abstype"	 => keyword ABSTYPE
 	   | "and"	 => keyword AND
 	   | "andalso"	 => keyword ANDALSO
 	   | "as"	 => keyword AS
-	   | "assumesig"	 => keyword ASSUME
+	   | "assumesig"	 => keyword ASSUME   (* for CIDRE *)
 	   | "case"	 => keyword CASE
 	   | "do"	 => keyword DO
 	   | "datatype"	 => keyword DATATYPE
@@ -172,18 +172,18 @@ functor LexUtils(structure LexBasics: LEX_BASICS
 	   | "sharing"	 => keyword SHARING
 	   | "sig"	 => keyword SIG
 	   | "signature" => keyword SIGNATURE
-           | "sortdef"   => keyword SORT      
+           | "sortdef"   => keyword SORT            (* for CIDRE *)
 	   | "struct"	 => keyword STRUCT
 	   | "structure" => keyword STRUCTURE
-           | "subsort"   => keyword SUBSORT
+           | "subsort"   => keyword SUBSORT         (* for CIDRE *)
 	   | "then"	 => keyword THEN
 	   | "type"	 => keyword TYPE
 	   | "val"	 => keyword VAL
-           | "valspec"   => keyword VALSPEC
+           | "valspec"   => keyword VALSPEC         (* unused? *)
 	   | "where"	 => keyword WHERE
 	   | "with"	 => keyword WITH
 	   | "withtype"	 => keyword WITHTYPE
-	   | "withsort"	 => keyword WITHSORT
+	   | "withsort"	 => keyword WITHSORT        (* for CIDRE *)
 	   | "while"	 => keyword WHILE
 
 	   | ":"	 => keyword COLON
@@ -195,11 +195,11 @@ functor LexUtils(structure LexBasics: LEX_BASICS
 	   | "#"	 => keyword HASH
 	   | "*"	 => keyword STAR
 
-           | "<"         => keyword LESS
+           | "<"         => keyword LESS            (* used in CIDRE signatures *)
 					(* Not actually reserved, but ... *)
-	   | "&"	 => keyword CONJ
-	   | "<:"	 => keyword HASSORT
-	   | "|:"	 => keyword REFINES
+	   | "&"	 => keyword CONJ            (* for CIDRE *)
+	   | "<:"	 => keyword HASSORT         (* for CIDRE *)
+	   | "|:"	 => keyword REFINES         (* for CIDRE *)
 (*	   | "|>"	 => keyword SUPERSORT *)
 
 	   | _		 => (shifting("ID(" ^ text ^ ")"); ID(text, p1, p2))
