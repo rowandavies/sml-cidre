@@ -6,7 +6,7 @@ signature OS_FILE_SYS =
     datatype access = A_READ | A_WRITE | A_EXEC
       
     val openDir   : string -> dirstream
-    val readDir   : dirstream -> string
+    val readDir   : dirstream -> string option
     val rewindDir : dirstream -> unit
     val closeDir  : dirstream -> unit
       
