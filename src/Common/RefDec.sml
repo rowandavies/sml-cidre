@@ -1632,6 +1632,12 @@ in
              letC (ref_ty0 (C, ty))  (fn srt2 =>
              letCV (check_exp(C, exp1, srt2))  (fn () =>
              noRedo srt2  ))) errflag
+       (* Need to allow this for the expansion of a "case". *)
+       | RG.APPexp(i, exp1 as (RG.FNexp _), atexp2) =>
+           let val def_srt = findMLSort(C, RG.get_info_exp exp)  in
+             letCV (check_exp (C, exp, def_srt))  (fn () =>
+             noRedo def_srt ) errflag
+           end
 (*       | RG.APPexp(i, exp1 as RG.ATEXPexp(_, RG.SCONatexp _), atexp2) =>
              letR (infer_exp(C, exp1))  (fn srt1 =>
              apply_consort_to_atexp(C, srt1, atexp2)  ) errflag  *)
@@ -1747,15 +1753,15 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-(*             val () = Env.debug_push (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
-                                               :: lines_pp (RG.layoutExp exp)) *)
+             val () = Env.debug_push (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
+                                               :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
      	     val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
 	     val res =  if !memoizeOn then Comp.memoIn memo (check_exp0 (C, exp, gsrt)) errflag
 			else check_exp0 (C, exp, gsrt) errflag
-(*             val _ = Env.debug_pop (fn () => 
-				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] ) *)
+             val _ = Env.debug_pop (fn () => 
+				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
 
 (*             val _ = pr_debug ("check_exp: ", fn () => RG.layoutExp exp)
 	     val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt)
@@ -1771,16 +1777,16 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-(*             val () = Env.debug_push (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
-                                               :: lines_pp (RG.layoutAtexp atexp)) *)
+             val () = Env.debug_push (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
+                                               :: lines_pp (RG.layoutAtexp atexp))
 
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
      	     val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
 	     val res =  if !memoizeOn then Comp.memoIn memo (check_atexp0 (C, atexp, gsrt)) errflag
 			else check_atexp0 (C, atexp, gsrt) errflag
-(*             val _ = Env.debug_pop (fn () => 
-				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] ) *)
+             val _ = Env.debug_pop (fn () => 
+				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
 	 in   res  end
 
     and infer_exp (C, exp : RG.exp) errflag
@@ -1789,16 +1795,16 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)	       
-(*             val () = Env.debug_push (fn () => ("\n****infer_exp: ")
-                                               :: lines_pp (RG.layoutExp exp)) *)
+             val () = Env.debug_push (fn () => ("\n****infer_exp: ")
+                                               :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
      	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
 	     val res = if !memoizeOn then Comp.memoIn memo (infer_exp0 (C, exp)) errflag
 		       else infer_exp0 (C, exp) errflag
-(*             val _ = Env.debug_pop (fn () => "infer_exp:  RESULT: " ::
+             val _ = Env.debug_pop (fn () => "infer_exp:  RESULT: " ::
 				      lines_pp (RO.layoutSort ((fn (redo, _) => 
-						      #1 (redoToResAndRC redo)) res)  )) *)
+						      #1 (redoToResAndRC redo)) res)  ))
 	 in   res  end
 
     and infer_atexp (C, atexp : RG.atexp) errflag
@@ -1809,16 +1815,16 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-(*             val () = Env.debug_push (fn () => ("\n****infer_atexp: ")
-                                               :: lines_pp (RG.layoutAtexp atexp)) *)
+             val () = Env.debug_push (fn () => ("\n****infer_atexp: ")
+                                               :: lines_pp (RG.layoutAtexp atexp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
      	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
 	     val res = if !memoizeOn then Comp.memoIn memo (infer_atexp0 (C, atexp)) errflag
 		       else infer_atexp0 (C, atexp) errflag
-(*             val _ = Env.debug_pop (fn () => "infer_atexp:  RESULT: " ::
+             val _ = Env.debug_pop (fn () => "infer_atexp:  RESULT: " ::
 				      lines_pp (RO.layoutSort ((fn (redo, _) => 
-						      #1 (redoToResAndRC redo)) res)  )) *)
+						      #1 (redoToResAndRC redo)) res)  ))
 
 	 in   res  end	
      
