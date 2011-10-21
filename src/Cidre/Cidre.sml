@@ -276,7 +276,9 @@ structure Cidre = struct
              val _ = Flags.reset_warnings ()
              val _ = warned:=false;
              val bdec = MlbProject.parseContents (mlbFileNm, contents)
-             val _ = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) bdec
+             val (rT, (infB, BE, B), BC) = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) bdec
+             val _ = R.currentInfB := InfixBasis.compose (!R.currentInfB, infB);
+             val _ =   R.currentElabB:=B.plus (!currentElabB, B.plus_rT(B.erase_TG B, rT))
           in
              print "\nCidre: finished checking.\n";
              not (!warned)
@@ -294,8 +296,10 @@ structure Cidre = struct
      fun checkmlb mlbFileNm = 
          let val _ = Flags.reset_warnings ()
              val _ = warned:=false;
-             val _ = checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) (MLBFILEbdec(mlbFileNm,NONE))
-             (* The (rT, MB, BC) are discarded. *)
+             val (rT, (infB, BE, B), BC) = 
+                    checkBdec (B.to_rT initialElabB, MB.initial, BC.empty) (MLBFILEbdec(mlbFileNm,NONE))
+             val _ = R.currentInfB := InfixBasis.compose (!R.currentInfB, infB);
+             val _ =   R.currentElabB:=B.plus (!currentElabB, B.plus_rT(B.erase_TG B, rT))
           in
              print "\nCIDRE: finished checking.\n";
              not (!warned)

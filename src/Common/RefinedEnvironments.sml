@@ -133,7 +133,7 @@ functor RefinedEnvironments
 
     val debug_stack : (int * int * bool * (unit -> string list)) list ref = ref []
 
-    fun pr_now indent str = TextIO.output (TextIO.stdErr,(nspaces indent) ^ str ^"\n")
+    fun pr_now indent str = TextIO.output (TextIO.stdErr,(nspaces (indent mod 100)) ^ str ^"\n")
 
     fun print_unprinted_debug_stack ((indent, time, false, strs)::stack_tail) = 
           (let val new_tail = print_unprinted_debug_stack stack_tail
@@ -153,7 +153,7 @@ functor RefinedEnvironments
             val _ = debug_stack := (indent, time_ms(), false, strs) :: !debug_stack
             val _ = if print_now then debug_stack := print_unprinted_debug_stack (!debug_stack) 
 		    else ()
-            val _ = debug_indent := !debug_indent + 4
+            val _ = debug_indent := !debug_indent + 2
 	in
             ()
 	end
@@ -192,6 +192,25 @@ functor RefinedEnvironments
             val _ = debug_indent := indent
 	in
 	    ()
+	end
+
+    fun debug_push2 strs = if debug_fns_do_nothing then (fn _ => ())
+			  else
+	let val print_now1 = debug_print_is_on()
+            val _ = debug_count := !debug_count +1
+            val indent = !debug_indent
+            val print_now = debug_print_is_on()
+            val _ = if print_now andalso not print_now1 then 
+			pr_now indent "----------------------------------------------------------"
+		    else ()
+            val _ = debug_push_maybe (print_now orelse print_now1) strs
+
+            val _ = debug_push strs
+            val indent = !debug_indent
+            val stk = !debug_stack
+            fun pop strs = (debug_stack:=stk; debug_indent:=indent; debug_pop strs)
+	in
+            pop
 	end
 
     fun debug_layout string_tree : string list = 

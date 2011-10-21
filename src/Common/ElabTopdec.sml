@@ -649,7 +649,7 @@ functor ElabTopdec
     (* val ref_datdesc :> rContext * datdesc * bool -> (rT * rVE * bool) Comp *)
     fun elab_strexp (B : Basis, strexp : IG.strexp) : (TyName list * Env * rT * rEnv * OG.strexp) =
 
-     (debug_push (fn () => ["elab_strexp"]);
+     ( (*debug_push (fn () => ["elab_strexp"]); *)
       case strexp of
         (* Generative *)                                    (*rule 50*)
         IG.STRUCTstrexp (i, strdec) =>
@@ -742,7 +742,7 @@ functor ElabTopdec
            in
             (TyName.Set.list T, E, rT, rE, OG.ASSUMEstrexp (okConv i, out_sigexp))
           end
-    ) before debug_pop (fn () => [])
+    ) (* before debug_pop (fn () => []) *)
 
 
 
@@ -752,9 +752,9 @@ functor ElabTopdec
 
     and elab_strdec (B : Basis, strdec : IG.strdec) : (TyName list * Env * rT * rEnv * OG.strdec) =
       let 
-        val _ = (* if !Flags.DEBUG_ELABTOPDEC then *)
+(*        val _ = (* if !Flags.DEBUG_ELABTOPDEC then *)
                 rEnv.debug_push (fn () =>["elab_strdec: dec\n", 
-                                             PrettyPrint.flatten1 (IG.layoutStrdec strdec)]);
+                                             PrettyPrint.flatten1 (IG.layoutStrdec strdec)]); *)
 (*                      print "\nelab_strdec: B\n";
                       pr_Tree (B.layout B);
                       print "\n")
@@ -804,7 +804,7 @@ functor ElabTopdec
         (* Sequential declaration *)                        (*rule 60*)
       | IG.SEQstrdec (i, strdec1, strdec2) =>
           let
-            val _ = rEnv.debug_pop (fn () => []) (* Early pop in this case => smaller stacks *)
+            (* val _ = rEnv.debug_pop (fn () => []) (* Early pop in this case => smaller stacks *) *)
             val (T1, E1, rT1, rE1, out_strdec1) = elab_strdec (B, strdec1)
             val (T2, E2, rT2, rE2, out_strdec2) = elab_strdec (B_plus_E_rT_rE (B,E1,rT1,rE1), 
                                                                strdec2)
@@ -813,7 +813,7 @@ functor ElabTopdec
              OG.SEQstrdec (okConv i, out_strdec1, out_strdec2))
           end)
 
-      val _ = case strdec of IG.SEQstrdec _ => () | _ => rEnv.debug_pop (fn () => [])
+(*      val _ = case strdec of IG.SEQstrdec _ => () | _ => rEnv.debug_pop (fn () => []) *)
       val _ = if !Flags.DEBUG_ELABTOPDEC then   
                      (print "elab_strdec: dec\n";
                       pr_Tree (IG.layoutStrdec strdec);  (* This code may crash.  *)
@@ -837,7 +837,7 @@ functor ElabTopdec
        (* Structure bindings *)                             (*rule 61*)
        IG.STRBIND (i, strid, strexp, strbind_opt) =>
          let
-           val () = debug_push (fn () => ["elab_strbind"])
+(*           val () = debug_push (fn () => ["elab_strbind"]) *)
            val (T, E, rT, rE, out_strexp) = elab_strexp (B, strexp)
            val (T', SE, rT', rSE', out_strbind_opt) =
                  elab_X_opt' (B, strbind_opt)
@@ -849,7 +849,7 @@ functor ElabTopdec
            (T' @ T, SE.singleton (strid, E) SE_plus_SE SE, rT @@ rT', 
             rEnv.SE_plus_SE (rEnv.singleSE (strid, rE), rSE'),
             OG.STRBIND (out_i, strid, out_strexp, out_strbind_opt))
-           before debug_pop (fn () =>[])
+           (*before debug_pop (fn () =>[]) *)
          end)
 
     (*****************************************************************)

@@ -5,7 +5,7 @@ signature GENERAL = sig
   (* The spec doesn't include this first part (down to "unit"), but for now...  *)
   type 'a ref = 'a ref  
   eqtype 'a array
-  eqtype 'a vector
+  eqtype 'a vector  (* sortdef '+a vector *)
   type substring
 
   val substring : string * int * int -> string
@@ -15,7 +15,9 @@ signature GENERAL = sig
    I don't want to get into it, it works as is, revisit it later  (rowan 18oct11)
 *)
 
-  datatype 'a option = NONE | SOME of 'a 
+  datatype 'a option = NONE | SOME of 'a
+  (* datasort '+a option = NONE | SOME of '+a *)
+
   exception Option
   val getOpt : ('a option * 'a) -> 'a 
   val isSome : 'a option -> bool 

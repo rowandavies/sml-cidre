@@ -265,8 +265,9 @@ functor ParseElab(structure Parse: PARSE
    
 
   val _ = if !Flags.load_prelude then 
+           (print "Loading basis files\n";
             List.app (fn filename => refine_basisfile (basisDir ^ filename))
-                     basisFiles
+                     basisFiles)
           else ()
 
   val _ = report_file_sig := true;

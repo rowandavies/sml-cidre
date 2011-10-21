@@ -492,6 +492,7 @@ signature REFINED_ENVIRONMENTS =
     val reportLayoutC : Context -> Report
 
     val debug_push : (unit -> string list) -> unit
+    val debug_push2 : (unit -> string list) -> ((unit -> string list) -> unit)
     val debug_pop  : (unit -> string list) -> unit
     val debug_push_must : (unit -> string list) -> unit
     val assert : (unit -> string list option) -> unit

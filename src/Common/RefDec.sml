@@ -297,7 +297,7 @@ in
       | calc_variance (TyVar.MIXED, covar, contra) = 
         (covar andalso contra, covar andalso contra)
 
-    (*[ val covariant_sortname :> Env.Context -> SortName.SortName -> bool ]*)
+    (*[ covariant_sortname :> Env.Context -> SortName.SortName -> bool ]*)
     fun covariant_sortname C sortname =
 	case Env.Lookup_tyname (C, SortName.tyname sortname)
 	   of SOME tystr => Env.covariant_of_TyStr tystr
@@ -340,9 +340,9 @@ in
            val srt_instances = map (RO.MLSortOfTy (TNtoSN C)) ty_instances
 	in
 	   if List.all (RO.covariant_sort (covariant_sortname C)) srt_instances then
-                    full_instance (C, sscheme, ty_instances)
+                    (full_instance (C, sscheme, ty_instances), false)
 	   else     (* Perhaps issue a warning.  Maybe disable this with a flag.  *)
-                RO.instance (sscheme, srt_instances)
+                (RO.instance (sscheme, srt_instances), true)  (* true => warning *)
 	end
 
     val dec_toRG = MapDecEtoR.map_dec_info RefInfo.from_ElabInfo 
@@ -429,7 +429,7 @@ in
            if isEmptyPS C ps then [] else srts
 	else
 	  let  (* The default sort may cause a problem if at some point applySort fails *)
-	    val srt1 = full_or_default_inst (*full_instance*) (C, ssch, instances)
+	    val (srt1, warn) = full_or_default_inst (*full_instance*) (C, ssch, instances)
 	  in
 	    case patsort_opt
 	      of NONE => [srt1]
@@ -850,7 +850,7 @@ in
     and ref_dec (C, dec) errflag = 
       let val decRG = dec_toRG dec  
           val () = Env.clearManySortVars()  (* Clear the set of variables used during memotable lookups. *)
-          val () = Env.debug_push (fn () => lines_pp (RG.layoutDec decRG))
+          val pop = Env.debug_push2 (fn () => lines_pp (RG.layoutDec decRG))
           val (redo1, errs1) = ref_decR (C, decRG) errflag
           val ((T1, E1), rc1) = Comp.redoToResAndRC redo1
           val VE_list = map (fn (T, E) => Env.VE_of_E E) 
@@ -868,7 +868,7 @@ in
 					     errflag, 
 	  		 	       errs1 ) )
     	      | _ => ((T1, E1), errs1)
-   	  val () = Env.debug_pop (fn () => [])
+   	  val () = pop (fn () => [])
       in
         res
       end
@@ -1534,7 +1534,7 @@ in
     and ref_match (C, match as RG.MATCH(i1, RG.MRULE(i2, pat, exp), match_opt), ps1, gsrt) errflag
            : PatSort Result =
       let
-        val () = Env.debug_push (fn () => ("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
+        val pop = Env.debug_push2 (fn () => ("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
                                            :: ("patsort = " ^ pr_PatSort ps1)
                                            :: lines_pp (RG.layoutMatch match))
         val _ = assert (fn () => 
@@ -1569,7 +1569,7 @@ in
 			     | srt1::srts => 
 			       (map (fn srt2 => assert (compatSorts "ref_match:END" srt1 srt2)) srts; 
 			        NONE) )
-        val () = Env.debug_pop (fn () => ("ref_match: sort = " ^ RO.pr_Sort gsrt)
+        val () = pop (fn () => ("ref_match: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutMatch match))
 
       in
@@ -1632,18 +1632,34 @@ in
              letC (ref_ty0 (C, ty))  (fn srt2 =>
              letCV (check_exp(C, exp1, srt2))  (fn () =>
              noRedo srt2  ))) errflag
+
+       (* Need to handle the expansion of a "#lab atexp" differently. *)
+       | RG.APPexp(i, exp1 as RG.ATEXPexp (_, RG.PARatexp (_, RG.FNexp (_,RG.MATCH(_,RG.MRULE(_, 
+                         pat11,
+                         exp12 as RG.ATEXPexp(_, RG.IDENTatexp(_,RG.OP_OPT(longid2,_)) )),NONE)))), 
+                      atexp2) =>
+             letR (infer_atexp(C, atexp2))  (fn srt2 => 
+             case ref_pat_max (C, pat11, mkSORTps C srt2) errflag
+               of (([VE11], residPS), errs11) =>  
+                   if not (isEmptyPS C residPS) then impossible "infer_exp:label-project (1)" else
+                   infer_exp (Env.C_plus_VE (C, VE11), exp12)
+                | _ => impossible "infer_exp:label-project (2)") errflag
+
        (* Need to allow this for the expansion of a "case". *)
        | RG.APPexp(i, exp1 as (RG.FNexp _), atexp2) =>
            let val def_srt = findMLSort(C, RG.get_info_exp exp)  in
              letCV (check_exp (C, exp, def_srt))  (fn () =>
              noRedo def_srt ) errflag
            end
+
 (*       | RG.APPexp(i, exp1 as RG.ATEXPexp(_, RG.SCONatexp _), atexp2) =>
              letR (infer_exp(C, exp1))  (fn srt1 =>
              apply_consort_to_atexp(C, srt1, atexp2)  ) errflag  *)
+
        | RG.APPexp(i, exp1, atexp2) =>   (* We could use distributivity here for constructors... *)
              letR (infer_exp(C, exp1))  (fn srt1 =>  (* With non-covariant arguments, it gives a *)
              apply_sort_to_atexp(C, srt1, atexp2)  ) errflag                (* different result. *)
+
        | RG.ATEXPexp(i, atexp) => infer_atexp (C, atexp) errflag
        | RG.UNRES_INFIXexp _ => impossible "infer_exp:UNRES_INFIXexp"
        | _ =>   (* use default sort *)
@@ -1720,14 +1736,14 @@ in
                                    | SOME (TypeInfo.EXCON_INFO _) => []
                                    | _ => impossible "ref_atexp'(1)")
 
-             val srt =         (* Instance could be huge.  Use "local type inference"? *)
+             val (srt,warn) =         (* Instance could be huge.  Use "local type inference"? *)
                 case Env.Lookup_longid(C, longid) 
                   of SOME(Env.LONGVAR sscheme) =>  full_or_default_inst (C, sscheme, instances)
                    | SOME(Env.LONGCON sscheme) =>  full_or_default_inst (C, sscheme, instances)
-                   | SOME(Env.LONGEXCON srt) =>  srt
+                   | SOME(Env.LONGEXCON srt) =>  (srt,false)
                    | NONE => impossible ("infer_atexp:IDENTatexp not found: " ^ 
                                          (Ident.pr_longid longid) )
-             in
+             in   (* Add warning here. *)
                noErr (noRedo srt)
              end
        | RG.LETatexp(i, dec, exp) =>
@@ -1753,14 +1769,14 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-             val () = Env.debug_push (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
+             val pop = Env.debug_push2 (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
      	     val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
 	     val res =  if !memoizeOn then Comp.memoIn memo (check_exp0 (C, exp, gsrt)) errflag
 			else check_exp0 (C, exp, gsrt) errflag
-             val _ = Env.debug_pop (fn () => 
+             val _ = pop (fn () => 
 				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
 
 (*             val _ = pr_debug ("check_exp: ", fn () => RG.layoutExp exp)
@@ -1777,7 +1793,7 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-             val () = Env.debug_push (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
+             val pop = Env.debug_push2 (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutAtexp atexp))
 
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
@@ -1785,7 +1801,7 @@ in
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
 	     val res =  if !memoizeOn then Comp.memoIn memo (check_atexp0 (C, atexp, gsrt)) errflag
 			else check_atexp0 (C, atexp, gsrt) errflag
-             val _ = Env.debug_pop (fn () => 
+             val _ = pop (fn () => 
 				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
 	 in   res  end
 
@@ -1795,14 +1811,14 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)	       
-             val () = Env.debug_push (fn () => ("\n****infer_exp: ")
+             val pop = Env.debug_push2 (fn () => ("\n****infer_exp: ")
                                                :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
      	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
 	     val res = if !memoizeOn then Comp.memoIn memo (infer_exp0 (C, exp)) errflag
 		       else infer_exp0 (C, exp) errflag
-             val _ = Env.debug_pop (fn () => "infer_exp:  RESULT: " ::
+             val _ = pop (fn () => "infer_exp:  RESULT: " ::
 				      lines_pp (RO.layoutSort ((fn (redo, _) => 
 						      #1 (redoToResAndRC redo)) res)  ))
 	 in   res  end
@@ -1815,14 +1831,14 @@ in
 		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
 			           NONE =>  StringTree.LEAF "NO-INFO"
 				 | SOME i =>  TypeInfo.layout i)
-             val () = Env.debug_push (fn () => ("\n****infer_atexp: ")
+             val pop = Env.debug_push2 (fn () => ("\n****infer_atexp: ")
                                                :: lines_pp (RG.layoutAtexp atexp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
      	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
 	     val res = if !memoizeOn then Comp.memoIn memo (infer_atexp0 (C, atexp)) errflag
 		       else infer_atexp0 (C, atexp) errflag
-             val _ = Env.debug_pop (fn () => "infer_atexp:  RESULT: " ::
+             val _ = pop (fn () => "infer_atexp:  RESULT: " ::
 				      lines_pp (RO.layoutSort ((fn (redo, _) => 
 						      #1 (redoToResAndRC redo)) res)  ))
 
