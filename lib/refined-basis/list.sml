@@ -1,25 +1,6 @@
 (*[ datasort 'a conslist = :: of 'a * 'a list ]*)
 
-signature LIST = sig
-
-include LIST
-
-(*[ val getItem: 'a conslist -> ('a * 'a list) some
-               & 'a list -> ('a * 'a list) option ]*)
-
-(*[ val rev: 'a conslist -> 'a conslist
-           & 'a list -> 'a list ]*)
-
-(*[ val revAppend: 'a list * 'a conslist -> 'a conslist 
-                 & 'a conslist * 'a list -> 'a conslist
-                 & 'a list * 'a list -> 'a list ]*)
-   
-(*[ val map: ('a -> 'b) -> 'a conslist -> 'b conslist
-           & ('a -> 'b) -> 'a list -> 'b list ]*)
-
-end
-
-structure List:> LIST = struct
+structure List = struct
 
 open List
 
@@ -43,7 +24,15 @@ fun revAppend ([], ys) = ys
            & 'a list -> 'a list ]*)
 fun rev xs = revAppend (xs, [])
 
+(*[ val @ : 'a list * 'a list -> 'a list
+         & 'a conslist * 'a list -> 'a conslist
+         & 'a list * 'a conslist -> 'a conslist ]*)
+
+val @ = (fn ([], ys) => ys
+          | (x :: xs, ys) => x :: (xs @ ys))
 
 end
 
 val map = List.map
+
+val @ = List.@

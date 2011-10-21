@@ -1,3 +1,6 @@
 /src/*/.cm
 /src/drml-ext.cm
 *~
+/bin/sml-cidre
+/bin/sml-cidre.bat
+/bin/.heap/*
