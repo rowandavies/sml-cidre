@@ -29,8 +29,8 @@ type 'a array = unit
   val modify  : ('a -> 'a) -> 'a array -> unit = fn _ => raise Match
 
   val appi    : (int * 'a -> unit) -> 'a array * int * int option -> unit = fn _ => raise Match
-  val foldli  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option -> 'b = fn _ => raise Match
-  val foldri  : (int * 'a * 'b -> 'b) -> 'b -> 'a array * int * int option -> 'b = fn _ => raise Match
+  val foldli  : (int * 'a * 'b -> 'b) -> 'b -> 'a array -> 'b = fn _ => raise Match
+  val foldri  : (int * 'a * 'b -> 'b) -> 'b -> 'a array -> 'b = fn _ => raise Match
   val modifyi : (int * 'a -> 'a) -> 'a array * int * int option -> unit = fn _ => raise Match
 end (*signature ARRAY*)
 
