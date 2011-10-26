@@ -285,7 +285,7 @@ structure Cidre = struct
           end handle Failed report => (reportErr report; false)
 
      fun checkcm cmfilenm = 
-         let fun doit base = checkContents (base^".mlb", CM2MLB.mlbString cmfilenm) in 
+         let fun doit base = checkContents (base^".mlb",  cmfilenm) in 
              case OS.Path.splitBaseExt cmfilenm 
                of {base, ext=SOME "cm"} => doit base
                 | {base, ext=SOME "CM"} => doit base
