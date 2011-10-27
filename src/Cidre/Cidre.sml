@@ -149,7 +149,7 @@ structure Cidre = struct
      val print_flag = false  (* convert this to an argument or flag - maybe. *)
 
      fun print_error_report report = 
-            Report.print' (Report.// (Report.line "\nCidre: ***************** Errors *****************",
+            Report.print' (Report.// (Report.line "\nCIDRE: ***************** Errors *****************",
 					report) )
 							(!Flags.log)
      fun print_result_report report = (Report.print' report (!Flags.log);
@@ -280,7 +280,7 @@ structure Cidre = struct
              val _ = R.currentInfB := InfixBasis.compose (!R.currentInfB, infB);
              val _ =   R.currentElabB:=B.plus (!currentElabB, B.plus_rT(B.erase_TG B, rT))
           in
-             print "\nCidre: finished checking.\n";
+             print "\nCIDRE: finished checking.\n";
              not (!warned)
           end handle Failed report => (reportErr report; false)
 

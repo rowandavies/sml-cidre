@@ -338,8 +338,10 @@ in
     fun full_or_default_inst (C, sscheme, ty_instances) =
 	let
            val srt_instances = map (RO.MLSortOfTy (TNtoSN C)) ty_instances
+           val unique = not (List.exists (Env.hasMultRefments C) ty_instances)
 	in
-	   if List.all (RO.covariant_sort (covariant_sortname C)) srt_instances then
+	   if 
+              unique orelse List.all (RO.covariant_sort (covariant_sortname C)) srt_instances then
                     (full_instance (C, sscheme, ty_instances), false)
 	   else     (* Perhaps issue a warning.  Maybe disable this with a flag.  *)
                 (RO.instance (sscheme, srt_instances), true)  (* true => warning *)
@@ -1695,7 +1697,8 @@ in
 		 else
 		     fn srt => RO.isInstance (Env.conjSortNameC C) srt srtsch
            in
-             if List.all isInstance (RO.list_Conjuncts gsrt) then noErrC () errflag
+(*             if List.all isInstance (RO.list_Conjuncts gsrt) then noErrC () errflag *)
+             if isInstance gsrt then noErrC () errflag        (* Must match closely! *)
              else let val (_, srt2) = RO.instance_vars srtsch
                   in  error((), RG.get_info_atexp atexp, REI.NOT_SUBSORT(gsrt, srt2)) errflag
                   end

@@ -1745,15 +1745,20 @@ functor RefObject( structure StatObject : STATOBJECT
 
     fun isInstance conjSN srt1 sortsch2 : bool =
       let
+        fun debug_print x = () (*print (x^ "\n") *)
+
 	(* Check whether srt1 is an instance of srt2, returning upper and lower bounds for svars. *)
 	fun isInstBounds srt1 svars srt2 : (LowerBounds * UpperBounds) option =
+(*          ( Report.print (PP.reportStringTree (StringTree.NODE{start="isInstBounds: ", finish="", indent=0,
+			 children=(map layoutSortVar svars) @ [layoutSort srt1, layoutSort srt2],
+			 childsep=StringTree.LEFT " , "}));  *)	       
 	  case (srt1, srt2)
 	    of (_, SORTVAR sv) => if List.exists (fn svar => equal_SortVar (sv, svar)) svars
 				  then  SOME ([], [(sv, srt1)]) 
 				  else (case srt1 of SORTVAR sv1 => 
 						      if equal_SortVar (sv1, sv) then  SOME ([], [])
-						      else NONE
-						   | _ => NONE)
+						      else (debug_print "isInstBounds: SORTVAR NONE"; NONE) 
+						   | _ => (debug_print "isInstBounds: SORTVAR _"; NONE))
 
 	     | (ARROW (s11, s12), ARROW (s21, s22)) => 
 		 (case (isInstBounds s11 svars s21, isInstBounds s12 svars s22)
@@ -1769,7 +1774,7 @@ functor RefObject( structure StatObject : STATOBJECT
 			      (ListPair.zip (recSort_list r1, recSort_list r2))
 
 	     | (CONSSORT (srts1, sn1), CONSSORT (srts2, sn2)) => 
-		 if not (SortName.eq (sn2, conjSN(sn1,sn2))) then NONE (* check sn2 <= sn1 *)
+		 if not (SortName.eq (sn2, conjSN(sn1,sn2))) then (debug_print "isInstBounds: CONSSORT NONE";NONE (* check sn2 <= sn1 *) )
 		 else List.foldl (fn (((s11, s12), variance), bnds2) => 
 				    case (isInstBounds s11 svars s12, bnds2, variance)
 				      of (_, res, IGNORED) => res
@@ -1783,6 +1788,9 @@ functor RefObject( structure StatObject : STATOBJECT
 				 (SOME ([], []))
 				 (ListPair.zip (ListPair.zip (srts1, srts2), SortName.variance sn2))
 
+
+               (* There's clearly an issue of completeness here - the goal must exactly match
+                  aside from the sort-variable positions. *)
 	     | (CONJSORT (srt11, srt12), CONJSORT (srt21, srt22)) => 
 		 (case (isInstBounds srt11 svars srt21, isInstBounds srt12 svars srt22)
 		    of (SOME (low1, up1), SOME (low2, up2)) =>  SOME (low1 @ low2, up1 @ up2)
@@ -1793,14 +1801,21 @@ functor RefObject( structure StatObject : STATOBJECT
 	     | _ => NONE
 
 
+
            val (svars, srt2) = instance_vars sortsch2
         in
            if compatible_Sort (srt1, srt2) then 
-	       subSort conjSN (srt2, srt1)
+               (debug_print "isInstBounds: compatible"  ; 
+	       subSort conjSN (srt2, srt1) )
 	   else
             case isInstBounds srt1 svars srt2 
-              of NONE => false
-               | SOME (low, up) =>  List.all (fn sv => checkBounds conjSN sv (low, up)) svars
+              of NONE => (debug_print "isInstBounds: NONE"  ; false)
+               | SOME (low, up) =>  
+                 (debug_print "isInstBounds: SOME"  ;
+                  let val res = List.all (fn sv => checkBounds conjSN sv (low, up)) svars
+                      val _ = debug_print (Bool.toString res)
+                  in res
+                  end )
         end
 
     fun sntx_eqsrtsch (SORTFCN{sortvars=svs1, sort=s1},

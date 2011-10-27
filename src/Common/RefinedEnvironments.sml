@@ -1634,6 +1634,29 @@ structure SortNameMap =
                                  []))
            | _ => Crash.impossible "RefinedEnvironment.allRefinements(3)"
     end
+
+    fun hasMultRefments (C : Context) (ty : Type) : bool =
+
+        case (SO.Type.un_Arrow ty) 
+(*arrow*) of SOME(ty1, ty2) =>   (* We could remove some equivalent sorts here *)
+             hasMultRefments C ty1 orelse hasMultRefments C ty2  
+(*cons*)   | NONE => case (SO.Type.to_ConsType ty) of SOME(constype) =>
+             (case (SO.Type.un_ConsType constype) 
+                of NONE => Crash.impossible "RefinedEnvironments.hasMultRefments(1)"
+                 | SOME(tys, tyname) =>
+                   case Lookup_tyname(C, tyname)
+                     of NONE => Crash.impossible "RefinedEnvironments.hasMultRefments(2)"
+                      | SOME (TYSTR{R, ...}) =>
+                        case Rdom R of _::_::_ => true
+                           | _ => List.exists (hasMultRefments C) tys )
+
+(*tyvar*)  | NONE => case (SO.Type.to_TyVar ty) of (SOME tv) => false
+(*record*) | NONE => case (SO.Type.to_RecType ty) of (SOME rectype) =>
+              List.exists (fn (_, ty) => hasMultRefments C ty)
+                          (SO.Type.RecType.to_list rectype)
+           | _ => Crash.impossible "RefinedEnvironment.allRefinements(3)"
+
+
           
     (********
     Lattice Creation

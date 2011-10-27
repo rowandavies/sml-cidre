@@ -411,6 +411,8 @@ signature REFINED_ENVIRONMENTS =
 
     val allRefinements : Context -> Type -> Sort list
 
+    val hasMultRefments : Context -> Type -> bool
+
     (********
     Function which looks up a type constructor in the Env
     ********)

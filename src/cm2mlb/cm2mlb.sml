@@ -45,8 +45,8 @@ struct
 
    fun message s = TextIO.output (TextIO.stdErr, s ^ "\n")
    fun die msg =
-      (message ("Error: " ^ msg)
-       ; OS.Process.exit OS.Process.failure)
+      (message ("Error: " ^ msg) (*; raise Fail "" )
+      ) *) ; OS.Process.exit OS.Process.failure)
 
    structure CM =
       struct
