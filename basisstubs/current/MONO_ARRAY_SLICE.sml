@@ -32,6 +32,90 @@ signature MONO_ARRAY_SLICE =
     val collate  : (elem * elem -> order) -> slice * slice -> order 
   end
 
+
+structure Word8ArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE
+  where type vector = Word8Vector.vector
+  where type vector_slice = Word8VectorSlice.slice
+  where type array = Word8Array.array
+  where type elem = Word8.word
+]*) end
+structure CharArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE
+  where type vector = CharVector.vector
+  where type vector_slice = CharVectorSlice.slice
+  where type array = CharArray.array
+  where type elem = char
+]*) end
+structure WideCharArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = WideCharVector.vector
+  where type vector_slice = WideCharVectorSlice.slice
+  where type array = WideCharArray.array
+  where type elem = WideChar.char
+]*) end
+structure BoolArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = BoolVector.vector
+  where type vector_slice = BoolVectorSlice.slice
+  where type array = BoolArray.array
+  where type elem = bool
+]*) end
+structure IntArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = IntVector.vector
+  where type vector_slice = IntVectorSlice.slice
+  where type array = IntArray.array
+  where type elem = int
+]*) end
+structure WordArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = WordVector.vector
+  where type vector_slice = WordVectorSlice.slice
+  where type array = WordArray.array
+  where type elem = word
+]*) end
+structure RealArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = RealVector.vector
+  where type vector_slice = RealVectorSlice.slice
+  where type array = RealArray.array
+  where type elem = real
+]*) end
+structure LargeIntArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = LargeIntVector.vector
+  where type vector_slice = LargeIntVectorSlice.slice
+  where type array = LargeIntArray.array
+  where type elem = LargeInt.int
+]*) end
+structure LargeWordArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = LargeWordVector.vector
+  where type vector_slice = LargeWordVectorSlice.slice
+  where type array = LargeWordArray.array
+  where type elem = LargeWord.word
+]*) end
+structure LargeRealArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = LargeRealVector.vector
+  where type vector_slice = LargeRealVectorSlice.slice
+  where type array = LargeRealArray.array
+  where type elem = LargeReal.real
+]*) end
+
+(*
+structure Int<N>ArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = Int{N}Vector.vector
+  where type vector_slice = Int{N}VectorSlice.slice
+  where type array = Int{N}Array.array
+  where type elem = Int{N}.int
+]*) end
+structure Word<N>ArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = Word{N}Vector.vector
+  where type vector_slice = Word{N}VectorSlice.slice
+  where type array = Word{N}Array.array
+  where type elem = Word{N}.word
+]*) end
+structure Real<N>ArraySlice = struct (*[ assumesig  MONO_ARRAY_SLICE  (* OPTIONAL *)
+  where type vector = Real{N}Vector.vector
+  where type vector_slice = Real{N}VectorSlice.slice
+  where type array = Real{N}Array.array
+  where type elem = Real{N}.real
+]*) end
+*)
+
+
 (*
 Description
 

@@ -27,3 +27,4 @@ signature STR_BASE =
     val explode   : string -> char list
   end
 
+structure StrBase:STR_BASE = struct(*[ assumesig STR_BASE ]*) end

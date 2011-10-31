@@ -25,7 +25,9 @@ signature MODULE_STATOBJECT =
 
     type Sort
     type SortScheme
-
+(*    type SortFcn
+    type SortName
+*)
     eqtype id
     type strid
     eqtype longstrid
@@ -49,7 +51,7 @@ signature MODULE_STATOBJECT =
     | EXCNOTEQUAL of strid list * id * (Type * Type)
     | INCOMPATIBLE_REALISATION of longtycon
     | SUBSORT of Sort * Sort
-    | VARIANCE  of tycon
+    | VARIANCE  of tycon * StringTree.t * StringTree.t 
 
     exception No_match of SigMatchError
     (*raised by Sigma.match and Phi.match when matching fails*)

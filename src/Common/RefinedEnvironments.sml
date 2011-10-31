@@ -196,16 +196,8 @@ functor RefinedEnvironments
 
     fun debug_push2 strs = if debug_fns_do_nothing then (fn _ => ())
 			  else
-	let val print_now1 = debug_print_is_on()
-            val _ = debug_count := !debug_count +1
-            val indent = !debug_indent
-            val print_now = debug_print_is_on()
-            val _ = if print_now andalso not print_now1 then 
-			pr_now indent "----------------------------------------------------------"
-		    else ()
-            val _ = debug_push_maybe (print_now orelse print_now1) strs
-
-            val _ = debug_push strs
+        let
+            val () = debug_push strs
             val indent = !debug_indent
             val stk = !debug_stack
             fun pop strs = (debug_stack:=stk; debug_indent:=indent; debug_pop strs)
@@ -2444,7 +2436,7 @@ structure SortNameMap =
             TEmap (on_SortFcn conjSN phi) TE
       fun on_SortEnv conjSN (phi : realisation) (RE : SortEnv) =
             REmap (on_SortFcn conjSN phi) RE
-      (* FIX: on_ToRea should adjust sortnames if realiser is not a sortname *)
+      (* FIX: on_ToRea should adjust sortnames if the realiser is not a sortname *)
       fun on_ToRea conjSN phi torea = 
           ToRea.map (fn sn => case RO.SortFcn_to_SortName (on_SortName conjSN phi sn) 
                                 of SOME sn2 => sn2 ) torea
@@ -2588,6 +2580,9 @@ structure SortNameMap =
             val subSN = subSortNameRL RLold
 
             val sn1_sn2 = conjSN (sn1, sn2)
+            val () = SortName.improve_variance sn1 (SortName.variance sn2)
+            val () = SortName.improve_variance sn2 (SortName.variance sn1)
+
             val sns_not_below_sn1_sn2 = List.filter (fn sn => not (subSN (sn, sn1_sn2))) sns_old 
             val sns_below_sn1 = List.filter (fn sn => (subSN (sn, sn1))) sns_not_below_sn1_sn2
             val sns_below_sn2 = List.filter (fn sn => (subSN (sn, sn2))) sns_not_below_sn1_sn2
@@ -2609,8 +2604,14 @@ structure SortNameMap =
                If this happens, we should find all conjunct sortnames that mention that sortname,
                and "refresh" them so that their conjuncts are all in the lattice. *)
             val phi1 = foldl (fn (sn, acc) => 
-				 Rea.plus acc (Rea.singleSN (sn, conjSN (sn, sn1_sn2))))
-                             Rea.Id sns_renaming
+                                 let val cnj = conjSN (sn, sn1_sn2)
+                                     (* We really should have a new sortname, or store variance separately *)
+                                     val () = SortName.improve_variance sn (SortName.variance cnj)
+                                     val () = SortName.improve_variance cnj (SortName.variance sn)
+				 in  Rea.plus acc (Rea.singleSN (sn, cnj ))
+                                 end)
+                             Rea.Id 
+                             sns_renaming
 (*            val _ = pr ("phi1 = ", Rea.layout phi1) *)
             (* Use this to map back to a sensible representitive. This could be improved. *)
             val phi2 = foldl (fn (sn, acc) => 
@@ -2619,7 +2620,7 @@ structure SortNameMap =
 (*            val _ = pr ("phi2 = ", Rea.layout phi2) *)
             val phi = Rea.oo conjSN phi2 phi1
 
-            (* Look for non-conjunct sort names that are not mapped to themselves by phi *)
+            (* Consider: Look for non-conjunct sort names that are not mapped to themselves by phi *)
 	in
 	    phi
         end

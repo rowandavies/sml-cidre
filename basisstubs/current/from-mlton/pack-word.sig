@@ -18,3 +18,19 @@ signature PACK_WORD_EXTRA =
       val unsafeSubVecX: Word8Vector.vector * int -> LargeWord.word 
       val unsafeUpdate: Word8Array.array * int * LargeWord.word -> unit
    end
+
+
+
+local structure s = 
+struct (*[ assumesig sig
+  structure PackWord32Big: PACK_WORD_EXTRA
+  structure PackWord32Little: PACK_WORD_EXTRA
+  structure PackWord32Host: PACK_WORD_EXTRA
+
+  structure PackWord64Big: PACK_WORD_EXTRA
+  structure PackWord64Little: PACK_WORD_EXTRA
+  structure PackWord64Host: PACK_WORD_EXTRA
+end ]*) end
+
+in open s 
+end

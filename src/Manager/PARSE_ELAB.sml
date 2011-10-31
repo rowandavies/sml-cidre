@@ -22,4 +22,6 @@ signature PARSE_ELAB =
     val currentInfB : InfixBasis ref
     val currentElabB : ElabBasis ref
 
+    val resetBasis : unit -> unit
+
   end

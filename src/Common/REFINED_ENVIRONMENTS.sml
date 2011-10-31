@@ -493,6 +493,7 @@ signature REFINED_ENVIRONMENTS =
     val layoutC : Context -> StringTree.t
     val reportLayoutC : Context -> Report
 
+    val debug_stack : (int * int * bool * (unit -> string list)) list ref
     val debug_push : (unit -> string list) -> unit
     val debug_push2 : (unit -> string list) -> ((unit -> string list) -> unit)
     val debug_pop  : (unit -> string list) -> unit

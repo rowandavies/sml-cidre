@@ -80,38 +80,51 @@ structure CharArray =
   end
 
 
-(*
-structure WideCharArray :> MONO_ARRAY  (* OPTIONAL *)
+
+structure WideCharArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = WideCharVector.vector
   where type elem = WideChar.char
-structure BoolArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure BoolArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = BoolVector.vector
   where type elem = bool
-structure IntArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure IntArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = IntVector.vector
   where type elem = int
-structure WordArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure WordArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = WordVector.vector
   where type elem = word
-structure RealArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure RealArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = RealVector.vector
   where type elem = real
-structure LargeIntArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure LargeIntArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = LargeIntVector.vector
   where type elem = LargeInt.int
-structure LargeWordArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure LargeWordArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = LargeWordVector.vector
   where type elem = LargeWord.word
-structure LargeRealArray :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure LargeRealArray = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = LargeRealVector.vector
   where type elem = LargeReal.real
-structure Int<N>Array :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+
+(*
+structure Int<N>Array = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = Int{N}Vector.vector
   where type elem = Int{N}.int
-structure Word<N>Array :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure Word<N>Array = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = Word{N}Vector.vector
   where type elem = Word{N}.word
-structure Real<N>Array :> MONO_ARRAY  (* OPTIONAL *)
+]*) end
+structure Real<N>Array = struct (*[ assumesig  MONO_ARRAY  (* OPTIONAL *)
   where type vector = Real{N}Vector.vector
   where type elem = Real{N}.real
+]*) end
 *)

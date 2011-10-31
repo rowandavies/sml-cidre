@@ -3,35 +3,35 @@
 signature TIME =
   sig
     eqtype time
-    
     exception Time
-
     val zeroTime : time
-    val now      : unit -> time
+    val fromReal : LargeReal.real -> time
+    val toReal : time -> LargeReal.real
+    val toSeconds      : time -> LargeInt.int
+    val toMilliseconds : time -> LargeInt.int
+    val toMicroseconds : time -> LargeInt.int
+    val toNanoseconds  : time -> LargeInt.int
+    val fromSeconds      : LargeInt.int -> time
+    val fromMilliseconds : LargeInt.int -> time
+    val fromMicroseconds : LargeInt.int -> time
+    val fromNanoseconds  : LargeInt.int -> time
 
-    val toSeconds        : time -> int
-    val toMilliseconds   : time -> int
-    val toMicroseconds   : time -> int
-    val fromSeconds      : int -> time
-    val fromMilliseconds : int -> time
-    val fromMicroseconds : int -> time
+    val + : time * time -> time
+    val - : time * time -> time
 
-    val fromReal : real -> time
-    val toReal   : time -> real
-
-    val toString   : time -> string	(* rounded to millisecond precision *)
-    val fmt        : int -> time -> string
-    val fromString : string -> time option
-    val scan       : (char, 'a) StringCvt.reader -> (time, 'a) StringCvt.reader
-
-    val +  : time * time -> time
-    val -  : time * time -> time
+    val compare : time * time -> order
     val <  : time * time -> bool
     val <= : time * time -> bool
     val >  : time * time -> bool
     val >= : time * time -> bool
 
-    val compare : time * time -> order
+    val now : unit -> time
+
+    val fmt      : int -> time -> string
+    val toString : time -> string
+    val scan       : (char, 'a) StringCvt.reader
+                       -> (time, 'a) StringCvt.reader
+    val fromString : string -> time option
 
   end
 

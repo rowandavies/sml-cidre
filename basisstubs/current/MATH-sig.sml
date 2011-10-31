@@ -1,7 +1,7 @@
 (*MATH.sml*)
 
 signature MATH = sig
-  type real = real
+ type real
 
   val pi : real
   val e  : real

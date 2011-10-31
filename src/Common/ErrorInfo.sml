@@ -461,9 +461,10 @@ where type Report = Report.Report
 							(RefObject.newSVNames ()) srt1)
                  // line("  is not a subsort of:  " ^ RefObject.pr_SortPRETTY 
                                                         (RefObject.newSVNames ()) srt2)
-               | VARIANCE tycon => 
+               | VARIANCE (tycon, sortfcnST, snST) => 
 		 line("Variance in signature not satisfied by structure for sort constructor:") 
-		 // line("    " ^ TyCon.pr_TyCon tycon)
+		 // line("    " ^ TyCon.pr_TyCon tycon ^ ": signature specifies " ^ 
+                         StringTree_to_string snST ^ ", structure provides " ^ StringTree_to_string sortfcnST )
 	  end
 
       | report (CYCLE longstrid) =

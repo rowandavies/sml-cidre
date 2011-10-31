@@ -1,7 +1,15 @@
 (*BYTE.sml*)
 
 signature BYTE = sig
-  val byteToChar      : Word8.word -> Char.char
+  val byteToChar : Word8.word -> char
+  val charToByte : char -> Word8.word
+  val bytesToString : Word8Vector.vector -> string
+  val stringToBytes : string -> Word8Vector.vector
+  val unpackStringVec : Word8VectorSlice.slice -> string
+  val unpackString : Word8ArraySlice.slice -> string
+  val packString : Word8Array.array * int * substring -> unit
+
+(*  val byteToChar      : Word8.word -> Char.char
   val charToByte      : Char.char -> Word8.word
   val bytesToString   : Word8Vector.vector -> String.string
   val stringToBytes   : String.string -> Word8Vector.vector
@@ -9,6 +17,7 @@ signature BYTE = sig
   val unpackStringVec : Word8Vector.vector * int * int option -> string
   val unpackString    : Word8Array.array * int * int option -> string
   val packString      : Substring.substring * Word8Array.array * int -> unit
+*)
 end; (*signature BYTE*)
 
 (* Conversions between bytes and characters, and between byte vectors 

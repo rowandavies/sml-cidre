@@ -28,6 +28,56 @@ signature MONO_VECTOR_SLICE =
     val collate  : (elem * elem -> order) -> slice * slice -> order
   end
 
+(* See =OLD/ByteSlice.sml for alternative implementations. *)
+
+(*  The following is from the spec.  *)
+
+structure Word8VectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE
+  where type vector = Word8Vector.vector
+  where type elem = Word8.word ]*) end
+
+structure CharVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE
+  where type slice = Substring.substring
+  where type vector = String.string
+  where type elem = char ]*) end
+structure WideCharVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type slice = WideSubstring.substring
+  where type vector = WideString.string
+  where type elem = WideChar.char ]*) end
+structure BoolVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = BoolVector.vector
+  where type elem = bool ]*) end
+structure IntVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = IntVector.vector
+  where type elem = int ]*) end
+structure WordVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = WordVector.vector
+  where type elem = word ]*) end
+structure RealVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = RealVector.vector
+  where type elem = real ]*) end
+structure LargeIntVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = LargeIntVector.vector
+  where type elem = LargeInt.int ]*) end
+structure LargeWordVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = LargeWordVector.vector
+  where type elem = LargeWord.word ]*) end
+structure LargeRealVectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type vector = LargeRealVector.vector
+  where type elem = LargeReal.real ]*) end
+
+(*
+structure Int<N>VectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type elem = Int{N}.int ]*) end
+  where type vector = Int{N}Vector.vector
+structure Word<N>VectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type elem = Word{N}.word
+  where type vector = Word{N}Vector.vector ]*) end
+structure Real<N>VectorSlice = struct (*[ assumesig  MONO_VECTOR_SLICE  (* OPTIONAL *)
+  where type elem = Real{N}.real
+  where type vector = Real{N}Vector.vector ]*) end
+*)
+
 (*
 Description
 

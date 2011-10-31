@@ -1,3 +1,0 @@
-
-structure ByteVector = MonoVector
-

@@ -1,6 +1,27 @@
 (*STRING_CVT.sml*)
 
 signature STRING_CVT = sig
+
+  datatype radix = BIN | OCT | DEC | HEX
+  datatype realfmt
+    = SCI of int option
+    | FIX of int option
+    | GEN of int option
+    | EXACT
+  type ('a,'b) reader = 'b -> ('a * 'b) option
+  val padLeft  : char -> int -> string -> string
+  val padRight : char -> int -> string -> string
+  val splitl : (char -> bool)
+                 -> (char, 'a) reader -> 'a -> string * 'a
+  val takel : (char -> bool)
+                -> (char, 'a) reader -> 'a -> string
+  val dropl : (char -> bool) -> (char, 'a) reader -> 'a -> 'a
+  val skipWS : (char, 'a) reader -> 'a -> 'a
+  type cs
+  val scanString : ((char, cs) reader -> ('a, cs) reader)
+                     -> string -> 'a option
+
+(*
   datatype radix = BIN | OCT | DEC | HEX
   datatype realfmt
     = SCI of int option 
@@ -17,6 +38,8 @@ signature STRING_CVT = sig
   val scanString : ((char, cs) reader -> ('a, cs) reader) -> string -> 'a option 
   val scanList : ((char, char list) reader -> ('a, char list) reader)
         -> char list -> ('a * char list) option 
+*)
+
 end; (*signature STRING_CVT*)
 
 (* This structure presents tools for scanning strings and values from

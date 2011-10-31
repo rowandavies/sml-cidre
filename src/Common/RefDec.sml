@@ -852,7 +852,7 @@ in
     and ref_dec (C, dec) errflag = 
       let val decRG = dec_toRG dec  
           val () = Env.clearManySortVars()  (* Clear the set of variables used during memotable lookups. *)
-          val pop = Env.debug_push2 (fn () => lines_pp (RG.layoutDec decRG))
+           val pop = Env.debug_push2 (fn () => lines_pp (RG.layoutDec decRG))
           val (redo1, errs1) = ref_decR (C, decRG) errflag
           val ((T1, E1), rc1) = Comp.redoToResAndRC redo1
           val VE_list = map (fn (T, E) => Env.VE_of_E E) 

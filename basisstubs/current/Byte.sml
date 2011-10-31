@@ -1,14 +1,6 @@
 (*BYTE.sml*)
 
 structure Byte:BYTE = struct(*[ assumesig BYTE ]*)
-  val byteToChar      : Word8.word -> Char.char = fn _ => raise Match
-  val charToByte      : Char.char -> Word8.word = fn _ => raise Match
-  val bytesToString   : Word8Vector.vector -> String.string = fn _ => raise Match
-  val stringToBytes   : String.string -> Word8Vector.vector = fn _ => raise Match
-
-  val unpackStringVec : Word8Vector.vector * int * int option -> string = fn _ => raise Match
-  val unpackString    : Word8Array.array * int * int option -> string = fn _ => raise Match
-  val packString      : Substring.substring * Word8Array.array * int -> unit = fn _ => raise Match
 end; (*signature BYTE*)
 
 (* Conversions between bytes and characters, and between byte vectors 

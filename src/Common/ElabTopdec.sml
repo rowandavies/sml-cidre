@@ -1577,7 +1577,7 @@ functor ElabTopdec
                             val tyname = SortName.tyname compat_sn
                             val theta = TypeFcn.from_TyName tyname
                             val tystr = TyStr.from_theta_and_VE (theta, VE.empty)
-                            val TEnew = TE.singleton (srtcon, tystr)
+                            val TEnew = TE.singleton (srtcon, tystr) (* TE.empty *)
                             val (rTnew, sn_new) = 
                               if isSub then 
                                 rEnv.extend_lattice (rC, tyname, srtcon, variance, [] ,[compat_sn])

@@ -1,11 +1,6 @@
 (*BOOL.sml*)
 
 structure Bool:BOOL = struct(*[ assumesig BOOL ]*)
-type bool = unit
-  val not : bool -> bool  = fn _ => raise Match
-  val fromString : string -> bool option  = fn _ => raise Match
-  val scan : (char, 'a) StringCvt.reader -> 'a -> (bool * 'a) option  = fn _ => raise Match
-  val toString : bool -> string  = fn _ => raise Match
 end; (*signature BOOL*)
 
 (* 

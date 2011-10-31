@@ -1,61 +1,66 @@
 (*WORD.sml*)
 
 signature WORD = sig  (*requires StringCvt*)
-  type word
+  eqtype word
+
   val wordSize : int
 
-  val orb  : word * word -> word
+  val toLarge      : word -> CidreExtras.LargeWord.word
+  val toLargeX     : word -> CidreExtras.LargeWord.word
+  val toLargeWord  : word -> CidreExtras.LargeWord.word
+  val toLargeWordX : word -> CidreExtras.LargeWord.word
+  val fromLarge     : CidreExtras.LargeWord.word -> word
+  val fromLargeWord : CidreExtras.LargeWord.word -> word
+  val toLargeInt  : word -> LargeInt.int
+  val toLargeIntX : word -> LargeInt.int
+  val fromLargeInt : LargeInt.int -> word
+  val toInt  : word -> int
+  val toIntX : word -> int
+  val fromInt : int -> word
+
   val andb : word * word -> word
+  val orb  : word * word -> word
   val xorb : word * word -> word
   val notb : word -> word
+  val << : word * CidreExtras.Word.word -> word
+  val >> : word * CidreExtras.Word.word -> word
+  val ~>> : word * CidreExtras.Word.word -> word
 
-  val <<  : word * Word.word -> word
-  val >>  : word * Word.word -> word
-  val ~>> : word * Word.word -> word
-
-  val +   : word * word -> word
-  val -   : word * word -> word
-  val *   : word * word -> word
+  val + : word * word -> word
+  val - : word * word -> word
+  val * : word * word -> word
   val div : word * word -> word
   val mod : word * word -> word
 
-  val >   : word * word -> bool
-  val <   : word * word -> bool
-  val >=  : word * word -> bool
-  val <=  : word * word -> bool
   val compare : word * word -> order
+  val <  : word * word -> bool
+  val <= : word * word -> bool
+  val >  : word * word -> bool
+  val >= : word * word -> bool
 
+  val ~ : word -> word
   val min : word * word -> word
   val max : word * word -> word
 
-  val toString   : word -> string
+  val fmt      : StringCvt.radix -> word -> string
+  val toString : word -> string
+  val scan       : StringCvt.radix
+                     -> (char, 'a) StringCvt.reader
+                       -> (word, 'a) StringCvt.reader
   val fromString : string -> word option
-  val scan : StringCvt.radix 
-	     -> (char, 'a) StringCvt.reader -> (word, 'a) StringCvt.reader
-  val fmt  : StringCvt.radix -> word -> string
 
-  val toLargeWord   : word -> Word.word
-  val toLargeWordX  : word -> Word.word	(* with sign extension *)
-  val fromLargeWord : Word.word -> word
-
-  val toLargeInt   : word -> int
-  val toLargeIntX  : word -> int		(* with sign extension *)
-  val fromLargeInt : int -> word
-
-  val toInt   : word -> int
-  val toIntX  : word -> int		(* with sign extension *)
-  val fromInt : int -> word
-
-  val ~ : word -> word
-    
 end; (*signature WORD*)
 
-structure Word8 : WORD = Word
-structure Word : WORD = Word
-structure Word32 : WORD = Word
-structure Word31 : WORD = Word
-structure LargeWord : WORD = Word
-structure SysWord : WORD = Word
+structure Word = struct (*[ assumesig  WORD where type word = word ]*) end
+structure Word8 = struct (*[ assumesig  WORD ]*) end
+structure LargeWord = struct (*[ assumesig  WORD where type word = CidreExtras.LargeWord.word ]*) end
+structure Word16 = struct (*[ assumesig  WORD ]*) end
+structure Word32 = struct (*[ assumesig  WORD ]*) end
+structure Word31 = struct (*[ assumesig  WORD ]*) end
+structure Word64 = struct (*[ assumesig  WORD ]*) end
+structure Word63 = struct (*[ assumesig  WORD ]*) end
+structure SysWord = struct (*[ assumesig  WORD where type word = word ]*) end  
+    (* SysWord.word = word isn't in the spec, but some code assumes this, and it seems harmless.  *)
 
 
 (* [word] is the type of n-bit words, or n-bit unsigned integers.

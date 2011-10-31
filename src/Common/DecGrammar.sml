@@ -897,7 +897,7 @@ struct
 
 	    val this =
 	      NODE{start="", finish="", indent=0,
-		      children=(case tyvars_opt of SOME x => [x]
+		      children=(case tyvars_opt of SOME x => [x, LEAF" "]
 		    				 | NONE => nil
 			       ) @  [tyconT, eqT, tyT],
 		      childsep=NOSEP

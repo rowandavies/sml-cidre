@@ -2,24 +2,34 @@
 
 signature DATE = 
   sig
+
     datatype weekday = Mon | Tue | Wed | Thu | Fri | Sat | Sun
-
-    datatype month = Jan | Feb | Mar | Apr | May | Jun
-                   | Jul | Aug | Sep | Oct | Nov | Dec
-
+    datatype month
+      = Jan
+      | Feb
+      | Mar
+      | Apr
+      | May
+      | Jun
+      | Jul
+      | Aug
+      | Sep
+      | Oct
+      | Nov
+      | Dec
     type date
 
     exception Date
 
     val date : {
-             year   : int,              (* e.g. 1999                     *)
-             month  : month,            (* Jan, Feb, ...                 *)
-             day    : int,              (* 1-31                          *)
-             hour   : int,              (* 0-23                          *)
-             minute : int,              (* 0-59                          *)
-             second : int,              (* 0-61, permitting leap seconds *)
-             offset : Time.time option  (* time zone west of UTC         *)
-           } -> date
+                   year : int,
+                   month : month,
+                   day : int,
+                   hour : int,
+                   minute : int,
+                   second : int,
+                   offset : Time.time option
+                 } -> date
 
     val year    : date -> int
     val month   : date -> month
@@ -29,20 +39,22 @@ signature DATE =
     val second  : date -> int
     val weekDay : date -> weekday
     val yearDay : date -> int
-    val isDst   : date -> bool option
     val offset  : date -> Time.time option
+    val isDst   : date -> bool option
+
+    val localOffset : unit -> Time.time
 
     val fromTimeLocal : Time.time -> date
     val fromTimeUniv  : Time.time -> date
-    val toTime        : date -> Time.time
-    val localOffset   : unit -> Time.time
+    val toTime : date -> Time.time
 
-    val compare    : date * date -> order
-      
-    val toString   : date -> string
-    val fmt        : string -> date -> string
+    val compare : date * date -> order
+
+    val fmt      : string -> date -> string
+    val toString : date -> string
+    val scan       : (char, 'a) StringCvt.reader
+                       -> (date, 'a) StringCvt.reader
     val fromString : string -> date option
-    val scan       : (char, 'a) StringCvt.reader -> (date, 'a) StringCvt.reader
 
   end
 

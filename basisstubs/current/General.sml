@@ -10,7 +10,7 @@ infix  4  = <> > >= < <=
 infix  3  := o
 infix  0  before
 
-structure General : GENERAL = 
+structure General :> GENERAL = 
   struct (*[ assumesig GENERAL ]*)
   end (*structure General*)
 

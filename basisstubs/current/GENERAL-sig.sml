@@ -2,21 +2,33 @@
 
 signature GENERAL = sig
 
-  (* The spec doesn't include this first part (down to "unit"), but for now...  *)
+  (* The spec doesn't include this first part (down to "unit"), but for now it's convenient.  *)
   type 'a ref = 'a ref  
   eqtype 'a array
-  eqtype 'a vector  (* sortdef '+a vector *)
+
+  eqtype 'a vector  (*[ sortdef '+a xx__vector < vector ]*) (*[ subsort vector < xx__vector ]*)
+                    (* The above ascribes covariance to vector.  "sortdef '+a vector = vector" would be better. *)
+
+  structure CidreExtras : sig
+      structure Char : sig  type char = char  end   (* For convenient access in transparent specs. *)
+      structure Int : sig  type int = int  end
+      structure String : sig  type string = string  end
+      structure Word : sig  type word = word  end
+      structure LargeWord : sig  eqtype word  end   (* To break cycles, e.g. between REAL and LargeReal.real *)
+      structure LargeInt : sig  eqtype int  end
+      structure LargeReal : sig type real end
+  end
+
   type substring
 
   val substring : string * int * int -> string
 
 (* now in OPTION signature: (mads 13 March 1998) 
    well, the specs should still be here (Martin-08/07/1998) 
-   I don't want to get into it, it works as is, revisit it later  (rowan 18oct11)
+   Whatever, I don't want to get into it, it works as is, revisit it later  (rowan 18oct11)
 *)
 
-  datatype 'a option = NONE | SOME of 'a
-  (* datasort '+a option = NONE | SOME of '+a *)
+  datatype 'a option = NONE | SOME of 'a  (* Covariant from datatype defn *)
 
   exception Option
   val getOpt : ('a option * 'a) -> 'a 

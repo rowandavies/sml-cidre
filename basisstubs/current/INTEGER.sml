@@ -1,39 +1,58 @@
 (*INTEGER.sml*)
 
-structure LargeInt = Int
-
 signature INTEGER = sig
   eqtype int
-  val toLarge : int -> LargeInt.int 
-  val fromLarge : LargeInt.int -> int 
-  val toInt : int -> Int.int 
-  val fromInt : Int.int -> int 
-  val precision : Int.int option 
-  val minInt : int option 
-  val maxInt : int option 
-  val ~ : int -> int 
-  val * : (int * int) -> int 
-  val div : (int * int) -> int 
-  val mod : (int * int) -> int 
-  val quot : (int * int) -> int 
-  val rem : (int * int) -> int 
-  val + : (int * int) -> int 
-  val - : (int * int) -> int 
-  val compare : (int * int) -> order 
-  val > : (int * int) -> bool 
-  val >= : (int * int) -> bool 
-  val < : (int * int) -> bool 
-  val <= : (int * int) -> bool 
-  val abs : int -> int 
-  val min : (int * int) -> int 
-  val max : (int * int) -> int 
-  val sign : int -> Int.int 
-  val sameSign : (int * int) -> bool 
-  val fmt : StringCvt.radix -> int -> string 
-  val toString : int -> string 
-  val fromString : string -> int option 
-  val scan : StringCvt.radix -> (char, 'a) StringCvt.reader -> 'a -> (int * 'a) option 
+
+  val toLarge   : int -> CidreExtras.LargeInt.int
+  val fromLarge : CidreExtras.LargeInt.int -> int
+  val toInt   : int -> CidreExtras.Int.int
+  val fromInt : CidreExtras.Int.int -> int
+
+  val precision : CidreExtras.Int.int option
+  val minInt : int option
+  val maxInt : int option
+
+  val + : int * int -> int
+  val - : int * int -> int
+  val * : int * int -> int
+  val div : int * int -> int
+  val mod : int * int -> int
+  val quot : int * int -> int
+  val rem : int * int -> int
+
+  val compare : int * int -> order
+  val <  : int * int -> bool
+  val <= : int * int -> bool
+  val >  : int * int -> bool
+  val >= : int * int -> bool
+
+  val ~ : int -> int
+  val abs : int -> int
+  val min : int * int -> int
+  val max : int * int -> int
+  val sign : int -> CidreExtras.Int.int
+  val sameSign : int * int -> bool
+
+  val fmt      : StringCvt.radix -> int -> string
+  val toString : int -> string
+  val scan       : StringCvt.radix
+                     -> (char, 'a) StringCvt.reader
+                       -> (int, 'a) StringCvt.reader
+  val fromString : string -> int option
+
 end; (*signature INTEGER*)
+
+
+structure Int = struct (*[ assumesig  INTEGER where type int = int ]*) end
+structure FixedInt = struct (*[ assumesig  INTEGER  (* OPTIONAL *) ]*) end
+structure LargeInt = struct (*[ assumesig  INTEGER where type int = CidreExtras.LargeInt.int ]*) end
+structure Int8 = struct (*[ assumesig  INTEGER  (* OPTIONAL *) ]*) end
+structure Int16 = struct (*[ assumesig  INTEGER  (* OPTIONAL *) ]*) end
+structure Int32 = struct (*[ assumesig  INTEGER  (* OPTIONAL *) ]*) end
+structure Int64 = struct (*[ assumesig  INTEGER  (* OPTIONAL *) ]*) end
+structure Position = struct (*[ assumesig  INTEGER ]*) end
+
+
 
 structure Int : INTEGER = Int
 structure LargeInt : INTEGER = LargeInt

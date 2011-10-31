@@ -30,7 +30,7 @@ functor TyVar(structure Crash: CRASH): TYVAR =
     fun variancePrefix COVARIANT = "+"
       | variancePrefix CONTRAVARIANT = "-"
       | variancePrefix IGNORED = "?"
-      | variancePrefix MIXED = ""
+      | variancePrefix MIXED = "!"
 
     fun contravariant CONTRAVARIANT = true
       | contravariant IGNORED = true

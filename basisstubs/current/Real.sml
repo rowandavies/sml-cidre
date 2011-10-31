@@ -1,47 +1,8 @@
 (*REAL.sml*)
 
-structure Real:REAL = struct(*[ assumesig REAL ]*)
-type real = real
+structure LargeReal = struct (*[ assumesig REAL where type real = CidreExtras.LargeReal.real ]*) end
 
-  structure Math : MATH = Math
-
-  val ~    : real -> real = fn _ => raise Match
-  val +    : real * real -> real = fn _ => raise Match
-  val -    : real * real -> real = fn _ => raise Match
-  val *    : real * real -> real = fn _ => raise Match
-  val /    : real * real -> real = fn _ => raise Match
-  val abs  : real -> real = fn _ => raise Match
-  val min  : real * real -> real = fn _ => raise Match
-  val max  : real * real -> real = fn _ => raise Match
-  val sign : real -> int = fn _ => raise Match
-  val compare : real * real -> order = fn _ => raise Match
-
-  val sameSign    : real * real -> bool = fn _ => raise Match
-  val toDefault   : real -> real = fn _ => raise Match
-  val fromDefault : real -> real = fn _ => raise Match
-  val fromInt     : int -> real = fn _ => raise Match
-
-  val floor : real -> int = fn _ => raise Match
-  val ceil  : real -> int = fn _ => raise Match
-  val trunc : real -> int = fn _ => raise Match
-  val round : real -> int = fn _ => raise Match
-
-  val isNan : real -> bool = fn _ => raise Match
-  val isFinite : real -> bool = fn _ => raise Match
-  val posInf : real = 0.0
-  val negInf : real = 0.0
-
-  val >    : real * real -> bool = fn _ => raise Match
-  val >=   : real * real -> bool = fn _ => raise Match
-  val <    : real * real -> bool = fn _ => raise Match
-  val <=   : real * real -> bool = fn _ => raise Match
-  val ==   : real * real -> bool = fn _ => raise Match
-  val !=   : real * real -> bool = fn _ => raise Match
-
-  val toString   : real -> string = fn _ => raise Match
-  val fromString : string -> real option = fn _ => raise Match
-  val scan       : (char, 'a) StringCvt.reader -> (real, 'a) StringCvt.reader = fn _ => raise Match
-  val fmt        : StringCvt.realfmt -> real -> string = fn _ => raise Match
+structure Real = struct(*[ assumesig REAL where type real = real ]*)
 end; (*signature REAL*)
 
 fun real a = Real.fromInt a
@@ -49,6 +10,14 @@ fun floor a = Real.floor a
 fun ceil a = Real.ceil a
 fun trunc a = Real.trunc a
 fun round a = Real.round a
+
+
+structure Real32 = struct(*[ assumesig REAL ]*)
+end; (*signature REAL*)
+
+structure Real64 = struct(*[ assumesig REAL ]*)
+end; (*signature REAL*)
+
 
 (* [~, *, /, +, -, >, >=, <, <=, abs] are the usual operations on reals.
 

@@ -1,20 +1,8 @@
 
-(* 
-structure Vector =
-   struct
-      type 'a vector = 'a vector
-   end
-*)
-
-signature VECTOR_SLICE_GLOBAL =
-   sig
-   end
 
 signature VECTOR_SLICE =
    sig
-      include VECTOR_SLICE_GLOBAL
-
-      type 'a slice
+      type 'a slice  (*[ sortdef '+a x__slice < slice ]*) (*[ subsort slice < x__slice ]*)
 
       val length: 'a slice -> int
       val sub: 'a slice * int -> 'a

@@ -227,7 +227,7 @@ functor ModuleStatObject(structure StrId  : STRID
     | EXCNOTEQUAL of strid list * id * (Type * Type)
     | INCOMPATIBLE_REALISATION of longtycon
     | SUBSORT  of Sort * Sort
-    | VARIANCE  of tycon
+    | VARIANCE  of tycon * StringTree.t * StringTree.t 
 
     exception No_match of SigMatchError
     fun fail reason = raise No_match reason
@@ -422,14 +422,15 @@ functor ModuleStatObject(structure StrId  : STRID
                              if SortName.arity sn = RO.arity_SortFcn sortfcn'  then
                                if TypeFcn.eq (Realisation.on_TyName tphi t, 
                                               RO.TypeFcn_of_SortFcn sortfcn')  then
+                                  case RO.varianceSortFcn sortfcn' of varnce' =>
                                   if (out_debug (fn () => "Before variance check\n");
-                                      RO.varianceSortFcn sortfcn' =
+                                      varnce' =
                                       ListPair.map RO.ExplicitTyVar.join_variance
-						     (SortName.variance sn, 
-						      RO.varianceSortFcn sortfcn'))
+						     (SortName.variance sn, varnce'))
 				  then
                                       rRea.plus rphi (rRea.singleton (sn, sortfcn'))
-				  else  fail (VARIANCE tycon)
+				  else  case PP.layout_list (PP.layoutAtom RO.ExplicitTyVar.variancePrefix) of layoutVs => 
+                                        fail (VARIANCE (tycon, layoutVs varnce', layoutVs (SortName.variance sn)))
                                else fail (INCOMPATIBLE_REALISATION
                                             (TyCon.implode_LongTyCon (rev path,tycon)) )
                              else fail (S_CONFLICTINGARITY 

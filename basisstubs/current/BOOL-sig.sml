@@ -4,7 +4,8 @@ signature BOOL = sig
   type bool = bool
   val not : bool -> bool 
   val fromString : string -> bool option 
-  val scan : (char, 'a) StringCvt.reader -> 'a -> (bool * 'a) option 
+  val scan       : (char, 'a) StringCvt.reader
+                   -> (bool, 'a) StringCvt.reader
   val toString : bool -> string 
 end; (*signature BOOL*)
 

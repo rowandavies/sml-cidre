@@ -1,29 +1,6 @@
 (*VECTOR.sml*)
 
 structure Vector:VECTOR = struct(*[ assumesig VECTOR ]*)
-type 'a vector(*TODO 21/10/1997 16:06. tho.: = 'a vector*) = unit
-
-  val maxLen   : int = 0
-
-  val fromList : 'a list -> 'a vector = fn _ => raise Match
-  val tabulate : int * (int -> 'a) -> 'a vector = fn _ => raise Match
-
-  val length   : 'a vector -> int = fn _ => raise Match
-  val sub      : 'a vector * int -> 'a = fn _ => raise Match
-  val extract  : 'a vector * int * int option -> 'a vector = fn _ => raise Match
-  val concat   : 'a vector list -> 'a vector = fn _ => raise Match
-
-  val app      : ('a -> unit) -> 'a vector -> unit = fn _ => raise Match
-  val appi     : (int * 'a -> unit) -> 'a vector * int * int option -> unit = fn _ => raise Match
-
-  val foldl    : ('a * 'b -> 'b) -> 'b -> 'a vector -> 'b = fn _ => raise Match
-  val foldli   : (int * 'a * 'b -> 'b) -> 'b -> 'a vector*int*int option -> 'b = fn _ => raise Match
-
-  val foldr    : ('a * 'b -> 'b) -> 'b -> 'a vector -> 'b = fn _ => raise Match
-  val foldri   : (int * 'a * 'b -> 'b) -> 'b -> 'a vector*int*int option -> 'b = fn _ => raise Match
-
-  val map      : ('a -> 'b) -> 'a vector -> 'b vector = fn _ => raise Match
-  val mapi     : (int * 'a -> 'b) -> 'a vector * int * int option -> 'b vector = fn _ => raise Match
 
 end (*signature VECTOR*)
 

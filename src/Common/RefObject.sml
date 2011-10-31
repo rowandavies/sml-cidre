@@ -1521,6 +1521,7 @@ functor RefObject( structure StatObject : STATOBJECT
     fun applySortFcnVars (sortfcn as SORTFCN{sortvars, sort}) = 
       let 
 	val svs = map (fresh_sv) sortvars
+
 	val sorts = map mkSortSortVar svs
       in
 	(svs, applySortFcn(sortfcn, sorts))
@@ -2079,11 +2080,16 @@ functor RefObject( structure StatObject : STATOBJECT
       fun on_SortFcn _ Realisation_Id sfcn = sfcn
 	  | on_SortFcn conjSN phi sigma = 
               let val (svs1, sort1) = applySortFcnVars sigma
+                  val vnce = case on_Sort conjSN phi sort1 of CONSSORT (sorts, sn) => 
+                                       ListPair.map ExplicitTyVar.join_variance 
+                                                    (varianceSortFcn sigma, SortName.variance sn)
+                                | _ => varianceSortFcn sigma
+
 	      in
-                  mkSortFcn (svs1, on_Sort conjSN phi sort1) 
+                  mkSortFcn' (ListPair.zip (svs1, vnce), on_Sort conjSN phi sort1)
 	      end
 
-      val on_SortFcn = on_SortScheme
+      (* val on_SortFcn = on_SortScheme *)
 
       fun on_SortFcn' _ Realisation_Id sortfcn' = sortfcn'
 	| on_SortFcn' conjSN phi (SORTNAME t) = on_SortName' conjSN phi t

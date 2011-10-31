@@ -2,7 +2,7 @@
 
 fun (a:real) / (b:real) : real = prim ("divFloat", "divFloat", (a,b))
 
-structure Math:MATH = struct(*[ assumesig MATH ]*)
+structure Math = struct(*[ assumesig MATH where type real = real ]*)
 type real = real
 
   val pi = 3.14159265358979323846
