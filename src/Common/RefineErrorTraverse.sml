@@ -438,6 +438,7 @@ functor RefineErrorTraverse(
       case atexp
 	of SCONatexp(i, _) =>  check i
 	 | IDENTatexp(i, _) => check i
+	 | INSTatexp(i, _) => check i
 
 	 | RECORDatexp(i, exprow_opt) =>
 	     check i // walk_opt walk_Exprow exprow_opt

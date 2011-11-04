@@ -41,7 +41,7 @@ signature TYPE_INFO =
 			 *)
 
       | VAR_INFO of {instances : Type list}
-	                (* Attached to IDENTatexp,
+	                (* Attached to IDENTatexp, INSTatexp
 			   instances is the list of types which have been 
 			   chosen to instantiate the generic tyvars at this 
 			   variable.
@@ -56,14 +56,14 @@ signature TYPE_INFO =
                         (* RML: added instances - Rowan 03jan02 *)
                         (* RML: removed - use tyvars instead.  *)
       | CON_INFO of {numCons: int, index: int, instances: Type list,longid:longid}
-			(* Attached to IDENTatexp, LONGIDatpat, CONSpat.
+			(* Attached to IDENTatexp, INSTatexp, LONGIDatpat, CONSpat.
 			   numCons is the number of constructors for this type.
 			   instances is the list of types wich have been
 			   chosen to instantiate the generic tyars at this 
 			   occurrence of the constructor.
 			 *)
       | EXCON_INFO of {Type: Type,longid:longid}
-			(* Attached to IDENTatexp, LONGIDatpat, CONSpat.
+			(* Attached to IDENTatexp, INSTatexp, LONGIDatpat, CONSpat.
 			   The Type field is the type of the occurrence of the
 			   excon. *)
       | EXBIND_INFO of {TypeOpt: Type option}

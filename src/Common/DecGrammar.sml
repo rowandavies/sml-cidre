@@ -42,6 +42,7 @@ struct
   datatype atexp =
 	SCONatexp of info * scon |         
 	IDENTatexp of info * longid op_opt |
+	INSTatexp of info * longid op_opt * ty list |
 	RECORDatexp of info * exprow option |
 	LETatexp of info * dec * exp |
 	PARatexp of info * exp
@@ -162,6 +163,7 @@ struct
     case obj of
       SCONatexp x => (#1) x
     | IDENTatexp x => (#1) x
+    | INSTatexp x => (#1) x
     | RECORDatexp x => (#1) x
     | LETatexp x => (#1) x
     | PARatexp x => (#1) x
@@ -276,6 +278,7 @@ struct
       case atexp of
 	SCONatexp(i,scon) => SCONatexp(f i,scon)
       | IDENTatexp(i, op_opt) => IDENTatexp(f i, op_opt)
+      | INSTatexp(i, op_opt, sorts) => INSTatexp(f i, op_opt, sorts)
       | RECORDatexp(i, NONE) => RECORDatexp(f i,NONE)
       | RECORDatexp(i, SOME exprow) =>
 	  RECORDatexp(f i, SOME (map_exprow_info f exprow))
@@ -457,6 +460,7 @@ struct
 
       and nexp_atexp (SCONatexp(info, scon)) = true
 	| nexp_atexp (IDENTatexp(info, longid_op_opt)) = true
+	| nexp_atexp (INSTatexp(info, longid_op_opt,sorts)) = true
 	| nexp_atexp (RECORDatexp(info, exprow_opt)) = nexp_exprow_opt exprow_opt
 	| nexp_atexp (PARatexp(info, exp)) = nexp_exp exp
 	| nexp_atexp _ = false
@@ -471,6 +475,8 @@ struct
 	| conexp_exp _ = false
 
       and conexp_atexp (IDENTatexp(info, OP_OPT(longid, ?))) =
+	    harmless_con longid
+        | conexp_atexp (INSTatexp(info, OP_OPT(longid, ?), _)) =
 	    harmless_con longid
 	| conexp_atexp (PARatexp(info, exp)) = conexp_exp exp
 	| conexp_atexp _ = false
@@ -555,6 +561,17 @@ struct
 
 	 | IDENTatexp(_, OP_OPT(longid, withOp)) =>
 	     LEAF((if withOp then "op " else "") ^ Ident.pr_longid longid)
+
+	 | INSTatexp(_, OP_OPT(longid, withOp), tys) =>
+           let
+                val tyTs = map layoutTy tys
+		val tysT = NODE{start="(*[ ", finish=" ]*)", indent=0, children=tyTs, childsep=RIGHT ", "}
+           in
+	       NODE{start="", finish="", indent=0,
+		       children=[LEAF ((if withOp then "op " else "") ^ (Ident.pr_longid longid)), tysT],
+		       childsep=LEFT " "
+		      }
+           end
 
 	 | RECORDatexp(_, exprow_opt) =>
 	     (case exprow_opt

@@ -141,6 +141,8 @@ QualifiedId	   = ({AnyId} ".")+ {AnyId};
 			    token1(TYVAR, yytext, arg, yypos, yytext));
 <INITIAL>\"		=> (YYBEGIN S; lex (LexUtils.clearString arg) ());
 <INITIAL>"(*"		=> (YYBEGIN C; lex (LexUtils.newComment arg) ());
+<INITIAL>"(*[["		=> (token0(LCOMBRAC, arg, yypos, yytext));
+<INITIAL>"]]*)"		=> (token0(RCOMBRAC, arg, yypos, yytext));
 <INITIAL>"(*["		=> (token0(LCOMSPEC, arg, yypos, yytext));
 <INITIAL>"]*)"		=> (token0(RCOMSPEC, arg, yypos, yytext));
 

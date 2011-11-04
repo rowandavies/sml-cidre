@@ -836,6 +836,7 @@ functor Infixing(structure Report: REPORT
       case atexp
         of SCONatexp _ => atexp
          | IDENTatexp _ => atexp
+         | INSTatexp _ => atexp
 
          | RECORDatexp(i, exprow_opt) =>
              RECORDatexp(i,

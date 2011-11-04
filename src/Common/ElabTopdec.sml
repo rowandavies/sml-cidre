@@ -769,7 +769,7 @@ functor ElabTopdec
             val ((rT, rE), rErrors) = if !found_error          (* Check if any errors *)
                                        then ((rEnv.emptyT, rEnv.emptyE), [])
                                        else RefDec.ref_dec (B.to_rC B, out_dec) true
-            (* Filter out and print warnings. isWarning should be in RefInfo. *)
+            (* Filter out and print warnings. isWarning should probably be in RefInfo. *)
             fun isWarning (_, REI.UNMATCHED srt) = true
               | isWarning  _ = false
             val (rWarnings2, rErrors2) = StdList.partition isWarning rErrors

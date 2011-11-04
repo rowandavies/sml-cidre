@@ -695,9 +695,9 @@ in
     (*[ val ref_dec_memo : Context * RG.dec -> (TyNameEnv * Env) RComp ]*)
     (*[ val ref_dec_internal : Context * RG.dec -> (TyNameEnv * Env) RComp ]*) *)
     fun ref_dec_internal(C, dec) errflag = 
-(*     let val () = Env.debug_push (fn () => [PP.flatten1 (RG.layoutDec dec)])
-     let val res =  
-*)
+     let val () = Env.debug_push (fn () => ["ref_dec_internal:",PP.flatten1 (RG.layoutDec dec)])
+         val res =  
+
      case dec of
        RG.DATATYPEdec(i, datbind) =>
           let
@@ -711,10 +711,10 @@ in
       | RG.DATASORTdec(i, datsortbind) =>
           letCV (ref_datsortbind_completeRG (C, datsortbind))  (fn res => noRedo res) errflag
       | RG.VALdec(i, tyvars, valbind) =>    (* tyvars scoping okay? - Rowan 12jul01 *)
-         ((* Env.debug_push (fn () => [PP.flatten1 (RG.layoutDec dec)]); *)
+         (Env.debug_push (fn () => ["VALdec",PP.flatten1 (RG.layoutDec dec)]);
           letRV (ref_valbind (C, valbind)) (fn VE => 
           (Env.emptyT, Env.VE_in_E VE)  ) errflag
-	  (*before  Env.debug_pop (fn () => [])*)
+	  before  Env.debug_pop (fn () => ["VALdec(exit)"])
 	 )
 
       | RG.VALsdec(i, valsdesc) =>
@@ -741,9 +741,13 @@ in
       | RG.INFIXRdec(i, n_opt, ids) => noErr (noRedo (Env.emptyT, Env.emptyE))
       | RG.NONFIXdec(i, ids) => noErr (noRedo (Env.emptyT, Env.emptyE))
       | RG.SEQdec(i, dec1, dec2) => 
+         (Env.debug_push (fn () => "SEQdec(1)"::lines_pp (RG.layoutDec dec));
           letR (ref_decR (C, dec1)) (fn (T1, E1) =>
+          (Env.debug_push (fn () => "SEQdec(2)"::lines_pp (RG.layoutDec dec));
           letRV (ref_decR (Env.C_plus_T(Env.C_plus_E(C,E1),T1), dec2)) (fn (T2, E2) =>
-          (Env.T_plus_T(T1, T2), Env.E_plus_E(E1, E2))  )) errflag
+          (Env.debug_push (fn () => "SEQdec(3)"::lines_pp (RG.layoutDec dec));
+          (Env.T_plus_T(T1, T2), Env.E_plus_E(E1, E2))  )) )) errflag
+          before  Env.debug_pop (fn () => ["SEQdec(4)"]) )
 
       | RG.EMPTYdec i =>
           noErr (noRedo (Env.emptyT, Env.emptyE))
@@ -811,10 +815,10 @@ in
             end  )) errflag
           end
       | RG.UNRES_FUNdec _ => Crash.impossible "RefDec.ref_decR:UNRES_FUNdec"
-(*      val () = Env.debug_pop ()
+      val () = Env.debug_pop (fn()=>[])
      in
 	 res
-     end *)
+     end
 
     (* Internal, memoizing ref_dec *)
     and ref_dec_memo(C, dec) errflag = 
@@ -1704,6 +1708,32 @@ in
                   end
            end
 
+      | RG.INSTatexp (i, RG.OP_OPT(longid, withOp), tys) =>
+           let
+             val instances = (case (getPostElabTypeInfo i)
+                                  of SOME (TypeInfo.VAR_INFO {instances}) => instances
+                                   | SOME (TypeInfo.CON_INFO {instances, ...}) => instances
+                                   | SOME (TypeInfo.EXCON_INFO _) => []
+                                   | _ => impossible "check_atexp0(1)")
+             val srtsch =
+                case Env.Lookup_longid(C, longid) 
+                  of SOME(Env.LONGVAR sscheme) =>  sscheme
+                   | SOME(Env.LONGCON sscheme) =>  sscheme
+                   | SOME(Env.LONGEXCON srt) =>  RO.Sort_in_SortScheme srt
+                   | NONE => impossible ("check_atexp0:INSTatexp not found: " ^ 
+                                         (Ident.pr_longid longid) )
+
+             val srtsC = foldr (fn (ty,rest) => letC (ref_ty0 (C, ty)) (fn srt => letCV rest (fn r =>srt::r)) ) 
+                               (noErrC []) 
+                               tys
+           in
+             letC srtsC  ( fn srts=>  
+             if RO.subSort (Env.conjSortNameC C) (RO.instance (srtsch, srts), gsrt) then noErrC ()
+             else let val (_, srt2) = RO.instance_vars srtsch
+                  in  error((), RG.get_info_atexp atexp, REI.NOT_SUBSORT(gsrt, srt2))
+                  end ) errflag
+           end
+
        | RG.LETatexp(i, dec, exp) =>
             letRC (ref_decR (C, dec))  (fn (T, E) =>
             check_exp (Env.C_plus_T (Env.C_plus_E(C,E), T), exp, gsrt)  ) errflag
@@ -1749,6 +1779,33 @@ in
              in   (* Add warning here. *)
                noErr (noRedo srt)
              end
+
+       | RG.INSTatexp (i, RG.OP_OPT(longid, withOp),tys) =>
+           let
+             val instances  = (case (getPostElabTypeInfo i)
+                                  of SOME (TypeInfo.VAR_INFO {instances}) => instances
+                                   | SOME (TypeInfo.CON_INFO {instances, ...}) => instances
+                                   | SOME (TypeInfo.EXCON_INFO _) => []
+                                   | _ => impossible "ref_atexp'(1)")
+
+             val srtsch =
+                case Env.Lookup_longid(C, longid) 
+                  of SOME(Env.LONGVAR sscheme) =>  sscheme
+                   | SOME(Env.LONGCON sscheme) =>  sscheme
+                   | SOME(Env.LONGEXCON srt) =>  RO.Sort_in_SortScheme srt
+                   | NONE => impossible ("infer_atexp0:INSTatexp not found: " ^ 
+                                         (Ident.pr_longid longid) )
+
+             val srtsC = foldl (fn (ty,rest) => letC (ref_ty0 (C, ty)) (fn srt => letCV rest (fn r =>srt::r)) ) 
+                               (noErrC []) 
+                               tys
+             in
+                letCV srtsC  ( fn srts =>
+                (* case rev srts of srts =>     (* Not sure why this needs to be reversed *) *)
+                (ListPair.app  (fn (s,t) => assert (eqTypes "INSTatexp: " (RO.tyOfSort s) t)) (srts,instances);
+                 noRedo (RO.instance (srtsch, srts)) ) ) errflag
+             end
+
        | RG.LETatexp(i, dec, exp) =>
            letR  (ref_decR (C, dec))  (fn (T, E) =>
 	   infer_exp (Env.C_plus_T (Env.C_plus_E(C,E), T), exp)  ) errflag
@@ -1891,6 +1948,7 @@ in
      | always_infer_exp _ = false
    and always_infer_atexp (RG.SCONatexp _) = true
      | always_infer_atexp (RG.IDENTatexp _) = true
+     | always_infer_atexp (RG.INSTatexp _) = true
      | always_infer_atexp (RG.PARatexp (_, exp)) = always_infer_exp exp
      | always_infer_atexp _ = false
 
@@ -1899,6 +1957,7 @@ in
      | exp_has_var_head _ = false
 
    and atexp_has_var_head (RG.IDENTatexp _) = true
+     | atexp_has_var_head (RG.INSTatexp _) = true
      | atexp_has_var_head (RG.PARatexp(_, exp)) = exp_has_var_head exp
      | atexp_has_var_head _ = false
 
@@ -1924,7 +1983,7 @@ in
                   of SOME(Env.LONGVAR sscheme) =>  sscheme
                    | SOME(Env.LONGCON sscheme) =>  sscheme
                    | SOME(Env.LONGEXCON srt) =>  RO.Sort_in_SortScheme srt
-                   | NONE => impossible ("check_atexp0:IDENTatexp not found: " ^ 
+                   | NONE => impossible ("check_poly_head_atexp:IDENTatexp not found: " ^ 
                                          (Ident.pr_longid longid) )
              val sortInstances = map (RO.MLSortOfTy (TNtoSN C)) instances
 
@@ -1945,6 +2004,9 @@ in
                   in  error(out_srt, RG.get_info_atexp atexp, REI.NOT_SUBSORT(gsrt, srt2)) errflag
                   end
            end
+
+      (* | RG.IDENTatexp (i, RG.OP_OPT(longid, withOp)) =>  ??? *)
+
 
    and ref_ty0 (C, ty) errflag = 
           ref_ty(C, ty, (true, false)) errflag

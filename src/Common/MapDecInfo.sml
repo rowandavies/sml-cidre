@@ -39,6 +39,7 @@ struct
       case atexp of
 	IG.SCONatexp(i,scon) => OG.SCONatexp(f i,scon)
       | IG.IDENTatexp(i, op_opt) => OG.IDENTatexp(f i, do_op_opt op_opt)
+      | IG.INSTatexp(i, op_opt,tys) => OG.INSTatexp(f i, do_op_opt op_opt, map (map_ty_info f) tys)
       | IG.RECORDatexp(i, NONE) => OG.RECORDatexp(f i,NONE)
       | IG.RECORDatexp(i, SOME exprow) =>
 	  OG.RECORDatexp(f i, SOME (map_exprow_info f exprow))

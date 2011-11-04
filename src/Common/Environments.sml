@@ -192,6 +192,8 @@ functor Environments(
 	  unguarded_dec dec ++ unguarded_exp exp
 	| unguarded_atexp(DecGrammar.PARatexp(_,exp)) =
 	  unguarded_exp exp
+	| unguarded_atexp(DecGrammar.INSTatexp(_,_,tys)) =
+	  unguarded_list unguarded_ty tys
 	| unguarded_atexp _ = []
 
       and unguarded_exprow(DecGrammar.EXPROW(_,_,exp,exprow_opt)) =

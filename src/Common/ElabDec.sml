@@ -639,6 +639,7 @@ functor ElabDec(
                     OG.IDENTatexp (out_i, OG.OP_OPT (longid, withOp)))
                  end
 
+
               (* Constructor *)
             | SOME(VE.LONGCON sigma) =>
                 let val (tau,instances) = (TypeScheme.instance' sigma)
@@ -667,6 +668,75 @@ functor ElabDec(
                               )
                 )
           )
+
+
+          (* ident with sort instantiators *)
+        | IG.INSTatexp(i, IG.OP_OPT(longid, withOp), sorts) =>
+
+            (case C.lookup_longid C longid of
+
+               (* Variable *)                                   
+              SOME(VE.LONGVAR sigma) =>  (* instantiate with sorts *)
+                 let val (instance, instances) = TypeScheme.instance' sigma
+		     val pairs = map (fn srt => elab_srt (C, srt)) sorts
+		     val out_tys = map #2 pairs
+		     val tau_opts = map #1 pairs
+		     val (i2, newInstances) = 
+                         if length tau_opts <> length instances then 
+                           (errorConv (i, ErrorInfo.WRONG_ARITY {actual=length tau_opts, expected=length instances}), instances)
+                         else
+                           (case ListPair.map (fn (tv,SOME tau)=> (Type.unify (tv, tau); Substitution.Id on tau) 
+                                                | (tv,_) => Substitution.Id on tv) 
+                                              (rev instances, tau_opts) 
+                              of newInstances =>  (okConv i, newInstances) )
+
+                   val out_i = addTypeInfo_VAR (i2, newInstances)
+                 in  
+                   (Substitution.Id, Substitution.Id on instance,    (* Don't bother pretending to have non-imperative subst. *)
+                    OG.INSTatexp (out_i, OG.OP_OPT (longid, withOp), out_tys))
+                 end
+
+              (* Constructor *)
+            | SOME(VE.LONGCON sigma) =>
+                 let val (instance, instances) = TypeScheme.instance' sigma
+		     val pairs = map (fn srt => elab_srt (C, srt)) sorts
+		     val out_tys = map #2 pairs
+		     val tau_opts = map #1 pairs
+		     val i2 = 
+                         if length tau_opts <> length instances then 
+                           errorConv (i, ErrorInfo.WRONG_ARITY {actual=length tau_opts, expected=length instances})
+                         else
+                           (ListPair.map (fn (tv, SOME tau) => Type.unify (tv, tau) ) (rev instances, tau_opts);
+                            okConv i)
+
+                   val out_i = addTypeInfo_CON (i2, C, instances, longid)
+                 in  
+                   (Substitution.Id, Substitution.Id on instance,    (* Don't bother pretending to have non-imperative subst. *)
+                    OG.INSTatexp (out_i, OG.OP_OPT (longid, withOp), out_tys))
+                 end
+
+             (* Exception constructor *)
+           | SOME(VE.LONGEXCON tau) =>
+                (Substitution.Id,
+                 tau,
+                 OG.INSTatexp(addTypeInfo_EXCON(errorConv (i, ErrorInfo.WRONG_ARITY {actual=length sorts, expected=0}),
+                                                tau, longid),
+                              OG.OP_OPT(longid, withOp),
+                              map (fn srt => #2 (elab_srt (C, srt))) sorts 
+                             )
+                 )
+
+             (* Not found in current context *)
+           | NONE =>
+               (Substitution.Id, Type_bogus (),
+                OG.INSTatexp(lookupIdError (i, longid),
+                              OG.OP_OPT(Ident.bogus, withOp),
+                             map (fn srt => #2 (elab_srt (C, srt))) sorts
+                              )
+                )
+          )
+
+
 
           (* record expression *)                               (*rule 3*)
         | IG.RECORDatexp(i, NONE) =>
@@ -2511,6 +2581,14 @@ let
                      IDENTatexp
                        (ElabInfo.plus_OverloadingInfo i (resolve_tyvar (Type.Int, OverloadingInfo.RESOLVED_INT) tyvar), 
                         op_opt)
+                 | SOME _ => impossible "resolve_atexp")
+        | INSTatexp(i, op_opt,sorts) =>
+              (case ElabInfo.to_OverloadingInfo i of 
+                   NONE => INSTatexp (resolve_i i, op_opt,sorts)
+                 | SOME (OverloadingInfo.UNRESOLVED_IDENT tyvar) =>
+                     INSTatexp
+                       (ElabInfo.plus_OverloadingInfo i (resolve_tyvar (Type.Int, OverloadingInfo.RESOLVED_INT) tyvar), 
+                        op_opt, sorts)
                  | SOME _ => impossible "resolve_atexp")
         | RECORDatexp(i, NONE) => RECORDatexp(resolve_i i,NONE)
         | RECORDatexp(i, SOME exprow) =>

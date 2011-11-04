@@ -388,6 +388,7 @@ functor ErrorTraverse (structure TopdecGrammar : TOPDEC_GRAMMAR
       case atexp
 	of SCONatexp(i, _) =>  check i
 	 | IDENTatexp(i, _) => check i
+	 | INSTatexp(i, _, tys) => check i // list_walk walk_Ty tys
 
 	 | RECORDatexp(i, exprow_opt) =>
 	     check i // walk_opt walk_Exprow exprow_opt

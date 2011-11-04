@@ -17,6 +17,8 @@ val STAR:  'a * 'a -> (svalue,'a) token
 val EQUALS:  'a * 'a -> (svalue,'a) token
 val RCOMSPEC:  'a * 'a -> (svalue,'a) token
 val LCOMSPEC:  'a * 'a -> (svalue,'a) token
+val RCOMBRAC:  'a * 'a -> (svalue,'a) token
+val LCOMBRAC:  'a * 'a -> (svalue,'a) token
 val HASSORT:  'a * 'a -> (svalue,'a) token
 val CONJ:  'a * 'a -> (svalue,'a) token
 val HASH:  'a * 'a -> (svalue,'a) token

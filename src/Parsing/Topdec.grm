@@ -127,7 +127,7 @@ type arg = unit
 (* Symbolic reserved words: *)
 	| LPAREN | RPAREN | LBRACKET | RBRACKET | LBRACE | RBRACE
 	| COMMA | COLON | SEMICOLON | DOTDOTDOT | UNDERBAR | BAR
-	| DARROW | ARROW | HASH | CONJ | HASSORT | LCOMSPEC | RCOMSPEC
+	| DARROW | ARROW | HASH | CONJ | HASSORT | LCOMBRAC | RCOMBRAC | LCOMSPEC | RCOMSPEC
 
 (* Half-hearted reserved words, dealt with correctly in context: *)
         | EQUALS | STAR | LESS  (* added LESS for refinements *)
@@ -388,6 +388,9 @@ type arg = unit
 %right  EQTYPE          (* L/R is arbitrary. *)
 %right  TYPE            (* L/R is arbitrary. *)
 %right  VAL             (* L/R is arbitrary. *)
+
+%left   LCOMBRAC        (* L/R is arbitrary. *)
+%right  RCOMBRAC        (* L/R is arbitrary. *)
 
 %left   LCOMSPEC        (* L/R is arbitrary. *)
 %right  RCOMSPEC        (* L/R is arbitrary. *)
@@ -1027,6 +1030,15 @@ AtExp:
         | LPAREN Exp_ LCOMSPEC OfSort TyComma_seq1 RCOMSPEC RPAREN
                         ( PARatexp (PP LPARENleft RPARENright, 
                                     SORTEDexp (PP Exp_left RCOMSPECright, Exp_, TyComma_seq1)) )
+
+        | LongOpEqIdent LCOMBRAC TyComma_seq1 RCOMBRAC
+                        ( let val OP_OPT (id, withOp) = LongOpEqIdent
+                          in
+                            INSTatexp (PP LongOpEqIdentleft RCOMBRACright, OP_OPT (mk_LongId id, withOp), TyComma_seq1)
+                          end )
+
+
+
 
 (* Atomic Expression Derived Forms (Defn. V4 apdx. A fig. 15). Actually,
    this figure only catalogues these things as expression derived forms,

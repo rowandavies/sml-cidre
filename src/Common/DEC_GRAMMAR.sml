@@ -43,6 +43,7 @@ sig
   datatype atexp =
 	SCONatexp of info * scon |         
 	IDENTatexp of info * longid op_opt |
+	INSTatexp of info * longid op_opt * ty list |
 	RECORDatexp of info * exprow option |
 	LETatexp of info * dec * exp |
 	PARatexp of info * exp
