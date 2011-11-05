@@ -335,9 +335,10 @@ in
         conjoin_product(ListHacks.reverse sort_instanceLists, [])
       end
 
-    fun full_or_default_inst (C, sscheme, ty_instances) =
+    fun full_or_specified_inst (C, sscheme, srt_instances, ty_instances_opt) =
 	let
-           val srt_instances = map (RO.MLSortOfTy (TNtoSN C)) ty_instances
+           val ty_instances = case ty_instances_opt of SOME x => x 
+                                                     | NONE => map RO.tyOfSort srt_instances
            val unique = not (List.exists (Env.hasMultRefments C) ty_instances)
 	in
 	   if 
@@ -347,6 +348,10 @@ in
                 (RO.instance (sscheme, srt_instances), true)  (* true => warning *)
 	end
 
+    fun full_or_default_inst (C, sscheme, ty_instances) =
+        full_or_specified_inst(C, sscheme,  map (RO.MLSortOfTy (TNtoSN C)) ty_instances, SOME ty_instances)
+
+
     val dec_toRG = MapDecEtoR.map_dec_info RefInfo.from_ElabInfo 
     val ty_toIG = MapDecRtoE.map_ty_info to_ElabInfo   (* tygoals use IG (avoids cycle) *)
     val ty_toRG = MapDecEtoR.map_ty_info RefInfo.from_ElabInfo
@@ -354,7 +359,7 @@ in
     (* A local type to keep track of residual sort information in patterns *)
     datatype PatSort = SORTps of RO.Sort
                        (* Constr. with original sorts, sortsch, instances, and optional argument. *)
-                     | VALCONSps of Ident.longid * (RO.Sort list * RO.SortScheme * RO.Type list) 
+                     | VALCONSps of Ident.longid * (RO.Sort list * RO.SortScheme * RO.Sort list) 
 				    * PatSort option
                    (*  | REFps of RO.Sort * PatSort     (* ref requires special treatment *) *)
                      | ADDFIELDps of RG.lab * PatSort * PatSort
@@ -431,7 +436,7 @@ in
            if isEmptyPS C ps then [] else srts
 	else
 	  let  (* The default sort may cause a problem if at some point applySort fails *)
-	    val (srt1, warn) = full_or_default_inst (*full_instance*) (C, ssch, instances)
+	    val (srt1, warn) = full_or_specified_inst (*full_instance*) (C, ssch, instances, NONE)
 	  in
 	    case patsort_opt
 	      of NONE => [srt1]
@@ -529,7 +534,7 @@ in
                             if (con2 = con) then acc_ps
                             else mkUNIONps(mkVALCONSps(Ident.implode_LongId(path, con2), 
                                                        ([srt], con_to_srt con2, 
-							map RO.tyOfSort srts_1st),
+							srts_1st),
                                                        sfsopt_to_psopt sfsopt2), 
                                            acc_ps))
                          EMPTYps
@@ -1348,10 +1353,11 @@ in
      of RG.LONGIDatpat(i, RG.OP_OPT(longid, withOp)) => 
        (case (getPostElabTypeInfo i)
           of SOME (TypeInfo.CON_INFO {instances, ...}) => 
-             let val correct_instances = instances  (* was reversed in ML/Kit 1.0 *)
+             let val srt_instances = map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not quite right? *)
                  val (out_patsort, arg_ps, srtsPat) = dividePatsort(C, patsort, longid)     
                  val (SOME (Env.LONGCON ssch)) = Env.Lookup_longid(C,longid)
-                 val matched_patsort = mkVALCONSps(longid, (srtsPat, ssch, correct_instances),arg_ps)
+                 val matched_patsort = mkVALCONSps(longid, (srtsPat, ssch, srt_instances),
+                                                   arg_ps)    (* The instances shouldn't be used? *)
                  val VE_psrt_list = case arg_ps of NONE => [(Env.emptyVE, matched_patsort)] 
                                                 | SOME _ => []
              in
@@ -1414,7 +1420,7 @@ in
 	   let
 	     val instances = case (getPostElabTypeInfo i)
 			       of SOME (TypeInfo.CON_INFO {instances, ...}) => 
-				    instances  (* reversed in ML/Kit 1.0 *)
+				    map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not right, but unused (?) *)
 				| SOME (TypeInfo.EXCON_INFO _) => []
 				| _ => Crash.impossible "RefDec.ref_pat(1)"
 	     val (out_ps, ps_opt, srtsPat) = dividePatsort(C, patsort, longid)
