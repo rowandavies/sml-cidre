@@ -710,10 +710,10 @@ functor StatObject (structure SortedFinMap : SORTED_FINMAP
                                             (RecType.sort (findRecType r))  (* Sort! 22jan03 *)
 		| ARROW (ty,ty') =>     (* For the compilation of value constructors, we
 					 * extract the tyvars of ty' before those of ty. 
-					 * Martin-15/11/1998 - not anymore Rowan-4nov11 *)
-		    (tyvars0 f_b ty; tyvars0 f_b ty')
+					 * Martin-15/11/1998 - hard to change-Rowan-4nov11 *)
+		    (tyvars0 f_b ty'; tyvars0 f_b ty)
 
-		| CONSTYPE (types,_) => foldl (fn (ty,()) => tyvars0 f_b ty) () types
+		| CONSTYPE (types,_) => foldr (fn (ty,()) => tyvars0 f_b ty) () types
 	  end
 
         fun tyvars1 f_b ty = (bucket := []; tyvars0 f_b ty; !bucket)

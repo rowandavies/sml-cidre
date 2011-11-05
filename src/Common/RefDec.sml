@@ -483,7 +483,7 @@ in
        plus a sort containing the pattern sort (used for references).
        Argument patsort will be "SOME (empty)" if no match, even if no argument.  *)
     and dividePatsort (C : Env.Context, ps : PatSort, longid : longid) 
-          : PatSort * PatSort option * Sort list =
+          : PatSort * PatSort option * Sort list * Sort list =
      case ps    
      of SORTps srt =>  (* ref is not allowed - it should be handled differently *)
         (case Env.Lookup_longid (C, longid)
@@ -496,11 +496,11 @@ in
                    of NONE => (NONE, srt')
                     | SOME (srt1, srt2) => (SOME (mkSORTps C srt1), srt2)
               in
-                (ps, out_patsort_opt, [out_srt])  (* ps should always be SortExn *)
+                (ps, out_patsort_opt, [out_srt],[])  (* ps should always be SortExn *)
               end
            | SOME (Env.LONGCON con_srtsch) =>  (* Expand "srt" using the INV. PRINC. in "RC".  *)
              case (RO.unSortCons (RO.firstConjunct srt))   (* Many for non-covariant datasorts. *)
-               of NONE => (EMPTYps, SOME EMPTYps, [])   (* What about a BogusSort?  *)
+               of NONE => (EMPTYps, SOME EMPTYps, [], [])   (* What about a BogusSort?  *)
                 | SOME (srts_1st, sortname) =>  (* All conjuncts have the same sortname, *)
                    let                          (* but possibly different sort arguments.       *)
                      val srts_list =   (* List of the sort arguments in each conjunct. *)
@@ -540,15 +540,16 @@ in
                          EMPTYps
                          RC
                    in 
-		      (patsort, patsort_opt, [srt])
+		      (patsort, patsort_opt, [srt], srts_1st)
                    end
         )   (* Of "(case Env.Lookup_longid ..." inside the case for "SORTps srt" *)
-      | VALCONSps(longid1, (srts, _, _), patsort_opt) =>
-        if (longid1 = longid) then (EMPTYps, patsort_opt, srts) else (ps, SOME EMPTYps, srts)
+      | VALCONSps(longid1, (srts, _, srtInstances), patsort_opt) =>
+        if (longid1 = longid) then (EMPTYps, patsort_opt, srts, srtInstances) else (ps, SOME EMPTYps, srts, srtInstances)
       | UNIONps(ps1, ps2) =>
         let
-          val (patsort1, patsort1_opt, srts1) = dividePatsort(C, ps1, longid)
-          val (patsort2, patsort2_opt, srts2) = dividePatsort(C, ps2, longid)
+          val (patsort1, patsort1_opt, srts1, instances1) = dividePatsort(C, ps1, longid)
+          val (patsort2, patsort2_opt, srts2, instances2) = dividePatsort(C, ps2, longid)
+          val instances = case instances1 of [] => instances2 | _ => instances1
           val patsort = mkUNIONps(patsort1, patsort2)
           val patsort_opt = case (patsort1_opt, patsort2_opt)
                               of (SOME ps1', SOME ps2') => SOME(mkUNIONps(ps1', ps2'))
@@ -556,9 +557,9 @@ in
 	  val srts = (if isEmptyPS C ps1 then [] else srts1) @ 
 		     (if isEmptyPS C ps2 then [] else srts2)
         in
-          (patsort, patsort_opt, srts)
+          (patsort, patsort_opt, srts, instances)
         end
-      | EMPTYps => (EMPTYps, SOME EMPTYps, []) (* Sort is never used. *)
+      | EMPTYps => (EMPTYps, SOME EMPTYps, [], []) (* Sort and instances are never used. *)
       | _ => Crash.impossible "RefDec.dividePatsort"
 
     (* Project a pattern-sort on a label, to get a union represented as a list of pairs of patsorts
@@ -1345,7 +1346,7 @@ in
      | _ =>      (* Case for NONE or SOME DOTDOTDOT *)
             noErr ([(Env.emptyVE, patsort)], patsort, EMPTYps)
 
-    (* Returns possible VE's with corresponding sorts of pattern plus both matched and 
+    (* Returns possible VE's with corresponding sorts for the pattern plus both matched and 
        remaining PatSort.   *)
     and ref_atpat (C: Context, atpat: RG.atpat, patsort: PatSort) errflag
           : ((Env.VarEnv * PatSort) list * PatSort * PatSort) Result =
@@ -1353,8 +1354,7 @@ in
      of RG.LONGIDatpat(i, RG.OP_OPT(longid, withOp)) => 
        (case (getPostElabTypeInfo i)
           of SOME (TypeInfo.CON_INFO {instances, ...}) => 
-             let val srt_instances = map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not quite right? *)
-                 val (out_patsort, arg_ps, srtsPat) = dividePatsort(C, patsort, longid)     
+             let val (out_patsort, arg_ps, srtsPat,srt_instances) = dividePatsort(C, patsort, longid)     
                  val (SOME (Env.LONGCON ssch)) = Env.Lookup_longid(C,longid)
                  val matched_patsort = mkVALCONSps(longid, (srtsPat, ssch, srt_instances),
                                                    arg_ps)    (* The instances shouldn't be used? *)
@@ -1364,14 +1364,14 @@ in
                noErr (VE_psrt_list, matched_patsort, out_patsort)
              end
            | SOME (TypeInfo.EXCON_INFO _) => 
-             let val (out_patsort, arg_ps, srtsPat) = dividePatsort(C, patsort, longid)
+             let val (out_patsort, arg_ps, srtsPat, srt_instances) = dividePatsort(C, patsort, longid)
                  val (SOME (Env.LONGEXCON srt)) = Env.Lookup_longid(C,longid)
                  val ssch = RO.Sort_in_SortScheme srt
                  val VE_psrt_list = case arg_ps 
 				      of NONE => [(Env.emptyVE, mkSORTps C srt)] 
 				       | SOME _ => []
              in
-                 noErr (VE_psrt_list, mkVALCONSps(longid, (srtsPat, ssch, []), arg_ps), out_patsort)
+                 noErr (VE_psrt_list, mkVALCONSps(longid, (srtsPat, ssch, srt_instances), arg_ps), out_patsort)
              end
            | _ =>   (* must be variable pattern *)
              let val id = Ident.id_of_longid longid
@@ -1418,12 +1418,12 @@ in
 	   check_pat_ty (C, i, pat1, patsort, ty2) ) errflag
       | RG.CONSpat(i, RG.OP_OPT(longid, withOp), atpat1) =>
 	   let
-	     val instances = case (getPostElabTypeInfo i)
+(*	     val instances = case (getPostElabTypeInfo i)
 			       of SOME (TypeInfo.CON_INFO {instances, ...}) => 
 				    map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not right, but unused (?) *)
 				| SOME (TypeInfo.EXCON_INFO _) => []
-				| _ => Crash.impossible "RefDec.ref_pat(1)"
-	     val (out_ps, ps_opt, srtsPat) = dividePatsort(C, patsort, longid)
+				| _ => Crash.impossible "RefDec.ref_pat(1)"  *)
+	     val (out_ps, ps_opt, srtsPat, instances) = dividePatsort(C, patsort, longid)
 	     val ps1 = case ps_opt of NONE => EMPTYps | SOME ps1 => ps1  (* NONE => type error *)
 	     val ((VE_psrt_list, match_ps1, out_ps1), errs1) = ref_atpat(C, atpat1, ps1) errflag
              val con_ssch = case Env.Lookup_longid (C, longid) of 
@@ -1734,6 +1734,7 @@ in
                                tys
            in
              letC srtsC  ( fn srts=>  
+             case rev srts of srts =>     (* Change to the more natural "order of last occurrence" *)             
              if RO.subSort (Env.conjSortNameC C) (RO.instance (srtsch, srts), gsrt) then noErrC ()
              else let val (_, srt2) = RO.instance_vars srtsch
                   in  error((), RG.get_info_atexp atexp, REI.NOT_SUBSORT(gsrt, srt2))
@@ -1807,7 +1808,7 @@ in
                                tys
              in
                 letCV srtsC  ( fn srts =>
-                (* case rev srts of srts =>     (* Not sure why this needs to be reversed *) *)
+                case rev srts of srts =>     (* Change to the more natural "order of last occurrence" *)
                 (ListPair.app  (fn (s,t) => assert (eqTypes "INSTatexp: " (RO.tyOfSort s) t)) (srts,instances);
                  noRedo (RO.instance (srtsch, srts)) ) ) errflag
              end

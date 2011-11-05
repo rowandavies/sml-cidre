@@ -687,7 +687,7 @@ functor ElabDec(
                          else
                            (case ListPair.map (fn (tv,SOME tau)=> (Type.unify (tv, tau); Substitution.Id on tau) 
                                                 | (tv,_) => Substitution.Id on tv) 
-                                              (rev instances, tau_opts) 
+                                              (instances, tau_opts) 
                               of newInstances =>  (okConv i, newInstances) )
 
                    val out_i = addTypeInfo_VAR (i2, newInstances)
@@ -706,7 +706,7 @@ functor ElabDec(
                          if length tau_opts <> length instances then 
                            errorConv (i, ErrorInfo.WRONG_ARITY {actual=length tau_opts, expected=length instances})
                          else
-                           (ListPair.map (fn (tv, SOME tau) => Type.unify (tv, tau) ) (rev instances, tau_opts);
+                           (ListPair.map (fn (tv, SOME tau) => Type.unify (tv, tau) ) (instances, tau_opts);
                             okConv i)
 
                    val out_i = addTypeInfo_CON (i2, C, instances, longid)
