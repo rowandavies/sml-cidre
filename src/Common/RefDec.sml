@@ -89,14 +89,14 @@ functor RefDec(
                      where type REnv.VarEnv = RefinedEnvironments.VarEnv
                      where type REnv.TyNameEnv = RefinedEnvironments.TyNameEnv
                      where type REnv.Env = RefinedEnvironments.Env
-		     where type REnv.Sort = RefObject.Sort 
+                     where type REnv.Sort = RefObject.Sort 
 
                      where type ElabInfo.TypeInfo.longid = Ident.longid
                      where type ElabInfo.TypeInfo.Type    = StatObject.Type
                      where type ElabInfo.TypeInfo.TyName.TyName  = StatObject.TyName
                      where type ElabInfo.TypeInfo.TyVar   = StatObject.TyVar
                      where type ElabInfo.TypeInfo.ExplicitTyVarEnv 
-		                = RefinedEnvironments.ExplicitTyVarEnv
+                                = RefinedEnvironments.ExplicitTyVarEnv
                      where type ElabInfo.ParseInfo.SourceInfo = RefineErrorInfo.SourceInfo
 
                 structure MapDecEtoR: MAP_DEC_INFO 
@@ -230,7 +230,7 @@ in
           Report.print' (Report.decorate (msg, PP.reportStringTree t)) TextIO.stdErr
 
     fun pr_debug (msg, t) = if !Flags.DEBUG_REFDEC then pr (nspaces (!debug_indent) ^ msg, t () )
-			    else ()
+                            else ()
 
     fun lines_pp st = PP.lines_minipage (PP.format (100, st))
 
@@ -243,18 +243,18 @@ in
 
     (* For use with assert. *)
     fun eqTypes str ty1 ty2 () =  (* Use strings, since Type.eq is tied to unification. *)
-	let val flag = Flags.lookup_flag_entry "print_type_name_stamps"
+        let val flag = Flags.lookup_flag_entry "print_type_name_stamps"
             val keep = !flag
-	    val () = flag := true
-	    val str1 = PP.flatten1 (Type.layout ty1)
+            val () = flag := true
+            val str1 = PP.flatten1 (Type.layout ty1)
             val str2 = PP.flatten1 (Type.layout ty2)
-	    val () = flag := false
-	in
-  	  if str1 = str2 (* Type.eq(ty1, ty2) *) then NONE
-  	  else (Flags.lookup_flag_entry "print_type_name_stamps" := true;
- 	        SOME [str ^ "types not equal: \n" ^ PP.flatten1 (Type.layout ty1) ^
-		          "\nis not equal to: \n" ^ PP.flatten1 (Type.layout ty2)])
-	end
+            val () = flag := false
+        in
+          if str1 = str2 (* Type.eq(ty1, ty2) *) then NONE
+          else (Flags.lookup_flag_entry "print_type_name_stamps" := true;
+                SOME [str ^ "types not equal: \n" ^ PP.flatten1 (Type.layout ty1) ^
+                          "\nis not equal to: \n" ^ PP.flatten1 (Type.layout ty2)])
+        end
 
     (* For use with assert. *)
     fun compatSorts str srt1 srt2 () = eqTypes str (RO.tyOfSort srt1) (RO.tyOfSort srt2) ()
@@ -263,7 +263,7 @@ in
 
     (* Added this while trying to track down a bug while sort checking this file. *)
     (*[ val getPostElabTypeInfo :> ElabInfo.ElabInfo * RefInfo.RefDecMemo ref 
-				    -> ElabInfo.TypeInfo option ]*)
+                                    -> ElabInfo.TypeInfo option ]*)
     fun getPostElabTypeInfo i = ElabInfo.to_TypeInfo (to_ElabInfo i)
 
     (* Get SourceInfo from AST annotations *)
@@ -299,9 +299,9 @@ in
 
     (*[ covariant_sortname :> Env.Context -> SortName.SortName -> bool ]*)
     fun covariant_sortname C sortname =
-	case Env.Lookup_tyname (C, SortName.tyname sortname)
-	   of SOME tystr => Env.covariant_of_TyStr tystr
-	    | NONE => Crash.impossible "covariant_sortname"
+        case Env.Lookup_tyname (C, SortName.tyname sortname)
+           of SOME tystr => Env.covariant_of_TyStr tystr
+            | NONE => Crash.impossible "covariant_sortname"
 
     fun findMLSort(C, i) = (* find the ML Sort corresponding to the info type *)
       let                  (* Could memoize in i *)
@@ -312,41 +312,54 @@ in
              | SOME (TypeInfo.VAR_PAT_INFO {Type, ...}) => Type
              | SOME (TypeInfo.MATCH_INFO {Type, ...}) => Type
              | _ => Crash.impossible "RefDec.findMLSort(2)"
- 	  val _ = pr_debug ("findMLSort: ", fn () => StatObject.Type.layout Type)
+          val _ = pr_debug ("findMLSort: ", fn () => StatObject.Type.layout Type)
           val res = RO.MLSortOfTy (TNtoSN C) Type
           val () = assert (eqTypes "findMLSort: " (RO.tyOfSort res) Type)
- 	  val _ = pr_debug ("findMLSort: ", fn () => RO.layoutSort res)
+          val _ = pr_debug ("findMLSort: ", fn () => RO.layoutSort res)
       in
           res
       end
 
-    (* Instance of a sort-scheme for given types with all conjuncts. *)
+    exception TooMuch
+    val howMuchIsTooMuch = ref 50000
+
+    val () = Flags.add_int_to_menu (["Extensions"], "maxInstantiation", 
+                                    "Maximum size of instances before using default instead?", howMuchIsTooMuch)
+
+    (* Instance of a sort-scheme for given types with all conjuncts. May throw TooMuch. *)
     fun full_instance (C, sscheme, ty_instances) =
       let
+        val howMuch = ref 0
+        fun oneMore() = (howMuch := !howMuch + 1; if !howMuch > (!howMuchIsTooMuch) then (raise TooMuch) else ()) 
         val sort_instanceLists = map (Env.allRefinements C) ty_instances
-        val mkconj = RO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C))
+        fun mkconj (srt1, srt2) = (oneMore();
+                                   RO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C)) (srt1, srt2) )
+
         (* conjoin all instantiations of sscheme - accumulator reverses order *)
         fun conjoin_product ([], acc) = RO.instance(sscheme, acc)
           | conjoin_product (h::t, acc) = 
-                 foldl' (fn (x,b) => mkconj (x, b))
-                        (map (fn x => conjoin_product (t, x::acc)) h)
+                (foldl' (fn (x,b) => mkconj (x, b))
+                        (map (fn x => conjoin_product (t, x::acc)) h) )
+
         val _ = pr_debug ("full_instance: ", fn () => RO.layoutSortScheme sscheme)
       in
         conjoin_product(ListHacks.reverse sort_instanceLists, [])
       end
 
     fun full_or_specified_inst (C, sscheme, srt_instances, ty_instances_opt) =
-	let
-           val ty_instances = case ty_instances_opt of SOME x => x 
-                                                     | NONE => map RO.tyOfSort srt_instances
+        let
+           val ty_instances = case ty_instances_opt of SOME x => x | NONE => map RO.tyOfSort srt_instances
            val unique = not (List.exists (Env.hasMultRefments C) ty_instances)
-	in
-	   if 
-              unique orelse List.all (RO.covariant_sort (covariant_sortname C)) srt_instances then
+        in
                     (full_instance (C, sscheme, ty_instances), false)
-	   else     (* Perhaps issue a warning.  Maybe disable this with a flag.  *)
+                    handle TooMuch => (RO.instance (sscheme, srt_instances), true)  (* true => warning *)
+
+(*         if unique orelse List.all (RO.covariant_sort (covariant_sortname C)) srt_instances then
+                    (full_instance (C, sscheme, ty_instances), false)
+           else     (* Perhaps issue a warning.  Maybe disable this with a flag.  *)
                 (RO.instance (sscheme, srt_instances), true)  (* true => warning *)
-	end
+*)
+        end
 
     fun full_or_default_inst (C, sscheme, ty_instances) =
         full_or_specified_inst(C, sscheme,  map (RO.MLSortOfTy (TNtoSN C)) ty_instances, SOME ty_instances)
@@ -360,7 +373,7 @@ in
     datatype PatSort = SORTps of RO.Sort
                        (* Constr. with original sorts, sortsch, instances, and optional argument. *)
                      | VALCONSps of Ident.longid * (RO.Sort list * RO.SortScheme * RO.Sort list) 
-				    * PatSort option
+                                    * PatSort option
                    (*  | REFps of RO.Sort * PatSort     (* ref requires special treatment *) *)
                      | ADDFIELDps of RG.lab * PatSort * PatSort
                      | UNITps
@@ -380,7 +393,7 @@ in
       | mkUNIONps x = UNIONps x
 
     fun mkSORTps C srt = if RO.emptySort (Env.conjSortNameC C) srt then EMPTYps
-		         else SORTps srt
+                         else SORTps srt
 
 
 (*  Use these to see the dramatic effect of the above optimization. *)
@@ -397,7 +410,7 @@ in
       | pr_PatSort (VALCONSps (longid, _, SOME ps)) = 
         (Ident.pr_longid longid) ^ "(" ^ pr_PatSort ps ^ ")"
 (*      | pr_PatSort (REFps (srt, ps)) =
-	  REF ^ "(" ^ RO.pr_Sort srt ^ ", " ^  pr_PatSort ps ^ ")" *)
+          REF ^ "(" ^ RO.pr_Sort srt ^ ", " ^  pr_PatSort ps ^ ")" *)
       | pr_PatSort (ADDFIELDps(lab, ps1, ps2)) = 
         "FIELD(" ^ Lab.pr_Lab lab ^ "=" ^ (pr_PatSort ps1) ^ ", " ^ (pr_PatSort ps2) ^ ")"
       | pr_PatSort UNITps = "UNIT"
@@ -427,41 +440,44 @@ in
     val largestPS = ref 0
 
     (***** patSorts, to support ref_pat *****)
-    fun patSort_to_Sorts (C, SORTps srt) : RO.Sort list = 
+    fun patSort_to_Sorts (C, SORTps srt) : RO.Sort list * bool =   (* bool => warn *)
         if (RO.emptySort (Env.conjSortNameC C) srt)
            andalso not (RO.isBogusSort srt) 
-	then [] else [srt]
+        then ([],false) else ([srt],false)
       | patSort_to_Sorts (C, ps as VALCONSps (longid, (srts, ssch, instances), patsort_opt)) =
-	if longid = Ident.idToLongId Ident.id_REF then (* Unsound without this.  *)
-           if isEmptyPS C ps then [] else srts
-	else
-	  let  (* The default sort may cause a problem if at some point applySort fails *)
-	    val (srt1, warn) = full_or_specified_inst (*full_instance*) (C, ssch, instances, NONE)
-	  in
-	    case patsort_opt
-	      of NONE => [srt1]
-	       | SOME patsort =>                
-		 List.foldr (fn (srt2,srts) =>
-				case RO.applySort (Env.conjSortNameC C) (srt1, srt2)
-				  of NONE => Crash.impossible ("RefDec.patSort_to_Sorts(2): \n" ^
-					     "applying:  "^  RO.pr_Sort srt1 ^ 
-					     "\n    to:  " ^ RO.pr_Sort srt2 ^
-					     "\npatSort: " ^ (pr_PatSort patsort))
-				   | SOME srt3 => 
-				     RO.addSortToMaximals (Env.conjSortNameC C) (srt3, srts))
-			    [] (patSort_to_Sorts (C, patsort))
-	  end
+        if longid = Ident.idToLongId Ident.id_REF then (* Unsound without this.  *)
+           if isEmptyPS C ps then ([],false) else (srts,false)
+        else
+          let  (* The default sort won't work here, we need the original instances instead *)
+            val (srt1, warn1) = full_or_specified_inst (*full_instance*) (C, ssch, instances, NONE)
+          in
+           (case patsort_opt
+              of NONE => ([srt1], warn1)
+               | SOME patsort =>
+                 let val (p2srts, warn2) = (patSort_to_Sorts (C, patsort)) in
+                 (List.foldr (fn (srt2,srts) =>
+                                case RO.applySort (Env.conjSortNameC C) (srt1, srt2)
+                                  of NONE => Crash.impossible ("RefDec.patSort_to_Sorts(2): \n" ^
+                                             "applying:  "^  RO.pr_Sort srt1 ^ 
+                                             "\n    to:  " ^ RO.pr_Sort srt2 ^
+                                             "\npatSort: " ^ (pr_PatSort patsort))
+                                   | SOME srt3 => 
+                                     RO.addSortToMaximals (Env.conjSortNameC C) (srt3, srts))
+                            [] p2srts
+                  , warn1 orelse warn2)
+                 end)
+          end
 
 (*      | patSort_to_Sorts (C, REFps (srt, ps)) = 
-	  if emptyPS ps (* orelse RO.emptySort (Env.conjSortNameC C) srt *) then
-	      [] (* Unreachable case *)
-	  else
-	      srt *)
+          if emptyPS ps (* orelse RO.emptySort (Env.conjSortNameC C) srt *) then
+              [] (* Unreachable case *)
+          else
+              srt *)
 
       | patSort_to_Sorts (C, ADDFIELDps(lab1, patsort1, patsort2)) =
         let
-          val srts1 = patSort_to_Sorts (C, patsort1)
-          val srts2 = patSort_to_Sorts (C, patsort2)
+          val (srts1, warn1) = patSort_to_Sorts (C, patsort1)
+          val (srts2, warn2) = patSort_to_Sorts (C, patsort2)
           fun addsrts1 (srt, acc) = 
             case (RO.unSortRecSort srt) 
               of SOME recsrt => 
@@ -469,15 +485,20 @@ in
                  @ acc
                | NONE => Crash.impossible "RefDec.patSort_to_Sorts(3)"
         in
-          List.foldl addsrts1 [] srts2
+          (List.foldl addsrts1 [] srts2, warn1 orelse warn2)
         end
-      | patSort_to_Sorts (C, UNITps) = [RO.SortUnit]
+      | patSort_to_Sorts (C, UNITps) = ([RO.SortUnit], false)
       | patSort_to_Sorts (C, UNIONps (patsort1, patsort2)) = 
-        List.foldr (fn (srt1,srts2) =>
-                      RO.addSortToMaximals (Env.conjSortNameC C) (srt1, srts2))
-                   (patSort_to_Sorts (C, patsort2))
-                   (patSort_to_Sorts (C, patsort1))
-      | patSort_to_Sorts (C, EMPTYps) = []
+        let val (p2sorts1, warn1) =  patSort_to_Sorts (C, patsort1)
+            val (p2sorts2, warn2) =  patSort_to_Sorts (C, patsort2)
+        in 
+          (List.foldr (fn (srt1,srts2) =>
+                          RO.addSortToMaximals (Env.conjSortNameC C) (srt1, srts2))
+                      p2sorts2
+                      p2sorts1
+          , warn1 orelse warn2)
+        end
+      | patSort_to_Sorts (C, EMPTYps) = ([], false)
 
     (* Divide a patsort on a constructor to get residual and (optional) argument patsorts,
        plus a sort containing the pattern sort (used for references).
@@ -492,7 +513,7 @@ in
           | SOME (Env.LONGEXCON srt') =>
             let
               val (out_patsort_opt, out_srt) = 
-		  case (RO.unSortArrow srt') 
+                  case (RO.unSortArrow srt') 
                    of NONE => (NONE, srt')
                     | SOME (srt1, srt2) => (SOME (mkSORTps C srt1), srt2)
               in
@@ -511,7 +532,7 @@ in
                      val (path, con) = Ident.decompose longid                     
                      val SOME tystr = Env.lookupT (Env.T_of_C C, SortName.tyname sortname)
                      val SOME RC = Env.lookupR(Env.R_of_TyStr tystr, sortname) 
-		     val CE = Env.CE_of_TyStr tystr
+                     val CE = Env.CE_of_TyStr tystr
                      val match_sfs_opt = case Env.lookupRC(RC, con) (* sortfcns that match "con" *)
                                            of NONE => SOME []
                                             | SOME sfs_opt => sfs_opt
@@ -534,13 +555,13 @@ in
                             if (con2 = con) then acc_ps
                             else mkUNIONps(mkVALCONSps(Ident.implode_LongId(path, con2), 
                                                        ([srt], con_to_srt con2, 
-							srts_1st),
+                                                        srts_1st),
                                                        sfsopt_to_psopt sfsopt2), 
                                            acc_ps))
                          EMPTYps
                          RC
                    in 
-		      (patsort, patsort_opt, [srt], srts_1st)
+                      (patsort, patsort_opt, [srt], srts_1st)
                    end
         )   (* Of "(case Env.Lookup_longid ..." inside the case for "SORTps srt" *)
       | VALCONSps(longid1, (srts, _, srtInstances), patsort_opt) =>
@@ -554,8 +575,8 @@ in
           val patsort_opt = case (patsort1_opt, patsort2_opt)
                               of (SOME ps1', SOME ps2') => SOME(mkUNIONps(ps1', ps2'))
                                | _ => NONE
-	  val srts = (if isEmptyPS C ps1 then [] else srts1) @ 
-		     (if isEmptyPS C ps2 then [] else srts2)
+          val srts = (if isEmptyPS C ps1 then [] else srts1) @ 
+                     (if isEmptyPS C ps2 then [] else srts2)
         in
           (patsort, patsort_opt, srts, instances)
         end
@@ -599,11 +620,11 @@ in
     *********)
 
     fun datbind_to_info (RG.DATBIND((i (*[ :> ElabInfo.ElabInfo * RefInfo.RefDecMemo ref ]*)), 
-					     tyvars, tycon, _, datbind_opt)) = i
+                                             tyvars, tycon, _, datbind_opt)) = i
 
     (*[ val datatype_initial_T_TE_RE :> RG.datbind -> TyNameEnv * Env.TyEnv * Env.SortEnv ]*)
     fun datatype_initial_T_TE_RE (RG.DATBIND((i (*[ :> ElabInfo.ElabInfo * RefInfo.RefDecMemo ref ]*)), 
-					     tyvars, tycon, _, datbind_opt)) =
+                                             tyvars, tycon, _, datbind_opt)) =
         let
           val tyname = case getPostElabTypeInfo i
                          of SOME (TypeInfo.DATBIND_INFO {TyName}) => TyName
@@ -687,7 +708,7 @@ in
       end
 
       fun dec_depends_on_VE (RG.DATATYPEdec _) = false
-	| dec_depends_on_VE (RG.DATASORTdec _) = false
+        | dec_depends_on_VE (RG.DATASORTdec _) = false
         | dec_depends_on_VE _ = true
 
 (*    fun dec_depends_on_VE (RG.VALdec _) = true
@@ -720,14 +741,14 @@ in
          (Env.debug_push (fn () => ["VALdec",PP.flatten1 (RG.layoutDec dec)]);
           letRV (ref_valbind (C, valbind)) (fn VE => 
           (Env.emptyT, Env.VE_in_E VE)  ) errflag
-	  before  Env.debug_pop (fn () => ["VALdec(exit)"])
-	 )
+          before  Env.debug_pop (fn () => ["VALdec(exit)"])
+         )
 
       | RG.VALsdec(i, valsdesc) =>
          ((* Env.debug_push (fn () => lines_pp (RG.layoutDec dec)); *)
           letCV (ref_valsdesc (C, valsdesc))  (fn TG =>
           noRedo (Env.emptyT, Env.TG_in_E TG)  ) errflag
-          (*	  before  Env.debug_pop (fn () => []) *)
+          (*      before  Env.debug_pop (fn () => []) *)
          )
       | RG.EXCEPTIONdec(i, exbind) =>
           letCV (ref_exbind(C, exbind)) (fn EE =>   (* turn into VE - EE not used anymore *)
@@ -738,7 +759,7 @@ in
       | RG.SORTdec(i, typbind) =>
           letCV (ref_srtbind(C, typbind)) (fn RE => 
           noRedo (Env.overrideDefaults (Env.T_of_C C) RE, 
-		  Env.E_plus_E (Env.RE_in_E RE, Env.TE_in_E (Env.convertREtoTE RE)) )  ) errflag
+                  Env.E_plus_E (Env.RE_in_E RE, Env.TE_in_E (Env.convertREtoTE RE)) )  ) errflag
       | RG.LOCALdec(i, dec1, dec2) =>
           letR (ref_decR (Env.C_erase_TG C, dec1)) (fn (T1, E1) => 
           letRV (ref_decR (Env.C_plus_E (Env.C_plus_T(C,T1), E1), dec2)) (fn (T2, E2) => 
@@ -774,7 +795,7 @@ in
                   let
                     val RE = Env.singleRE (tycon, sortfcn)
                     val TE = Env.singleTE (tycon, sortfcn)
-		    val E1 = Env.E_plus_E (Env.RE_in_E RE, Env.TE_in_E TE)
+                    val E1 = Env.E_plus_E (Env.RE_in_E RE, Env.TE_in_E TE)
                     val SOME sn = RO.SortFcn_to_SortName sortfcn
                     val tn = SortName.tyname sn
                     val SOME tystr = Env.Lookup_tyname (C, tn)
@@ -823,7 +844,7 @@ in
       | RG.UNRES_FUNdec _ => Crash.impossible "RefDec.ref_decR:UNRES_FUNdec"
       val () = Env.debug_pop (fn()=>[])
      in
-	 res
+         res
      end
 
     (* Internal, memoizing ref_dec *)
@@ -834,25 +855,25 @@ in
         (* val () = Env.debug_push (fn () => "\n****ref_dec_memo: " :: (lines_pp (RG.layoutDec dec))) *)
         val res = 
              if dec_depends_on_VE dec then
-     	       let val memotable = get_DEPEND refDecMemo (* Will add table if not there. *)
+               let val memotable = get_DEPEND refDecMemo (* Will add table if not there. *)
                    val memo = lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
-	       in if !memoizeOn then Comp.memoInR memo (ref_dec_internal (C, dec)) errflag
-		  else ref_dec_internal (C, dec) errflag
-	       end
-	     else
-	     case !refDecMemo of
-		 DEC_NODEPEND memoed => memoed
+               in if !memoizeOn then Comp.memoInR memo (ref_dec_internal (C, dec)) errflag
+                  else ref_dec_internal (C, dec) errflag
+               end
+             else
+             case !refDecMemo of
+                 DEC_NODEPEND memoed => memoed
                | EMPTY => 
-		 (let val (res, errs) = ref_dec_internal(C, dec) true  (* memoize with errors always *)
-		      val _ =  (refDecMemo := DEC_NODEPEND (res, errs))
+                 (let val (res, errs) = ref_dec_internal(C, dec) true  (* memoize with errors always *)
+                      val _ =  (refDecMemo := DEC_NODEPEND (res, errs))
                   in
                       case (errflag, errs) of
-			  (false, _::_) =>  raise Comp.Fail
-			| _ =>  (res, errs)
+                          (false, _::_) =>  raise Comp.Fail
+                        | _ =>  (res, errs)
                   end)
-	 (* val () = Env.debug_pop (fn () => []) *)
+         (* val () = Env.debug_pop (fn () => []) *)
       in
-	  res
+          res
       end
     and ref_decR args = ref_dec_memo args (* ref_dec_internal args *)
 
@@ -866,21 +887,21 @@ in
           val (redo1, errs1) = ref_decR (C, decRG) errflag
           val ((T1, E1), rc1) = Comp.redoToResAndRC redo1
           val VE_list = map (fn (T, E) => Env.VE_of_E E) 
-	                    (Comp.redo_to_list redo1)
-(*	  val _ = print ("ref_dec: #results = " ^ Int.toString (length VE_list) 
+                            (Comp.redo_to_list redo1)
+(*        val _ = print ("ref_dec: #results = " ^ Int.toString (length VE_list) 
                           ^ " #errors = " ^ (Int.toString (length errs1)) ^ "\n")   *)
           val newT = Env.T_plus_T (Env.T_of_C C, T1)
           val conjoinedVE = foldl' (Env.VE_conjoin_vars newT) VE_list
           val res = 
-  	    case VE_list of
-	        h1::h2::t =>    (* Many VEs are allowed, as long as one of them is a minimum. *)
-		  (case List.find (fn VE => Env.subVE newT (VE, conjoinedVE)) VE_list  of
+            case VE_list of
+                h1::h2::t =>    (* Many VEs are allowed, as long as one of them is a minimum. *)
+                  (case List.find (fn VE => Env.subVE newT (VE, conjoinedVE)) VE_list  of
                       SOME VE =>  ((T1, Env.E_plus_E (E1, Env.VE_in_E VE)), errs1)
-		    | NONE => adderrs (error ((T1, E1), RG.get_info_dec decRG, REI.NOT_UNIQUE)
-					     errflag, 
-	  		 	       errs1 ) )
-    	      | _ => ((T1, E1), errs1)
-   	  val () = pop (fn () => [])
+                    | NONE => adderrs (error ((T1, E1), RG.get_info_dec decRG, REI.NOT_UNIQUE)
+                                             errflag, 
+                                       errs1 ) )
+              | _ => ((T1, E1), errs1)
+          val () = pop (fn () => [])
       in
         res
       end
@@ -1046,24 +1067,24 @@ in
           let
             val RE = datasort_initial_RE (C, datsortbind)
             val C' = Env.C_plus_E (C, Env.E_plus_E (Env.RE_in_E RE, 
-						    Env.TE_in_E (Env.convertREtoTE RE)))
+                                                    Env.TE_in_E (Env.convertREtoTE RE)))
           in
             case ref_datsortbind (C', datsortbind) errflag
               of (TR_map, []) => (* no errors *)
                  let  
                    val (outT, outRE, outVE) = Env.completeT (C', FinMapEq.list (* (raise Match) *)
-		                                                               TR_map, RE)
+                                                                               TR_map, RE)
                    val outE = Env.E_plus_E (Env.E_plus_E (Env.RE_in_E outRE, Env.VE_in_E outVE),
-		                            Env.TE_in_E (Env.convertREtoTE outRE))                   
+                                            Env.TE_in_E (Env.convertREtoTE outRE))                   
                    val _ =  if !Flags.PRINT_DATASORT_PROGRESS then
-				let fun pr s = TextIO.output (TextIO.stdErr, s)
-				in (pr "[Finished analysis of datasorts:";
-				    map (fn sortcon => pr (" " ^ TyCon.pr_TyCon sortcon) )
-					(Env.REdom outRE);
-				    pr ".]\n";
-				    ())
-				end
-			    else ()
+                                let fun pr s = TextIO.output (TextIO.stdErr, s)
+                                in (pr "[Finished analysis of datasorts:";
+                                    map (fn sortcon => pr (" " ^ TyCon.pr_TyCon sortcon) )
+                                        (Env.REdom outRE);
+                                    pr ".]\n";
+                                    ())
+                                end
+                            else ()
                  in
                    ((outT, outE), [])
                  end
@@ -1112,7 +1133,7 @@ in
       | add_valbind_Uenv (C, RG.PLAINvalbind(i, _, _, _)) =
                 case (getPostElabTypeInfo i)
                   of SOME(TypeInfo.PLAINvalbind_INFO{tyvars, Type, Uenv}) => 
-		        (tyvars, Type, Env.C_plus_U (C,Uenv))
+                        (tyvars, Type, Env.C_plus_U (C,Uenv))
                    | _ => Crash.impossible "RefObject.add_valbind_Uenv(1)"
 
     and ref_valbind (C, valbind) errflag : Env.VarEnv Redo Result =        
@@ -1120,33 +1141,33 @@ in
          RG.RECvalbind(i, valbind) =>
           let
               val (_, _, Cnew) = add_valbind_Uenv (C,valbind)
-	      fun valbindVE valbind errflag2 = 
-		case valbind of
- 		   RG.RECvalbind(i, valbind) =>  valbindVE valbind errflag2
-		 | RG.PLAINvalbind(i, pat1, exp2, valbind_opt) =>
- 		    let    (* pat1 can't contain constructors or pairs since exp2 is fn *)
-		      val srtR1 = case get_goal_srtRC(Cnew, pat1)  of
-			             SOME srtR =>  srtR
-				   | NONE =>  noErrC (noRedo (findMLSort(Cnew, i)))
-		    in
-		      letR srtR1  (fn srt1 =>
-		      letC (ref_pat (Cnew, pat1, mkSORTps C srt1))  (fn ((VE1, _)::_, _, _) =>
+              fun valbindVE valbind errflag2 = 
+                case valbind of
+                   RG.RECvalbind(i, valbind) =>  valbindVE valbind errflag2
+                 | RG.PLAINvalbind(i, pat1, exp2, valbind_opt) =>
+                    let    (* pat1 can't contain constructors or pairs since exp2 is fn *)
+                      val srtR1 = case get_goal_srtRC(Cnew, pat1)  of
+                                     SOME srtR =>  srtR
+                                   | NONE =>  noErrC (noRedo (findMLSort(Cnew, i)))
+                    in
+                      letR srtR1  (fn srt1 =>
+                      letC (ref_pat (Cnew, pat1, mkSORTps C srt1))  (fn ((VE1, _)::_, _, _) =>
                       (pr_debug ("ref_valbind: REC ", fn () => Env.layoutVE VE1);
-		       case valbind_opt of NONE => noErrC (noRedo VE1)
-			 	         | SOME vb => 
-					     letRV (valbindVE vb)  (fn VE2 =>
-					     Env.VE_plus_VE(VE1, VE2) )))) errflag2
-		    end  
-	    in
+                       case valbind_opt of NONE => noErrC (noRedo VE1)
+                                         | SOME vb => 
+                                             letRV (valbindVE vb)  (fn VE2 =>
+                                             Env.VE_plus_VE(VE1, VE2) )))) errflag2
+                    end  
+            in
               letR (valbindVE valbind)  (fn VE =>
-	      ref_valbind (Env.C_plus_VE(C, VE), valbind)  ) errflag
-	    end  (* Raise an error here if VE not met?  (can only happen if no goal) *)
+              ref_valbind (Env.C_plus_VE(C, VE), valbind)  ) errflag
+            end  (* Raise an error here if VE not met?  (can only happen if no goal) *)
       | RG.PLAINvalbind(i, pat1, exp2, valbind_opt) =>
         let
           val (scoped_tyvars, Type, Cnew) = add_valbind_Uenv (C, valbind)
           val scoped_sortvars = map RO.SVofTV scoped_tyvars
-	  val _ = pr_debug ("ref_valbind: ", 
-		       fn () => TypeInfo.layout (valOf (getPostElabTypeInfo i)))
+          val _ = pr_debug ("ref_valbind: ", 
+                       fn () => TypeInfo.layout (valOf (getPostElabTypeInfo i)))
           fun cont1 VE2 : Env.VarEnv RComp =   (* continuation for VE of pat1 *)
                 let val closedVE2 = Env.closVE(VE2, scoped_sortvars)
                 in case valbind_opt
@@ -1155,7 +1176,7 @@ in
                          letRV (ref_valbind(C, valbind2)) (fn VE3 =>
                          Env.VE_plus_VE (closedVE2, VE3)  )
                 end
-	  fun cont2 srt : Env.VarEnv RComp =   (* continuation for sort of exp2 *)
+          fun cont2 srt : Env.VarEnv RComp =   (* continuation for sort of exp2 *)
              (assert (eqTypes "PLAINvalbind: " (RO.tyOfSort srt) Type);          
               letC (ref_pat_max(C, pat1, mkSORTps C srt))  (fn (VE_list, out_patsort) =>
               case (VE_list, isEmptyPS C out_patsort)
@@ -1167,15 +1188,15 @@ in
 (* The following would work great, except that VE_list is a union, so backtracking isn't
    what we want: we can't succeed when just one succeeds - all must succeed. *)
 (*            letC (if isEmptyPS C out_patsort then noErrC ()
- 		    else error ((), i, REI.UNMATCHED srt) ) (fn () =>
-	      letR (tryEachV VE_list) cont1 ) ) )
+                    else error ((), i, REI.UNMATCHED srt) ) (fn () =>
+              letR (tryEachV VE_list) cont1 ) ) )
 *)
-	  val Cexp = Env.C_erase_TG Cnew
+          val Cexp = Env.C_erase_TG Cnew
         in
             case get_goal_srtRC (Cnew, pat1)  of
                SOME gsrtR =>  letR gsrtR  (fn gsrt =>
-			      letC (check_exp (Cexp, exp2, gsrt))  (fn () =>
-			      cont2 gsrt  )) errflag
+                              letC (check_exp (Cexp, exp2, gsrt))  (fn () =>
+                              cont2 gsrt  )) errflag
              | NONE =>  letR (infer_exp(Cexp, exp2)) cont2 errflag
         end
 
@@ -1184,7 +1205,7 @@ in
       | bogusVEpat (RG.TYPEDpat(_, pat, _)) = bogusVEpat pat
       | bogusVEpat (RG.SORTEDpat(_, pat, _)) = bogusVEpat pat
       | bogusVEpat (RG.LAYEREDpat(_, RG.OP_OPT(id, _), _, pat)) = 
-   	   Env.VE_plus_VE (Env.singleVarVE(id, bogus_sortsch), bogusVEpat pat)
+           Env.VE_plus_VE (Env.singleVarVE(id, bogus_sortsch), bogusVEpat pat)
       | bogusVEpat (RG.UNRES_INFIXpat _) = impossible "bogusVEpat"
 
     and bogusVEatpat (RG.LONGIDatpat (i, RG.OP_OPT(longid, _))) = 
@@ -1197,7 +1218,7 @@ in
       | bogusVEatpat _ = Env.emptyVE
 
     and bogusVEpatrowopt (SOME (RG.PATROW(_, _, pat1, patrow_opt2))) = 
-   	 Env.VE_plus_VE (bogusVEpat pat1, bogusVEpatrowopt patrow_opt2)
+         Env.VE_plus_VE (bogusVEpat pat1, bogusVEpatrowopt patrow_opt2)
       | bogusVEpatrowopt _ = Env.emptyVE
 
     and ref_valsdesc (C, RG.VALSDESC (i, id, tys, valsdesc_opt)) errflag : TyGoals Result =
@@ -1205,9 +1226,9 @@ in
             val (svs, Cnew) = Env.C_plus_U' (C, tyvars)
         in
           letC (mapC (fn ty => (letCV (ref_ty (Cnew, ty, (true, true)))) (fn srt =>
-			       RO.Close_SortScheme (RO.Sort_in_SortScheme srt, svs) ))
-		     tys)
-	  (fn srtschs =>
+                               RO.Close_SortScheme (RO.Sort_in_SortScheme srt, svs) ))
+                     tys)
+          (fn srtschs =>
           letCV (ref_valsdesc_opt (C, valsdesc_opt))  (fn TG2 =>
           Env.TG.add0(id, srtschs, TG2)  
           )) errflag
@@ -1230,18 +1251,18 @@ in
         case ty of
           RG.TYVARty(i, tyvar) =>
             let
-	      val srt = RO.MLSortOfTy (TNtoSN C) (Env.ExplicitTyVar_lookup C tyvar)
+              val srt = RO.MLSortOfTy (TNtoSN C) (Env.ExplicitTyVar_lookup C tyvar)
                         handle Match => RO.mkSortSortVar (sortvar_to_sv tyvar)
- 			               before (out_debug (fn () => "ExplicitTyVar_lookup: NONE"))
+                                       before (out_debug (fn () => "ExplicitTyVar_lookup: NONE"))
               val _ = out_debug (fn () => "ExplicitTyVar_lookup: " ^ 
-				           (TyVar.pr_tyvar tyvar) ^ " => " ^ (RO.pr_Sort srt))
+                                           (TyVar.pr_tyvar tyvar) ^ " => " ^ (RO.pr_Sort srt))
             in
-	      case (TyVar.variance tyvar, covar, contra) of
- 		 (TyVar.COVARIANT, true, _) =>  noErr srt
-	       | (TyVar.CONTRAVARIANT, _, true) =>  noErr srt
-	       | (TyVar.MIXED, _, _) =>  noErr srt
-	       | (TyVar.IGNORED, true, true) =>  noErr srt
-	       | _ => error (srt, i, REI.VARIANCE) errflag
+              case (TyVar.variance tyvar, covar, contra) of
+                 (TyVar.COVARIANT, true, _) =>  noErr srt
+               | (TyVar.CONTRAVARIANT, _, true) =>  noErr srt
+               | (TyVar.MIXED, _, _) =>  noErr srt
+               | (TyVar.IGNORED, true, true) =>  noErr srt
+               | _ => error (srt, i, REI.VARIANCE) errflag
             end
         | RG.RECORDty(i, NONE) =>  (* unit *)
             noErr RO.SortUnit
@@ -1250,30 +1271,30 @@ in
         | RG.CONty(i, ty_list, longtycon) =>
             let
               val sortfcn1 = case Env.Lookup_longsortcon(C, longtycon)  of
-		                SOME sortfcn => sortfcn
-			      | NONE => Crash.impossible ("RefDec.ref_ty : CONty(1).  longtycon = "
-							  ^ TyCon.pr_LongTyCon longtycon)
+                                SOME sortfcn => sortfcn
+                              | NONE => Crash.impossible ("RefDec.ref_ty : CONty(1).  longtycon = "
+                                                          ^ TyCon.pr_LongTyCon longtycon)
               val sortfcn2 = case Env.Lookup_longtycon(C, longtycon)  of
-		                SOME sortfcn => sortfcn
-			      | NONE => Crash.impossible "RefDec.ref_ty : CONty(2)"
+                                SOME sortfcn => sortfcn
+                              | NONE => Crash.impossible "RefDec.ref_ty : CONty(2)"
               val sort_err_list = 
                 map (fn (ty, variance) =>
                        ref_ty (C, ty, calc_variance (variance, covar, contra)) errflag)
                     (ListPair.zip (ty_list, RO.varianceSortFcn sortfcn1))
               val srt = RO.applySortFcn(sortfcn1, map #1 sort_err_list)
               val _ = out_debug (fn () => "ref_ty CONty: " ^ (RO.pr_Sort (#1 (hd sort_err_list)))
-				          ^ " => " ^ (RO.pr_Sort srt)) handle Empty => ()
+                                          ^ " => " ^ (RO.pr_Sort srt)) handle Empty => ()
               val errs = ListHacks.flatten (map #2 sort_err_list)
             in
-	      if RO.compatible_SortFcn(sortfcn1, sortfcn2)  then  (srt, errs)
-	      else  adderrs (error (srt, i, REI.SHADOWED longtycon) errflag, errs)
+              if RO.compatible_SortFcn(sortfcn1, sortfcn2)  then  (srt, errs)
+              else  adderrs (error (srt, i, REI.SHADOWED longtycon) errflag, errs)
             end
         | RG.FNty(i, ty1, ty2) =>
             letC (ref_ty(C, ty1, (contra, covar)))  (fn srt1 =>
             letCV (ref_ty(C, ty2, (covar, contra)))  (fn srt2 =>
             RO.mkSortArrow(srt1, srt2)  )) errflag
         | RG.PARty(i, ty) =>
-	    ref_ty(C, ty, (covar, contra)) errflag
+            ref_ty(C, ty, (covar, contra)) errflag
         | RG.INTERty(i, ty1, ty2) =>  (* disallow outside RML-spec-comments? *)
             letC (ref_ty(C, ty1, (covar, contra)))  (fn srt1 =>
             letC (ref_ty(C, ty2, (covar, contra)))  (fn srt2 =>
@@ -1281,7 +1302,7 @@ in
               noErrC (RO.mkSortConj (Env.conjSortNameT' (Env.T_of_C C)) (srt1, srt2))
             else  error (bogus_sort, i,      (* This should have been caught in ElabDec! *)
                          REI.INCOMPATIBLE (RO.Sort_in_SortScheme srt1,
-					   RO.Sort_in_SortScheme srt2))  )) errflag
+                                           RO.Sort_in_SortScheme srt2))  )) errflag
 
     and ref_tyrow (C :  Context, tyrow : RG.tyrow, (covar, contra)) errflag 
             : RO.RecSort Result =
@@ -1289,7 +1310,7 @@ in
             letC (ref_ty(C, ty, (covar, contra)))  (fn sort =>
             case tyrow_opt of
               SOME tyrow => letCV (ref_tyrow(C, tyrow, (covar, contra)))  (fn rho =>
-			    RO.addField (lab,sort) rho  )
+                            RO.addField (lab,sort) rho  )
             | NONE => noErrC (RO.addField (lab,sort) RO.emptyRecSort)  )  errflag
 
     and ref_patrow_opt (C: Context, patrow_opt: RG.patrow option, patsort: PatSort) errflag
@@ -1298,7 +1319,7 @@ in
        SOME (RG.PATROW(i, lab1, pat1, patrow_opt2)) =>   (* this is messy *)
         let
           (* val () = Env.debug_push (fn () => "\n****ref_patrow_opt:SOME"
-					    :: lines_pp (RG.layoutPat pat1)); *)
+                                            :: lines_pp (RG.layoutPat pat1)); *)
 
           fun productVE_psrt_list (VE_psrt_list1, VE_psrt_list2) = 
             List.foldl (fn ((VE1,psrt1), b) => 
@@ -1311,34 +1332,34 @@ in
                                 of [] => [(EMPTYps, EMPTYps)]  (* Need at least one *)
                                  | ps_pair => ps_pair         
           fun ref_patsort_pair (patsort1, patsort2) =
-	      letC (ref_pat (C, pat1, patsort1)) (fn (VE_psrt_list1, match_ps1, out_patsort1) =>
-	      letCV (ref_patrow_opt(C, patrow_opt2, patsort2))
- 		                                 (fn (VE_psrt_list2, match_ps2, out_patsort2) =>
-	      (productVE_psrt_list(VE_psrt_list1, VE_psrt_list2),
-	       mkADDFIELDps(lab1, match_ps1, match_ps2),
-	       mkUNIONps(mkADDFIELDps(lab1, out_patsort1, out_patsort2),   (* Better patsort? *)
-			 mkUNIONps(mkADDFIELDps(lab1, out_patsort1, match_ps2), 
-				   mkADDFIELDps(lab1, match_ps1, out_patsort2)) )
+              letC (ref_pat (C, pat1, patsort1)) (fn (VE_psrt_list1, match_ps1, out_patsort1) =>
+              letCV (ref_patrow_opt(C, patrow_opt2, patsort2))
+                                                 (fn (VE_psrt_list2, match_ps2, out_patsort2) =>
+              (productVE_psrt_list(VE_psrt_list1, VE_psrt_list2),
+               mkADDFIELDps(lab1, match_ps1, match_ps2),
+               mkUNIONps(mkADDFIELDps(lab1, out_patsort1, out_patsort2),   (* Better patsort? *)
+                         mkUNIONps(mkADDFIELDps(lab1, out_patsort1, match_ps2), 
+                                   mkADDFIELDps(lab1, match_ps1, out_patsort2)) )
 (* With the version below, match_ps is never needed and could be removed from ref_pat.  *)
 (* But, this is slightly less precise, and leads to many redundant contexts.  *)
-(*   	       mkUNIONps(mkADDFIELDps(lab1, out_patsort1, patsort2), 
-			 mkADDFIELDps(lab1, patsort1, out_patsort2)) *)
+(*             mkUNIONps(mkADDFIELDps(lab1, out_patsort1, patsort2), 
+                         mkADDFIELDps(lab1, patsort1, out_patsort2)) *)
                               )   ) ) errflag
 
 
           fun combine_results (((VE_psrt_list1, match_ps1, out_ps1), errs1),
                                ((VE_psrt_list2, match_ps2, out_ps2), errs2)) =
-	    let val errs = case errs1 of [] => errs2 
-	                               | _ => errs1
-	    in
-	        ((VE_psrt_list1 @ VE_psrt_list2, mkUNIONps(match_ps1, match_ps2), 
+            let val errs = case errs1 of [] => errs2 
+                                       | _ => errs1
+            in
+                ((VE_psrt_list1 @ VE_psrt_list2, mkUNIONps(match_ps1, match_ps2), 
                                                  mkUNIONps(out_ps1, out_ps2)      ),
                  errs)
-	    end
+            end
 
           val res = foldl' combine_results (map ref_patsort_pair patsort_pairs)
 (*          val () = Env.debug_pop (fn () => "\n****ref_patrow_opt:SOME"
-					    :: lines_pp (RG.layoutPat pat1)); *)
+                                            :: lines_pp (RG.layoutPat pat1)); *)
 (*          val _ =  print ("PATROW: " ^ (Int.toString(List.length (#1 (#1 res)))) ^ "\n") *)
         in
           res
@@ -1368,8 +1389,8 @@ in
                  val (SOME (Env.LONGEXCON srt)) = Env.Lookup_longid(C,longid)
                  val ssch = RO.Sort_in_SortScheme srt
                  val VE_psrt_list = case arg_ps 
-				      of NONE => [(Env.emptyVE, mkSORTps C srt)] 
-				       | SOME _ => []
+                                      of NONE => [(Env.emptyVE, mkSORTps C srt)] 
+                                       | SOME _ => []
              in
                  noErr (VE_psrt_list, mkVALCONSps(longid, (srtsPat, ssch, srt_instances), arg_ps), out_patsort)
              end
@@ -1377,33 +1398,37 @@ in
              let val id = Ident.id_of_longid longid
                  fun srt_to_VE_psrt srt =  (* Could have many or zero VEs in this case.  *)
                    (Env.singleVarVE(id, RO.Sort_in_SortScheme srt), mkSORTps C srt)
+                 val (srts, warn) = patSort_to_Sorts (C, patsort)
+                 val res = (map srt_to_VE_psrt srts, patsort, EMPTYps)
              in
-                noErr (map srt_to_VE_psrt (patSort_to_Sorts (C, patsort)), patsort, EMPTYps)
+               if warn then error(res, i, REI.TOO_MUCH) errflag else noErr res
              end)
       | RG.RECORDatpat(i, patrow_opt) =>  ref_patrow_opt (C, patrow_opt, patsort) errflag
       | RG.WILDCARDatpat i => 
-	    let val outVEpatsorts = 
+            let val outVEpatsorts = 
                 if isEmptyPS C patsort then [] else [(Env.emptyVE, patsort)]
                 (* The following is less efficient.  It is retained here because exposes a bug
                    while checking Twelf, file cs-eq-strings.sml *)
                 (* case patSort_to_Sorts (C, patsort) of [] =>[]
-	                                            | _ => [(Env.emptyVE, patsort)] *)
-	    in
+                                                    | _ => [(Env.emptyVE, patsort)] *)
+            in
                 noErr (outVEpatsorts, patsort, EMPTYps)
-	    end
+            end
       | RG.SCONatpat (i, scon) =>   (* no refinements currently *)
           noErr ([(Env.emptyVE, patsort)], patsort, patsort)
       | RG.PARatpat(i, pat) =>  ref_pat (C, pat, patsort) errflag
 
     (* Helper for ref_pat below.  Checks that each matching case is less than the bound. *)
     and check_pat_ty (C, i, pat1, patsort2, ty3) errflag =
-	  letC (ref_ty0 (C, ty3))  (fn srt3 =>
-	  letC (ref_pat (C, pat1, patsort2))  (fn res as (VE_psrt_list, _, _) =>
-	  case List.find (fn srt => not (RO.subSort (Env.conjSortNameC C) (srt, srt3)))
-		         (ListHacks.flatten (map (fn (_, psrt) => (patSort_to_Sorts (C, psrt)))
-                                                 VE_psrt_list ))
-	    of NONE =>  noErrC res
-	     | SOME srt =>  error (res, i, REI.NOT_SUBSORT(srt, srt3))  )) errflag
+          letC (ref_ty0 (C, ty3))  (fn srt3 =>
+          letC (ref_pat (C, pat1, patsort2))  (fn res as (VE_psrt_list, _, _) => fn errflag2 =>
+          case (map (fn (_, psrt) => (patSort_to_Sorts (C, psrt))) VE_psrt_list ) of srtsWarnList =>
+          case List.exists (fn w => w) (map #2 srtsWarnList) of warn =>
+          case (if warn then error(res, i, REI.TOO_MUCH) errflag2  else  noErr res) of (res2, errs) =>
+          case List.find (fn srt => not (RO.subSort (Env.conjSortNameC C) (srt, srt3)))
+                         (ListHacks.flatten (map #1 srtsWarnList))
+            of NONE => (res2, errs)   (* if warn then error(res, i, REI.TOO_MUCH)  else  noErrC res *)
+             | SOME srt => adderrs (error (res, i, REI.NOT_SUBSORT(srt, srt3)) errflag2, errs)  )) errflag
 
     (****** Patterns (patsort input).  ******)
     (* Returns possible VE's with corresponding sorts of pattern plus both matched and 
@@ -1415,41 +1440,49 @@ in
       | RG.TYPEDpat(i, pat1, ty2) => ref_pat (C, pat1, patsort) errflag
       | RG.SORTEDpat(i, pat1, tys2) => 
            letRC (tryEachV tys2) (fn ty2 =>
-	   check_pat_ty (C, i, pat1, patsort, ty2) ) errflag
+           check_pat_ty (C, i, pat1, patsort, ty2) ) errflag
       | RG.CONSpat(i, RG.OP_OPT(longid, withOp), atpat1) =>
-	   let
-(*	     val instances = case (getPostElabTypeInfo i)
-			       of SOME (TypeInfo.CON_INFO {instances, ...}) => 
-				    map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not right, but unused (?) *)
-				| SOME (TypeInfo.EXCON_INFO _) => []
-				| _ => Crash.impossible "RefDec.ref_pat(1)"  *)
-	     val (out_ps, ps_opt, srtsPat, instances) = dividePatsort(C, patsort, longid)
-	     val ps1 = case ps_opt of NONE => EMPTYps | SOME ps1 => ps1  (* NONE => type error *)
-	     val ((VE_psrt_list, match_ps1, out_ps1), errs1) = ref_atpat(C, atpat1, ps1) errflag
+           let
+(*           val instances = case (getPostElabTypeInfo i)
+                               of SOME (TypeInfo.CON_INFO {instances, ...}) => 
+                                    map (RO.MLSortOfTy (TNtoSN C)) instances  (* Not right, but unused (?) *)
+                                | SOME (TypeInfo.EXCON_INFO _) => []
+                                | _ => Crash.impossible "RefDec.ref_pat(1)"  *)
+             val (out_ps, ps_opt, srtsPat, instances) = dividePatsort(C, patsort, longid)
+             val ps1 = case ps_opt of NONE => EMPTYps | SOME ps1 => ps1  (* NONE => type error *)
+             val ((VE_psrt_list, match_ps1, out_ps1), errs1) = ref_atpat(C, atpat1, ps1) errflag
              val con_ssch = case Env.Lookup_longid (C, longid) of 
-			       SOME (Env.LONGCON ssch) => ssch
-			     | SOME (Env.LONGEXCON srt) => RO.Sort_in_SortScheme srt
+                               SOME (Env.LONGCON ssch) => ssch
+                             | SOME (Env.LONGEXCON srt) => RO.Sort_in_SortScheme srt
              fun mkPS ps = mkVALCONSps(longid, (srtsPat, con_ssch, instances), SOME ps)
-	     val out_VE_psrt_list = map (fn (VE, psrt1) => (VE, mkPS psrt1)) VE_psrt_list
-	   in
-	     ( (out_VE_psrt_list, mkPS match_ps1, mkUNIONps(out_ps, mkPS out_ps1)), errs1)
-	   end
+             val out_VE_psrt_list = map (fn (VE, psrt1) => (VE, mkPS psrt1)) VE_psrt_list
+           in
+             ( (out_VE_psrt_list, mkPS match_ps1, mkUNIONps(out_ps, mkPS out_ps1)), errs1)
+           end
       | RG.LAYEREDpat(i, RG.OP_OPT(id, withOp), ty_opt, pat2) =>
-	   let
+           let
              fun extend_VE_psrt VE_psrt_list = 
-               ListHacks.flatten
-               (map (fn (VE, psrt) =>
-                  map (fn srt => (Env.VE_plus_VE (VE, Env.singleVarVE(id, RO.Sort_in_SortScheme srt)), 
+               let val res_sWarnList = 
+                 (map (fn (VE, psrt) =>
+                  case (patSort_to_Sorts (C, psrt)) of (p2srts,warn) =>
+                  (map (fn srt => (Env.VE_plus_VE (VE, Env.singleVarVE(id, RO.Sort_in_SortScheme srt)), 
                                   mkSORTps C srt) )
-                      (patSort_to_Sorts (C, psrt))  )
+                      p2srts
+                  , warn)  )
                   VE_psrt_list )
-	   in
-	     letCV (ref_pat (C, pat2, patsort))
-		   (*(case ty_opt of NONE =>  ref_pat (C, pat2, patsort)
-	                           | SOME ty =>  check_pat_ty (C, i, pat2, patsort, ty)) (* Wrong! *) *)
-  	           (fn (VE_psrt_list, match_ps, out_patsort) =>
-	     (extend_VE_psrt VE_psrt_list, match_ps, out_patsort)  ) errflag
-	   end        
+                   val res = ListHacks.flatten (map #1 res_sWarnList)
+               in
+                  if List.exists (fn b=>b) (map #2 res_sWarnList) then  error(res, i, REI.TOO_MUCH)
+                  else noErrC res
+               end               
+           in
+             letC (ref_pat (C, pat2, patsort))
+                   (*(case ty_opt of NONE =>  ref_pat (C, pat2, patsort)
+                                   | SOME ty =>  check_pat_ty (C, i, pat2, patsort, ty)) (* Wrong! *) *)
+                   (fn (VE_psrt_list, match_ps, out_patsort) =>
+             letCV (extend_VE_psrt VE_psrt_list) (fn res =>
+             (res, match_ps, out_patsort) ) ) errflag
+           end        
       | RG.UNRES_INFIXpat _ => Crash.impossible "RefDec.ref_pat"
     
     and ref_pat (C: Env.Context, pat: RG.pat, patsort: PatSort) errflag
@@ -1466,7 +1499,7 @@ in
             (pr_indent ("ref_pat: END " ^ Int.toString (sizePS (#3(#1 res))) ^ 
                         " MATCHED: " ^ (pr_PatSort (#3 (#1 res)))   );
                         largestPS := sizePS (#3 (#1 res)))
-	 else ();*)
+         else ();*)
         res))
 
     (* Remove non-maximal environments.  Later, it would be better to rely on memoization. *)
@@ -1478,21 +1511,21 @@ in
        else (); *)
       (let (*val () = Env.debug_push (fn () => "\n****ref_pat_max(middle):"
                                                :: lines_pp (RG.layoutPat pat)) *)
-	   val res = 
+           val res = 
        (List.foldr (fn ((VE,_), accVE_list) => 
                      ListHacks.addMax (Env.subVE(Env.T_of_C C)) (VE, accVE_list))
                    [] 
-		   VE_psrt_list, 
+                   VE_psrt_list, 
         patsort)
            val lengthVE = Env.VEfold (fn (_, acc)  => acc + 1) 0
-(*	   val _ = if length (#1 res) <> 1 orelse (lengthVE (hd (#1 res))) > 1 then
+(*         val _ = if length (#1 res) <> 1 orelse (lengthVE (hd (#1 res))) > 1 then
 
-		      ( print ("res: " ^ (Int.toString(List.length (#1 res))) ^ "\n");
+                      ( print ("res: " ^ (Int.toString(List.length (#1 res))) ^ "\n");
                         app pr (map (fn VE => ("VE=", Env.layoutVE VE)) (#1 res));
                         print "\n" (*;
                         print (pr_PatSort (#2 res) ^ "\n\n") *) )
-		   else () *)
-(*	   val () = Env.debug_pop (fn () => []) *)
+                   else () *)
+(*         val () = Env.debug_pop (fn () => []) *)
        in
          res
        end)  ) ) errflag
@@ -1500,8 +1533,8 @@ in
     (* Find a goal sort either at the top of a pattern or in TyGoals of C *)
     and get_goal_srtRC (C, RG.TYPEDpat(i, pat, ty)) = get_goal_srtRC (C, pat)
       | get_goal_srtRC (C, RG.SORTEDpat(i, pat, tys)) =          
-	  SOME (letR (tryEachV tys) (fn ty =>
-		letCV (ref_ty0 (C, ty)) (fn ty => 
+          SOME (letR (tryEachV tys) (fn ty =>
+                letCV (ref_ty0 (C, ty)) (fn ty => 
                 noRedo ty ) ))
       | get_goal_srtRC (C, RG.ATPATpat(i1, RG.PARatpat(i2, pat))) = 
           get_goal_srtRC (C, pat)
@@ -1509,14 +1542,14 @@ in
           (case (getPostElabTypeInfo i2)  of
             SOME (TypeInfo.VAR_PAT_INFO {tyvars, ...}) =>
                (case Env.Lookup_tygoal (C, Ident.id_of_longid longid)  of
-		   SOME srtschs => SOME (letRV (tryEachV srtschs) (fn srtsch =>
-				         (RO.instance (srtsch, map TVtoSort tyvars)) ))
+                   SOME srtschs => SOME (letRV (tryEachV srtschs) (fn srtsch =>
+                                         (RO.instance (srtsch, map TVtoSort tyvars)) ))
 (*                                   before 
-		                 (pr_debug ("get_goal_srtRC : ", 
+                                 (pr_debug ("get_goal_srtRC : ", 
                                             fn () => RO.layoutSortScheme srtsch  )) *)
-	         | NONE => NONE before (pr_debug ("get_goal_srt FAILED: ", 
-					  fn () => Env.TG.layout (Env.TG_of_E (Env.E_of_C C))))
-			   )
+                 | NONE => NONE before (pr_debug ("get_goal_srt FAILED: ", 
+                                          fn () => Env.TG.layout (Env.TG_of_E (Env.E_of_C C))))
+                           )
           | SOME _ => NONE  (* CON_INFO or EXCON_INFO *)
           | NONE => impossible "get_goal_srtRC: No Info") 
       | get_goal_srtRC (C, _) = NONE
@@ -1530,13 +1563,13 @@ in
           (case (getPostElabTypeInfo i2)  of
             SOME (TypeInfo.VAR_PAT_INFO {tyvars, ...}) =>
                (case Env.Lookup_tygoal (C, Ident.id_of_longid longid)  of
-		   SOME srtsch => SOME (noErrC (RO.instance (srtsch, map TVtoSort tyvars)))
+                   SOME srtsch => SOME (noErrC (RO.instance (srtsch, map TVtoSort tyvars)))
                                    before 
-		                 (pr_debug ("get_goal_srt : ", 
+                                 (pr_debug ("get_goal_srt : ", 
                                             fn () => RO.layoutSortScheme srtsch  ))
-	         | NONE => NONE before (pr_debug ("get_goal_srt FAILED: ", 
-					  fn () => Env.TG.layout (Env.TG_of_E (Env.E_of_C C))))
-			   )
+                 | NONE => NONE before (pr_debug ("get_goal_srt FAILED: ", 
+                                          fn () => Env.TG.layout (Env.TG_of_E (Env.E_of_C C))))
+                           )
           | SOME _ => NONE  (* CON_INFO or EXCON_INFO *)
           | NONE => impossible "get_goal_srtC: No Info") 
       | get_goal_srtC (C, _) = NONE
@@ -1550,25 +1583,28 @@ in
                                            :: ("patsort = " ^ pr_PatSort ps1)
                                            :: lines_pp (RG.layoutMatch match))
         val _ = assert (fn () => 
-			   case patSort_to_Sorts (C, ps1) 
-			    of [] => NONE
-			     | srt1::srts => (map (fn srt2 => 
-						     assert (compatSorts "ref_match" srt1 srt2))
-						 srts; NONE) )
+                           case patSort_to_Sorts (C, ps1) 
+                            of ([], _) => NONE
+                             | (srt1::srts, _) => (map (fn srt2 => 
+                                                           assert (compatSorts "ref_match" srt1 srt2))
+                                                       srts; NONE) )
 
         val ((VElist, residPatsort), errs1) = ref_pat_max (C, pat, ps1) errflag
+
         fun isWarning (_, REI.UNMATCHED srt) = true
-	  | isWarning _ = false
+          | isWarning (_, REI.TOO_MUCH) = true
+          | isWarning _ = false
+
         fun do_checks (VE1 :: VEtail) = 
-	      (case check_exp (Env.C_plus_VE (C, VE1), exp, gsrt) errflag   of  
-		  ((), []) =>  do_checks VEtail
+              (case check_exp (Env.C_plus_VE (C, VE1), exp, gsrt) errflag   of  
+                  ((), []) =>  do_checks VEtail
                 | ((), errs) =>    (* Return the first errors, if none the first warnings. *)
-		  (case List.partition isWarning errs of
-	               (warnings, []) => (case do_checks VEtail of 
-					      (_, []) => (warnings, []) (* No errs, first warns. *)
-					    | warns_errs2 => warns_errs2)
-		     | warns_errs => warns_errs ) )  (* There is an error *)
-	  | do_checks [] = ([], [])  (* no warnings, no errs *)
+                  (case List.partition isWarning errs of
+                       (warnings, []) => (case do_checks VEtail of 
+                                              (_, []) => (warnings, []) (* No errs, first warns. *)
+                                            | warns_errs2 => warns_errs2)
+                     | warns_errs => warns_errs ) )  (* There is an error *)
+          | do_checks [] = ([], [])  (* no warnings, no errs *)
         val (warns2, errs2) = do_checks VElist
         val (endPatsort, errs3) = 
           case match_opt 
@@ -1576,11 +1612,11 @@ in
              | SOME match2 => ref_match (C, match2, residPatsort, gsrt) errflag
 
         val _ = assert (fn () => 
-			   case patSort_to_Sorts (C, endPatsort) 
-			    of [] => NONE
-			     | srt1::srts => 
-			       (map (fn srt2 => assert (compatSorts "ref_match:END" srt1 srt2)) srts; 
-			        NONE) )
+                           case patSort_to_Sorts (C, endPatsort) 
+                            of ([],_) => NONE
+                             | (srt1::srts, _) => 
+                               (map (fn srt2 => assert (compatSorts "ref_match:END" srt1 srt2)) srts; 
+                                NONE) )
         val () = pop (fn () => ("ref_match: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutMatch match))
 
@@ -1596,22 +1632,22 @@ in
            : unit Result =
       case exp of
          RG.FNexp(i, match) =>
-	    (case (RO.unSortConj gsrt)
-	       of SOME (srt1, srt2) =>
-		    letC (check_exp (C, exp, srt1))  (fn () =>
-		    check_exp (C, exp, srt2)  ) errflag
-		| NONE =>
-		    let
-		      val (srt1, srt2) =
-			case (RO.unSortArrow gsrt)
-			  of NONE => if RO.isBogusSort gsrt  then  (RO.bogusSort, RO.bogusSort)
+            (case (RO.unSortConj gsrt)
+               of SOME (srt1, srt2) =>
+                    letC (check_exp (C, exp, srt1))  (fn () =>
+                    check_exp (C, exp, srt2)  ) errflag
+                | NONE =>
+                    let
+                      val (srt1, srt2) =
+                        case (RO.unSortArrow gsrt)
+                          of NONE => if RO.isBogusSort gsrt  then  (RO.bogusSort, RO.bogusSort)
                                      else  Crash.impossible "RefDec.check_exp:FNexp"
-			   | SOME(srt1, srt2) => (srt1, srt2)
-		    in
-		      letC (ref_match(C, match, mkSORTps C srt1, srt2))  (fn endPatSort =>
-		      if isEmptyPS C endPatSort then  noErrC ()
-			else  (error((), i, REI.UNMATCHED srt1))    ) errflag
-		    end)
+                           | SOME(srt1, srt2) => (srt1, srt2)
+                    in
+                      letC (ref_match(C, match, mkSORTps C srt1, srt2))  (fn endPatSort =>
+                      if isEmptyPS C endPatSort then  noErrC ()
+                        else  (error((), i, REI.UNMATCHED srt1))    ) errflag
+                    end)
        (* Need to allow this for the expansion of a "case".  Later consider: C := ... | C I   *)
        | RG.APPexp(i, exp1 as (RG.FNexp _), atexp2) =>
             letRC (infer_atexp (C, atexp2))  (fn srt2 =>
@@ -1626,14 +1662,14 @@ in
        | RG.TYPEDexp(i, exp1, ty2) => check_exp (C, exp1, gsrt) errflag
 
        | _ => letRC (if (* exp_has_var_head exp*) false then
-			 check_poly_head_exp (C, exp, gsrt, 0)
-		     else
-			 infer_exp (C, exp))
-	      (fn inf_srt =>    (* infer sort and compare *)
-	      if (RO.subSort (Env.conjSortNameC C) (inf_srt, gsrt)) then
-		  noErrC ()
-	      else
-		  error((), RG.get_info_exp exp, REI.NOT_SUBSORT(gsrt, inf_srt))  ) errflag
+                         check_poly_head_exp (C, exp, gsrt, 0)
+                     else
+                         infer_exp (C, exp))
+              (fn inf_srt =>    (* infer sort and compare *)
+              if (RO.subSort (Env.conjSortNameC C) (inf_srt, gsrt)) then
+                  noErrC ()
+              else
+                  error((), RG.get_info_exp exp, REI.NOT_SUBSORT(gsrt, inf_srt))  ) errflag
 
     and infer_exp0 (C, exp : RG.exp) errflag
            : RO.Sort Redo Result =  
@@ -1701,11 +1737,11 @@ in
 
              val isInstance =   (* Slightly staged computation. *)
                  if false (*List.all (RO.covariant_sort (covariant_sortname C)) sortInstances*) then
-		     let val full_inst = full_instance (C, srtsch, instances)  in
+                     let val full_inst = full_instance (C, srtsch, instances)  in
                         fn srt => RO.subSort (Env.conjSortNameC C) (full_inst, srt)
-		     end
-		 else
-		     fn srt => RO.isInstance (Env.conjSortNameC C) srt srtsch
+                     end
+                 else
+                     fn srt => RO.isInstance (Env.conjSortNameC C) srt srtsch
            in
 (*             if List.all isInstance (RO.list_Conjuncts gsrt) then noErrC () errflag *)
              if isInstance gsrt then noErrC () errflag        (* Must match closely! *)
@@ -1746,19 +1782,19 @@ in
             check_exp (Env.C_plus_T (Env.C_plus_E(C,E), T), exp, gsrt)  ) errflag
        | RG.PARatexp(i, exp) => check_exp (C, exp, gsrt) errflag
        | RG.RECORDatexp(i, exprow_opt) =>
-	    (* Below: better would be to check with a record of bogusSorts.  *)
-	  if  RO.isBogusSort gsrt  then  letRC (infer_atexp(C,atexp))  (fn inf_srt =>
-					 noErrC ()  ) errflag
+            (* Below: better would be to check with a record of bogusSorts.  *)
+          if  RO.isBogusSort gsrt  then  letRC (infer_atexp(C,atexp))  (fn inf_srt =>
+                                         noErrC ()  ) errflag
           else  
-	    let                
-	      val grecmap : (RO.lab, RO.Sort) SortedFinMap.map = 
-		      case (RO.unSortRecSort gsrt)  of        (* mkConjSort distributes rec's *)
-			 SOME recsort => RO.recSortToMap recsort
-		       | NONE => impossible ("check_atexp:" ^
+            let                
+              val grecmap : (RO.lab, RO.Sort) SortedFinMap.map = 
+                      case (RO.unSortRecSort gsrt)  of        (* mkConjSort distributes rec's *)
+                         SOME recsort => RO.recSortToMap recsort
+                       | NONE => impossible ("check_atexp:" ^
                                                (PP.flatten1 (SourceInfo.layout (to_SourceInfo i))))
-	    in
-	      check_exprow_opt (C, exprow_opt, grecmap) errflag
-	    end
+            in
+              check_exprow_opt (C, exprow_opt, grecmap) errflag
+            end
        | _ => letRC (infer_atexp (C, atexp))  (fn inf_srt =>  (* infer sort and compare *)
               if (RO.subSort (Env.conjSortNameC C) (inf_srt, gsrt)) then
                  noErrC ()
@@ -1784,7 +1820,8 @@ in
                    | NONE => impossible ("infer_atexp:IDENTatexp not found: " ^ 
                                          (Ident.pr_longid longid) )
              in   (* Add warning here. *)
-               noErr (noRedo srt)
+               if warn then error(noRedo srt, i, REI.TOO_MUCH) errflag
+               else noErr (noRedo srt)
              end
 
        | RG.INSTatexp (i, RG.OP_OPT(longid, withOp),tys) =>
@@ -1815,7 +1852,7 @@ in
 
        | RG.LETatexp(i, dec, exp) =>
            letR  (ref_decR (C, dec))  (fn (T, E) =>
-	   infer_exp (Env.C_plus_T (Env.C_plus_E(C,E), T), exp)  ) errflag
+           infer_exp (Env.C_plus_T (Env.C_plus_E(C,E), T), exp)  ) errflag
        | RG.PARatexp(i, exp) =>  infer_exp (C, exp) errflag
        | RG.RECORDatexp(i, exprow_opt) =>
            letRV (infer_exprow_opt(C, exprow_opt)) RO.mkSortRecSort errflag
@@ -1831,109 +1868,109 @@ in
     and check_exp (C, exp : RG.exp, gsrt : RO.Sort) errflag
            : unit Result =
          let (*val _ = pr_debug ("check_exp: ", fn () => RG.layoutExp exp) 
-	     val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt) *)
-	     val _ = pr_debug ("  info for check_exp: ", 
-		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
-			           NONE =>  StringTree.LEAF "NO-INFO"
-				 | SOME i =>  TypeInfo.layout i)
+             val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt) *)
+             val _ = pr_debug ("  info for check_exp: ", 
+                       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
+                                   NONE =>  StringTree.LEAF "NO-INFO"
+                                 | SOME i =>  TypeInfo.layout i)
              val pop = Env.debug_push2 (fn () => ("\n****check_exp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
-     	     val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
+             val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
-	     val res =  if !memoizeOn then Comp.memoIn memo (check_exp0 (C, exp, gsrt)) errflag
-			else check_exp0 (C, exp, gsrt) errflag
+             val res =  if !memoizeOn then Comp.memoIn memo (check_exp0 (C, exp, gsrt)) errflag
+                        else check_exp0 (C, exp, gsrt) errflag
              val _ = pop (fn () => 
-				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
+                                     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
 
 (*             val _ = pr_debug ("check_exp: ", fn () => RG.layoutExp exp)
-	     val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt)
+             val _ = out_debug (fn () => "  sort for check_exp: "^ RO.pr_Sort gsrt)
              val _ = out_debug (fn () => "  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO"))
 *)
-	 in   res  end
+         in   res  end
 
     and check_atexp (C, atexp : RG.atexp, gsrt : RO.Sort) errflag
            : unit Result =
          let val _ = pr_debug ("check_atexp: ", fn () => RG.layoutAtexp atexp)
-	     val _ = out_debug (fn () => "  sort for check_atexp: "^ RO.pr_Sort gsrt)
-	     val _ = pr_debug ("  info for check_atexp: ", 
-		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
-			           NONE =>  StringTree.LEAF "NO-INFO"
-				 | SOME i =>  TypeInfo.layout i)
+             val _ = out_debug (fn () => "  sort for check_atexp: "^ RO.pr_Sort gsrt)
+             val _ = pr_debug ("  info for check_atexp: ", 
+                       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
+                                   NONE =>  StringTree.LEAF "NO-INFO"
+                                 | SOME i =>  TypeInfo.layout i)
              val pop = Env.debug_push2 (fn () => ("\n****check_atexp: sort = " ^ RO.pr_Sort gsrt)
                                                :: lines_pp (RG.layoutAtexp atexp))
 
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
-     	     val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
+             val memotable = RefInfo.get_CHECKABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVEsort ((Env.VE_of_E (Env.E_of_C C), gsrt), memotable)
-	     val res =  if !memoizeOn then Comp.memoIn memo (check_atexp0 (C, atexp, gsrt)) errflag
-			else check_atexp0 (C, atexp, gsrt) errflag
+             val res =  if !memoizeOn then Comp.memoIn memo (check_atexp0 (C, atexp, gsrt)) errflag
+                        else check_atexp0 (C, atexp, gsrt) errflag
              val _ = pop (fn () => 
-				     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
-	 in   res  end
+                                     ["  RESULT: " ^ (case res of (_, []) => "YES" | _ => "NO")] )
+         in   res  end
 
     and infer_exp (C, exp : RG.exp) errflag
            : RO.Sort Redo Result = 
          let val _ = pr_debug ("  info for infer_exp: ", 
-		       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
-			           NONE =>  StringTree.LEAF "NO-INFO"
-				 | SOME i =>  TypeInfo.layout i)	       
+                       fn () => case getPostElabTypeInfo (RG.get_info_exp exp) of
+                                   NONE =>  StringTree.LEAF "NO-INFO"
+                                 | SOME i =>  TypeInfo.layout i)               
              val pop = Env.debug_push2 (fn () => ("\n****infer_exp: ")
                                                :: lines_pp (RG.layoutExp exp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_exp exp)
-     	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
+             val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
-	     val res = if !memoizeOn then Comp.memoIn memo (infer_exp0 (C, exp)) errflag
-		       else infer_exp0 (C, exp) errflag
+             val res = if !memoizeOn then Comp.memoIn memo (infer_exp0 (C, exp)) errflag
+                       else infer_exp0 (C, exp) errflag
              val _ = pop (fn () => "infer_exp:  RESULT: " ::
-				      lines_pp (RO.layoutSort ((fn (redo, _) => 
-						      #1 (redoToResAndRC redo)) res)  ))
-	 in   res  end
+                                      lines_pp (RO.layoutSort ((fn (redo, _) => 
+                                                      #1 (redoToResAndRC redo)) res)  ))
+         in   res  end
 
     and infer_atexp (C, atexp : RG.atexp) errflag
            : RO.Sort Redo Result = 
-         let (*	val _ = pr_debug ("  C for infer_exp: ", 
-		             fn () => Env.layoutC C ) *)
-	     val _ = pr_debug ("  info for infer_atexp: ", 
-		       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
-			           NONE =>  StringTree.LEAF "NO-INFO"
-				 | SOME i =>  TypeInfo.layout i)
+         let (* val _ = pr_debug ("  C for infer_exp: ", 
+                             fn () => Env.layoutC C ) *)
+             val _ = pr_debug ("  info for infer_atexp: ", 
+                       fn () => case getPostElabTypeInfo (RG.get_info_atexp atexp) of
+                                   NONE =>  StringTree.LEAF "NO-INFO"
+                                 | SOME i =>  TypeInfo.layout i)
              val pop = Env.debug_push2 (fn () => ("\n****infer_atexp: ")
                                                :: lines_pp (RG.layoutAtexp atexp))
              val refDecMemo = RefInfo.to_RefDecMemo (RG.get_info_atexp atexp)
-     	     val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
+             val memotable = RefInfo.get_INFERABLE refDecMemo (* Will add table if not there. *)
              val memo = RefInfo.lookupMemoVE (Env.VE_of_E (Env.E_of_C C), memotable)
-	     val res = if !memoizeOn then Comp.memoIn memo (infer_atexp0 (C, atexp)) errflag
-		       else infer_atexp0 (C, atexp) errflag
+             val res = if !memoizeOn then Comp.memoIn memo (infer_atexp0 (C, atexp)) errflag
+                       else infer_atexp0 (C, atexp) errflag
              val _ = pop (fn () => "infer_atexp:  RESULT: " ::
-				      lines_pp (RO.layoutSort ((fn (redo, _) => 
-						      #1 (redoToResAndRC redo)) res)  ))
+                                      lines_pp (RO.layoutSort ((fn (redo, _) => 
+                                                      #1 (redoToResAndRC redo)) res)  ))
 
-	 in   res  end	
+         in   res  end  
      
     and check_exprow_opt(C, exp_row_opt, grecmap : (RO.lab, RO.Sort) SortedFinMap.map) errflag
                         : unit Result = 
       case exp_row_opt of
-	 NONE =>  noErr ()
+         NONE =>  noErr ()
        | SOME (RG.EXPROW(i, lab, exp, exprow_opt)) => 
-	    case SortedFinMap.lookup grecmap lab  of SOME gsrt =>  (* could sort labs in exp *)
-	    letC (check_exp(C, exp, gsrt))  (fn () =>
-	    check_exprow_opt(C, exprow_opt, grecmap)  ) errflag
+            case SortedFinMap.lookup grecmap lab  of SOME gsrt =>  (* could sort labs in exp *)
+            letC (check_exp(C, exp, gsrt))  (fn () =>
+            check_exprow_opt(C, exprow_opt, grecmap)  ) errflag
 
     (* Number of results is the product of the components. *)
     and infer_exprow_opt(C, exp_row_opt) errflag  : RO.RecSort Redo Result = 
         case exp_row_opt of
            NONE =>  noErr (noRedo RO.emptyRecSort)
          | SOME (RG.EXPROW(i, lab, exp, exprow_opt)) => 
-	      letR (infer_exp (C, exp))  (fn srt =>
-	      letRV (infer_exprow_opt (C, exprow_opt))  (fn recsrt =>
-	      RO.addField (lab, srt) recsrt  )) errflag	      
-	      
+              letR (infer_exp (C, exp))  (fn srt =>
+              letRV (infer_exprow_opt (C, exprow_opt))  (fn recsrt =>
+              RO.addField (lab, srt) recsrt  )) errflag       
+              
     and apply_sort_to_atexp(C, srt: RO.Sort, atexp: RG.atexp) errflag
           : RO.Sort Redo Result = 
       case (RO.unSortConj srt)  of
          SOME (srt1, srt2) =>  tryBothR1 (apply_sort_to_atexp(C, srt1, atexp))
-	                                 (apply_sort_to_atexp(C, srt2, atexp)) errflag
+                                         (apply_sort_to_atexp(C, srt2, atexp)) errflag
        | NONE => case (RO.unSortArrow srt)  of
                     SOME (srt1, srt2) =>  letCV (check_atexp(C, atexp, srt1))  (fn () =>
                                                 noRedo srt2  ) errflag
@@ -1942,9 +1979,9 @@ in
 (* UNFINISHED: was in apply_sort_to_atexp above.  Need RO.applySort to return a Redo Result
            if (always_infer_atexp atexp) then   (* optimize when argument is trivial? *)
              letR (infer_atexp (C, atexp))  (fn (T, srt2) => 
-	     letR (RO.applySort (Env.conjSortNameC C) (srt, srt2))  
+             letR (RO.applySort (Env.conjSortNameC C) (srt, srt2))  
              (fn NONE => error((T, RO.bogusSort), get_info_atexp atexp, REI.CANT_APPLY srt)
-	       | SOME out_srt => noErr (T, out_srt)  )) errflag
+               | SOME out_srt => noErr (T, out_srt)  )) errflag
            else
 *)
 
@@ -1970,8 +2007,8 @@ in
 
    and check_poly_head_exp (C, exp, gsrt, apps) errflag = 
        case exp
-	 of RG.ATEXPexp (i, atexp) => check_poly_head_atexp (C, atexp, gsrt, apps) errflag
-	  | RG.APPexp(i, exp1, atexp2) =>
+         of RG.ATEXPexp (i, atexp) => check_poly_head_atexp (C, atexp, gsrt, apps) errflag
+          | RG.APPexp(i, exp1, atexp2) =>
              letR (check_poly_head_exp(C, exp1, gsrt, apps+1))  (fn srt1 =>
              apply_sort_to_atexp(C, srt1, atexp2)  ) errflag
 
@@ -1996,15 +2033,15 @@ in
 
              val isInstance =   (* Slightly staged computation. *)
                  if List.all (RO.covariant_sort (covariant_sortname C)) sortInstances then
-		     let val full_inst = full_instance (C, srtsch, instances)  in
+                     let val full_inst = full_instance (C, srtsch, instances)  in  (* Could raise TooMuch *)
                         fn srt => RO.subSort (Env.conjSortNameC C) (full_inst, srt)
-		     end
-		 else (* Instead of srtsch, we want to take a parametric instance,
+                     end
+                 else (* Instead of srtsch, we want to take a parametric instance,
                          perhaps match against some arguments (just variables?),  
                          take the result of "->" apps times, then match against gsrt, 
                          and use the resulting substitution.  *)
-		     fn srt => RO.isInstance (Env.conjSortNameC C) srt srtsch
-	     val out_srt = noRedo gsrt (* This is wrong: it should be an instance of srtsch *)
+                     fn srt => RO.isInstance (Env.conjSortNameC C) srt srtsch
+             val out_srt = noRedo gsrt (* This is wrong: it should be an instance of srtsch *)
            in
              if List.all isInstance (RO.list_Conjuncts gsrt) then noErrC out_srt errflag
              else let val (_, srt2) = RO.instance_vars srtsch

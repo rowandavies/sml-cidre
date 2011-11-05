@@ -29,9 +29,12 @@ signature REFINE_ERROR_INFO =
       | WRONG_ARITY of {expected: int, actual: int}
       | NOT_COVARIANT
       | MULTIPLE_BINDINGS
-      | UNMATCHED of Sort
       | NOT_UNIQUE
       | SHARING_REFINEMENTS_DIFFER
+
+      (* warnings *)
+      | UNMATCHED of Sort
+      | TOO_MUCH
 
     type Error = SourceInfo * ErrorInfo
 

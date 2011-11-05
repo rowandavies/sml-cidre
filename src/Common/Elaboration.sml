@@ -684,6 +684,8 @@ signature ELABORATION =
 	    
     structure ElabTopdec : ELABTOPDEC
 
+    structure RefDec : REFDEC
+
 (*     structure PostElabDecGrammar : DEC_GRAMMAR *)
 
     structure PostElabTopdecGrammar : TOPDEC_GRAMMAR

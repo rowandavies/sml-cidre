@@ -14,6 +14,8 @@ sig
    type PostElabDec
    type PostElabTy
    type PostElabDatBind
+   
+   val howMuchIsTooMuch : int ref
 
    val ref_dec : Context * PostElabDec -> (TyNameEnv * Env) Comp
    val ref_ty_covar : Context * PostElabTy -> Sort Comp

@@ -40,9 +40,12 @@ functor RefineErrorInfo(structure SourceInfo : SOURCE_INFO
       | WRONG_ARITY of {expected: int, actual: int}
       | NOT_COVARIANT
       | MULTIPLE_BINDINGS
-      | UNMATCHED of Sort
       | NOT_UNIQUE
       | SHARING_REFINEMENTS_DIFFER
+
+      | UNMATCHED of Sort
+      | TOO_MUCH
+
 
     type Error = SourceInfo * ErrorInfo
 
@@ -131,6 +134,11 @@ functor RefineErrorInfo(structure SourceInfo : SOURCE_INFO
 
       | reportInfo SHARING_REFINEMENTS_DIFFER =
 	     line("You cannot share these types because they have different refinements.")
+
+      | reportInfo TOO_MUCH =
+	     line("Sort instantiation reached the limit (Cidre.Elaboration.RefDec.howMuchIsTooMuch : int ref)")
+           //line("- the default sorts were used to instantiate instead.")
+           //line("Use a sort constraint or explicit instantiators to improve accuracy.")
 
     fun report (sourceInfo, errorInfo) = 
          (SourceInfo.report sourceInfo)

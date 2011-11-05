@@ -4,9 +4,11 @@ structure MlbProject = MlbProject(Environment);
 
 structure Cidre = struct
 
+   (* structure Flags = Flags *)
+   open R
+
    local
      open InfixingLib
-     open R
      open Basics Tools
      open Basics.ModuleStatObject Basics.ModuleEnvironments
      open MlbProject.MS
