@@ -11,7 +11,7 @@ in
              "with SML-CIDRE 0.99999\n\nQuickstart:   Cidre.make \"filenm.cm\";\n\n");
        "a piece of")
   else 
-(print "CIDRE exported!\n";
+(print "CIDRE export available via:  ./bin/sml-cidre  \n";
 
   let val smlCidre = TextIO.openOut "../../bin/sml-cidre" 
       val smlCidreBat = TextIO.openOut "../../bin/sml-cidre.bat" 
@@ -19,6 +19,7 @@ in
     TextIO.output (smlCidre, "#! /bin/sh\nsml @SMLload=\"" ^ cidreDir ^ "/bin/.heap/sml-cidre\"");
     TextIO.output (smlCidreBat, "sml @SMLload=\"" ^ cidreDir ^ "/bin/.heap/sml-cidre\"");
     TextIO.closeOut smlCidre;
+    OS.Process.exit (OS.Process.success);
     ""
   end
 )

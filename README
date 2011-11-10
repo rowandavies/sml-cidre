@@ -34,7 +34,6 @@ definitely works.
 
 - cd to the directory containing this file.
 - type:  sml useme.sml
-- Exit from SML/NJ (via ^D or ^Z)
 - You can now run sml-cidre via:   ./bin/sml-cidre 
 
 sml-cidre includes all of SML/NJ, so use it in place of the normal "sml",
