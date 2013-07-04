@@ -14,6 +14,7 @@ signature FLAGS =
     val warn_string : string -> unit
     val report_warnings : unit -> unit
     val reset_warnings : unit -> unit
+    val get_warned : unit -> bool
       
     (*Warnings are collected during compilation and printed all at once at
      the end of the compilation of a program.  The printing is done in

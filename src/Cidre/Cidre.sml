@@ -188,7 +188,8 @@ structure Cidre = struct
            (case ParseElab.parse_elab {infB=infB0, elabB=B.plus_rT(B0,rT0), prjid=atbdec, file=atbdec}
               of SUCCESS {report, infB, elabB, topdec} => 
                    (if print_flag then print_result_report report 
-                                  else (Flags.report_warnings(); Flags.reset_warnings();warned:=true);
+                                  else ( warned := ((!warned) orelse (Flags.get_warned())) ;
+                                         Flags.report_warnings(); Flags.reset_warnings()   );
                     ( B.to_rT elabB, (infB, BE.empty, B.no_rT elabB), BC0 ) )
                | FAILURE (report, error_codes) =>
                    (Flags.report_warnings();  (* Print warnings even if there are errors.  *)

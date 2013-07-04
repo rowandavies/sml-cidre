@@ -184,6 +184,8 @@ functor Flags (structure Crash : CRASH
       fun warn report = warnings := report :: !warnings
       val warn_string = warn o Report.line
 
+      fun get_warned () = case (!warnings) of [] => false | _::_ => true 
+
       fun report_warnings () = 
 	    (case !warnings of
 	       [] =>  ()
