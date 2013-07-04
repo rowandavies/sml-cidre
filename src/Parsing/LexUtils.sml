@@ -145,6 +145,7 @@ functor LexUtils(structure LexBasics: LEX_BASICS
 	   | "as"	 => keyword AS
 	   | "assumesig"	 => keyword ASSUME   (* for CIDRE *)
 	   | "case"	 => keyword CASE
+	   | "cidredebug"	 => keyword CIDREDEBUG
 	   | "do"	 => keyword DO
 	   | "datatype"	 => keyword DATATYPE
 	   | "else"	 => keyword ELSE

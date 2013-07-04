@@ -1234,7 +1234,12 @@ functor ElabDec(
                (S2 oo S1, T1 @ T2,
                 E.plus (E1',E2),
                 OG.SEQdec(okConv i,out_dec1,out_dec2)) 
-             end)
+             end
+
+         | IG.CIDREDBGdec(i,id) =>
+             (Substitution.Id, [], E.from_VE VE.empty, OG.CIDREDBGdec(okConv i, id))
+
+        )
 
     (****** value bindings - Definition, p. ? ******)
 
@@ -2657,7 +2662,8 @@ let
          | INFIXdec _ => dec
          | INFIXRdec _ => dec
          | NONFIXdec _ => dec
-         | EMPTYdec _ => dec)
+         | EMPTYdec _ => dec
+         | CIDREDBGdec _ => dec)
 
   and resolve_valbind (valbind : valbind) : valbind =
       case valbind of

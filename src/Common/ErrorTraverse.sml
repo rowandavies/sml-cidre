@@ -274,6 +274,7 @@ functor ErrorTraverse (structure TopdecGrammar : TOPDEC_GRAMMAR
 	 | INFIXRdec(i, _, _) => check i
 	 | NONFIXdec(i, _) =>    check i
 	 | EMPTYdec i =>         check i
+	 | CIDREDBGdec(i, _) =>    check i
 
     and walk_Valbind valbind =
       case valbind

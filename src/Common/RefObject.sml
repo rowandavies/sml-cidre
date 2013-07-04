@@ -1005,8 +1005,10 @@ functor RefObject( structure StatObject : STATOBJECT
                       orelse (case accumr of [] => false | _ => subRecSort0 (r1, accumr))
 				   (* [] checked in subRecSort *)
 	      | (sort'::r')::rt2 => 
-                  (* subRecSort' would (need to) have a critical precondition if we add
+                  (* OLD: subRecSort' would (need to) have a critical precondition if we add
                      something like the following. *)
+                  (* The exact precondition should be documented here. *)
+                  (* First check two simpler cases to try to avoid the full expansion. *)
                   sub (sort, accums) orelse subRecSort0 (r1, accumr) orelse
                   (* sub (sort, sort'::accums) andalso subRecSort0 (r1, r'::accumr)
                   orelse  (* Checking inclusion first is an optimization.  *) *)
@@ -1017,7 +1019,7 @@ functor RefObject( structure StatObject : STATOBJECT
               | []::_ => Crash.impossible "RefObject.subRecSort'"
 
          and subRecSort (sorts1, sorts_list2) = 
-             (* First check some common cases, which may greatly speed things up. *)
+             (* First check some common cases, which can greatly speed things up. *)
             ((* (!out_debug_ssn) (fn () => "subRecSort.  \trecordsize = " ^ 
 				        Int.toString (length sorts1) ^ 
 				        "   \tunion components = " ^ 

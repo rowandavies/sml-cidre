@@ -738,6 +738,8 @@ functor Infixing(structure Report: REPORT
          | EMPTYdec i =>
              (emptyB, EMPTYdec i)
 
+         | CIDREDBGdec (i,id) => (emptyB, CIDREDBGdec(i,id))
+
     and resolveValbind(iBas, valbind) =
       case valbind
         of PLAINvalbind(i, pat, exp, valbind_opt) =>

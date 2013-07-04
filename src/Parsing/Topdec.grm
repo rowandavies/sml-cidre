@@ -119,7 +119,7 @@ type arg = unit
 	| WHERE | COLONGREATER | ASSUME | REFINES | SUBSORT (* | SUPERSORT *)
 
 (* Reserved words for the core language (Defn. V4 sec. 2.1): *)
-	| ABSTYPE | AND | ANDALSO | AS | CASE | DO | DATASORT | DATATYPE | ELSE
+	| ABSTYPE | AND | ANDALSO | AS | CASE | CIDREDEBUG | DO | DATASORT | DATATYPE | ELSE
 	| END | EXCEPTION | FN | FUN | FUNSORT | HANDLE | IF | IN | INFIX
 	| INFIXR | LET | LOCAL | NONFIX | OF | OP | OPEN | ORELSE
 	| RAISE | REC | SORT | THEN | TYPE | VAL | VALSPEC | WITH | WITHSORT | WITHTYPE | WHILE
@@ -1343,6 +1343,10 @@ OneSortDec:
 				      (get_info_datbind DatBind_nonzero_arity, db),
 				    SORTdec (get_info_typbind TypBind, TypBind))
                           end )
+
+        | CIDREDEBUG ID
+                        ( CIDREDBGdec (PP IDleft IDright, ID) )
+
 
 OneSortDec_or_SEMICOLON:
           OneSortDec        ( SOME OneSortDec )

@@ -68,6 +68,7 @@ val ELSE:  'a * 'a -> (svalue,'a) token
 val DATATYPE:  'a * 'a -> (svalue,'a) token
 val DATASORT:  'a * 'a -> (svalue,'a) token
 val DO:  'a * 'a -> (svalue,'a) token
+val CIDREDEBUG:  'a * 'a -> (svalue,'a) token
 val CASE:  'a * 'a -> (svalue,'a) token
 val AS:  'a * 'a -> (svalue,'a) token
 val ANDALSO:  'a * 'a -> (svalue,'a) token

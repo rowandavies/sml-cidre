@@ -101,6 +101,7 @@ struct
       | IG.INFIXRdec(i,x,y) => OG.INFIXRdec(f i,x,y)
       | IG.NONFIXdec(i,x) => OG.NONFIXdec(f i,x)
       | IG.EMPTYdec i => OG.EMPTYdec (f i)
+      | IG.CIDREDBGdec(i,x) => OG.CIDREDBGdec(f i,x)
 	    
     and map_FValBind_info f (IG.FVALBIND(i,FClause,FValBind_opt))  =
       OG.FVALBIND(f i, 

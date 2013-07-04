@@ -404,7 +404,7 @@ in
     fun mkADDFIELDps x = ADDFIELDps x
     fun mkUNIONps x = UNIONps x
 *)
-
+(*
     fun pr_PatSort (SORTps srt) = "SORTps(" ^ (RO.pr_Sort srt) ^ ")"
       | pr_PatSort (VALCONSps (longid, _, NONE)) = Ident.pr_longid longid
       | pr_PatSort (VALCONSps (longid, _, SOME ps)) = 
@@ -416,6 +416,21 @@ in
       | pr_PatSort UNITps = "UNIT"
       | pr_PatSort (UNIONps(ps1, ps2)) = 
         "UNION(" ^ (pr_PatSort ps1) ^ ", " ^ (pr_PatSort ps2) ^ ")"
+      | pr_PatSort EMPTYps = "EMPTY"    
+*)
+
+
+    fun pr_PatSort (SORTps srt) = "_"
+      | pr_PatSort (VALCONSps (longid, _, NONE)) = Ident.pr_longid longid
+      | pr_PatSort (VALCONSps (longid, _, SOME ps)) = 
+        (Ident.pr_longid longid) ^ "(" ^ pr_PatSort ps ^ ")"
+(*      | pr_PatSort (REFps (srt, ps)) =
+          REF ^ "(" ^ RO.pr_Sort srt ^ ", " ^  pr_PatSort ps ^ ")" *)
+      | pr_PatSort (ADDFIELDps(lab, ps1, ps2)) = 
+        "{" ^ Lab.pr_Lab lab ^ "=" ^ (pr_PatSort ps1) ^ " * " ^ (pr_PatSort ps2) ^ "}"
+      | pr_PatSort UNITps = "UNIT"
+      | pr_PatSort (UNIONps(ps1, ps2)) = 
+        "[" ^ (pr_PatSort ps1) ^ "+" ^ (pr_PatSort ps2) ^ "]"
       | pr_PatSort EMPTYps = "EMPTY"    
 
     fun isEmptyPS C (SORTps srt) = RO.emptySort (Env.conjSortNameC C) srt
@@ -438,6 +453,8 @@ in
       | sizePS EMPTYps = 1
 
     val largestPS = ref 0
+
+
 
     (***** patSorts, to support ref_pat *****)
     fun patSort_to_Sorts (C, SORTps srt) : RO.Sort list * bool =   (* bool => warn *)
@@ -613,6 +630,16 @@ in
       | UNIONps(ps1, ps2) => (projectPatsort(C, ps1, lab)) @ (projectPatsort(C, ps2, lab))
       | EMPTYps => []
       | _ => Crash.impossible "RefDec.projectPatsort"
+
+
+    (* An alternative approach to pattern subtraction designed to
+    avoid blow ups in the size of pattern sorts.  Each case is
+    subtracted separately. *)
+
+(*    fun patMatchVEs (C, sort, pat, prevPats) : (Env.VarEnv * PatSort) list =
+      (case pat of 
+*)
+
 
     (*********
     Environments to be used initially in refining a datbind
@@ -842,6 +869,10 @@ in
             end  )) errflag
           end
       | RG.UNRES_FUNdec _ => Crash.impossible "RefDec.ref_decR:UNRES_FUNdec"
+      | RG.CIDREDBGdec (_,"true") => ( Flags.DEBUG_REFOBJECTS:=true; noErr (noRedo (Env.emptyT, Env.emptyE)) )
+      | RG.CIDREDBGdec (_,"false") => ( Flags.DEBUG_REFOBJECTS:=false; noErr (noRedo (Env.emptyT, Env.emptyE)) )
+      | RG.CIDREDBGdec (_,s) => Crash.impossible ("RefDec.ref_decR:CIDREDEBUG " ^ s)
+
       val () = Env.debug_pop (fn()=>[])
      in
          res
@@ -1340,10 +1371,12 @@ in
                mkUNIONps(mkADDFIELDps(lab1, out_patsort1, out_patsort2),   (* Better patsort? *)
                          mkUNIONps(mkADDFIELDps(lab1, out_patsort1, match_ps2), 
                                    mkADDFIELDps(lab1, match_ps1, out_patsort2)) )
+
 (* With the version below, match_ps is never needed and could be removed from ref_pat.  *)
 (* But, this is slightly less precise, and leads to many redundant contexts.  *)
 (*             mkUNIONps(mkADDFIELDps(lab1, out_patsort1, patsort2), 
-                         mkADDFIELDps(lab1, patsort1, out_patsort2)) *)
+                         mkADDFIELDps(lab1, patsort1, out_patsort2))
+*)
                               )   ) ) errflag
 
 
@@ -1375,12 +1408,12 @@ in
      of RG.LONGIDatpat(i, RG.OP_OPT(longid, withOp)) => 
        (case (getPostElabTypeInfo i)
           of SOME (TypeInfo.CON_INFO {instances, ...}) => 
-             let val (out_patsort, arg_ps, srtsPat,srt_instances) = dividePatsort(C, patsort, longid)     
+             let val (out_patsort, arg_ps, srtsPat, srt_instances) = dividePatsort(C, patsort, longid)     
                  val (SOME (Env.LONGCON ssch)) = Env.Lookup_longid(C,longid)
                  val matched_patsort = mkVALCONSps(longid, (srtsPat, ssch, srt_instances),
-                                                   arg_ps)    (* The instances shouldn't be used? *)
+                                                   arg_ps)
                  val VE_psrt_list = case arg_ps of NONE => [(Env.emptyVE, matched_patsort)] 
-                                                | SOME _ => []
+                                                | SOME _ => [] (* type error *)
              in
                noErr (VE_psrt_list, matched_patsort, out_patsort)
              end
@@ -1487,19 +1520,19 @@ in
     
     and ref_pat (C: Env.Context, pat: RG.pat, patsort: PatSort) errflag
          : ((Env.VarEnv * PatSort) list * PatSort * PatSort) Result =
-     ((*if sizePS patsort > 50 then
+     (if !Flags.DEBUG_REFOBJECTS andalso sizePS patsort > 5000 andalso sizePS patsort > !largestPS then
           (pr_indent (("ref_pat: START " ^ Int.toString (sizePS patsort) ));
            largestPS := sizePS patsort)
-      else (); *)
+      else ();
       (*Env.debug_push (fn () => "\n****ref_pat"
                                :: lines_pp (RG.layoutPat pat)); *)
       case ref_pat0(C, pat, patsort) errflag of res =>
       ( (* Env.debug_pop (fn () => []);  *)
-        (* if sizePS (#3 (#1 res)) > 50 then       
-            (pr_indent ("ref_pat: END " ^ Int.toString (sizePS (#3(#1 res))) ^ 
-                        " MATCHED: " ^ (pr_PatSort (#3 (#1 res)))   );
+         if !Flags.DEBUG_REFOBJECTS andalso sizePS (#3 (#1 res)) > 5000 andalso sizePS (#3 (#1 res)) > !largestPS then
+            (pr_indent ("ref_pat: END " ^ Int.toString (sizePS (#3(#1 res))) (* ^ 
+                         " MATCHED: " ^ (pr_PatSort (#3 (#1 res))) *)   );
                         largestPS := sizePS (#3 (#1 res)))
-         else ();*)
+         else ();
         res))
 
     (* Remove non-maximal environments.  Later, it would be better to rely on memoization. *)
@@ -1579,9 +1612,9 @@ in
     and ref_match (C, match as RG.MATCH(i1, RG.MRULE(i2, pat, exp), match_opt), ps1, gsrt) errflag
            : PatSort Result =
       let
-        val pop = Env.debug_push2 (fn () => ("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
-                                           :: ("patsort = " ^ pr_PatSort ps1)
-                                           :: lines_pp (RG.layoutMatch match))
+        val pop = Env.debug_push2 (fn () => (("\n****ref_match: sort = " ^ RO.pr_Sort gsrt)
+                                           (* :: "patsort = " ^ pr_PatSort ps1 *))
+                                           :: lines_pp (RG.layoutMatch match) )
         val _ = assert (fn () => 
                            case patSort_to_Sorts (C, ps1) 
                             of ([], _) => NONE

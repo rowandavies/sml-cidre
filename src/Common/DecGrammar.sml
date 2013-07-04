@@ -85,7 +85,8 @@ struct
 	INFIXdec of info * int option * id list |
 	INFIXRdec of info * int option * id list |
 	NONFIXdec of info * id list |
-	EMPTYdec of info
+	EMPTYdec of info |
+	CIDREDBGdec of info * string
 
   and valsdesc =
       VALSDESC of info * id * ty list * valsdesc option
@@ -210,6 +211,7 @@ struct
     | INFIXRdec x => (#1) x
     | NONFIXdec x => (#1) x
     | EMPTYdec x => x
+    | CIDREDBGdec x => (#1) x
 
   and get_info_valsdesc (VALSDESC (info, id, ty, valsdesc_opt)) = info
 
@@ -348,6 +350,7 @@ struct
       | INFIXRdec(i,x,y) => INFIXRdec(f i,x,y)
       | NONFIXdec(i,x) => NONFIXdec(f i,x)
       | EMPTYdec i => EMPTYdec (f i)
+      | CIDREDBGdec(i,x) => CIDREDBGdec(f i,x)
 	    
     and map_FValBind_info f (FVALBIND(i,FClause,FValBind_opt)) : FValBind =
       FVALBIND(f i, 
@@ -831,6 +834,9 @@ struct
 		    }
 
 	 | EMPTYdec _ =>
+	     LEAF ""
+
+	 | CIDREDBGdec _ =>
 	     LEAF "")
 
     and layout_datatype_replication (i, tycon, longtycon) =

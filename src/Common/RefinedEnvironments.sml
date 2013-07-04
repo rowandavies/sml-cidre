@@ -215,7 +215,7 @@ functor RefinedEnvironments
 			  else ()
 
     fun assert f =     (* Simple assertions: SOME means there's a bug *)
-	if debug_fns_do_nothing then () else
+	(* if debug_fns_do_nothing then () else *)
 	case f () of NONE => ()
 		   | SOME strs => debug_print_must (fn () => "BUG: ASSERTION FAILED:" :: strs)
 				   
@@ -395,7 +395,7 @@ structure SortNameMap =
       end
 *)
 
-    type hash_code = word  (* For hash-consing in variable environments. *)
+    type hash_code = word  (* For hash-consing in variable environments.  Unused currently. *)
 
     datatype Context = CONTEXT of {T: TyNameEnv, E: Env, U: ExplicitTyVarEnv}
          and Env = ENV of {SE: StrEnv, TE: TyEnv, RE: SortEnv, 

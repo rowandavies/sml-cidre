@@ -85,7 +85,8 @@ sig
 	INFIXdec of info * int option * id list |
 	INFIXRdec of info * int option * id list |
 	NONFIXdec of info * id list |
-	EMPTYdec of info
+	EMPTYdec of info |
+	CIDREDBGdec of info * string
 
   and valbind =
 	PLAINvalbind of info * pat * exp * valbind option |
